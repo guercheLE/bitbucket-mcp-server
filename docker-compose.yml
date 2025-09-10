@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  bitbucket-mcp-server:
+    build: .
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=production
+      - TRANSPORT_MODE=http
+      - PORT=3000
+      - ATLASSIAN_SITE_NAME=${ATLASSIAN_SITE_NAME}
+      - ATLASSIAN_USER_EMAIL=${ATLASSIAN_USER_EMAIL}
+      - ATLASSIAN_API_TOKEN=${ATLASSIAN_API_TOKEN}
+      - BITBUCKET_USERNAME=${BITBUCKET_USERNAME}
+      - BITBUCKET_API_TOKEN=${BITBUCKET_API_TOKEN}
+      - BITBUCKET_BASE_URL=${BITBUCKET_BASE_URL}
+      - DEBUG=false
+      - API_TIMEOUT=30000
+      - API_MAX_RETRIES=3
+      - API_RATE_LIMIT=1000
+      - ENABLE_ISSUES=true
+      - ENABLE_PIPELINES=true
+      - ENABLE_WEBHOOKS=true
+      - ENABLE_PROJECTS=true
+    volumes:
+      - ./logs:/app/logs
+      - ./.env:/app/.env:ro
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "require('http').get('http://localhost:3000/', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - bitbucket-mcp-server-network
+
+  # Optional: Redis for caching
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    networks:
+      - bitbucket-mcp-server-network
+
+  # Optional: Nginx reverse proxy
+  nginx:
+    image: nginx:alpine
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - bitbucket-mcp-server
+    restart: unless-stopped
+    networks:
+      - bitbucket-mcp-server-network
+
+volumes:
+  redis-data:
+
+networks:
+  bitbucket-mcp-server-network:
+    driver: bridge

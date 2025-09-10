@@ -1,0 +1,79 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+CHANGELOG.md
+CONTRIBUTING.md
+CODE_OF_CONDUCT.md
+SECURITY.md
+STYLE_GUIDE.md
+SETUP_GUIDE.md
+SETUP_GUIDE_SERVER.md
+
+# Development files
+.vscode/
+.idea/
+*.log
+coverage/
+.nyc_output/
+
+# Build artifacts
+*.tsbuildinfo
+
+# Configuration files
+tsconfig.json
+tsconfig.build.json
+jest.config.js
+eslint.config.mjs
+.prettierrc
+.releaserc.json
+semantic-release.config.js
+nodemon.json
+.editorconfig
+
+# GitHub
+.github/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Scripts
+scripts/
+build.js
+
+# Tests
+**/*.test.ts
+**/*.spec.ts
+test/
+tests/
+
+# Source maps
+*.map
+
+# Dependencies (will be installed in container)
+node_modules/
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+*.swp
+*.swo
+*~
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp

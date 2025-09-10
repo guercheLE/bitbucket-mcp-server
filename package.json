@@ -1,0 +1,125 @@
+{
+  "name": "@guerchele/bitbucket-mcp-server",
+  "version": "2.2.0",
+  "description": "MCP server for Bitbucket Cloud and Server with enhanced functionality",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "bitbucket-mcp-server": "dist/index.js",
+    "bitbucket-mcp-server-cli": "dist/index.js",
+    "bitbucket-mcp-server": "dist/index.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./cli": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./server": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc && node scripts/ensure-executable.js",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "start:server": "ts-node --esm src/index.ts",
+    "start:cli": "ts-node --esm src/index.ts --help",
+    "dev:server": "ts-node --esm --watch src/index.ts",
+    "dev:cli": "ts-node --esm --watch src/index.ts --help",
+    "server:stdio": "ts-node --esm src/index.ts",
+    "server:http": "TRANSPORT_MODE=http ts-node --esm src/index.ts",
+    "test": "jest",
+    "test:simple": "jest src/simple.test.ts",
+    "test:pass": "jest --passWithNoTests",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch",
+    "lint": "eslint src --ext .ts --config eslint.config.mjs",
+    "lint:fix": "eslint src --ext .ts --config eslint.config.mjs --fix",
+    "format": "prettier --write \"src/**/*.ts\" \"scripts/**/*.js\"",
+    "clean": "rimraf dist coverage",
+    "prepublishOnly": "npm run clean && npm run build",
+    "mcp:stdio": "npm run build && cross-env TRANSPORT_MODE=stdio node dist/index.js",
+    "mcp:http": "npm run build && cross-env TRANSPORT_MODE=http node dist/index.js",
+    "mcp:inspect": "npm run build && cross-env TRANSPORT_MODE=http node dist/index.js & (timeout 2 || sleep 2) && npx @modelcontextprotocol/inspector http://localhost:3000/mcp",
+    "npx:cli": "node dist/index.js --help",
+    "npx:server": "node dist/index.js",
+    "npx:server:http": "cross-env TRANSPORT_MODE=http node dist/index.js"
+  },
+  "keywords": [
+    "mcp",
+    "bitbucket",
+    "atlassian",
+    "pull-request",
+    "code-review",
+    "repository",
+    "workspace",
+    "pipeline",
+    "webhook",
+    "issues",
+    "model-context-protocol",
+    "ai-integration",
+    "devops",
+    "version-control"
+  ],
+  "author": "Bitbucket MCP Community",
+  "license": "LGPL-2.1",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guercheLE/bitbucket-mcp-server.git"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.17.5",
+    "axios": "^1.10.0",
+    "commander": "^14.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "generic-pool": "3.9.0",
+    "minimatch": "^9.0.3",
+    "turndown": "^7.2.1",
+    "ws": "^8.18.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.33.0",
+    "@semantic-release/changelog": "6.0.3",
+    "@semantic-release/git": "10.0.1",
+    "@semantic-release/github": "11.0.5",
+    "@semantic-release/npm": "12.0.2",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/jest": "^30.0.0",
+    "@types/minimatch": "^5.1.2",
+    "@types/node": "^24.3.0",
+    "@types/turndown": "^5.0.5",
+    "@types/ws": "^8.5.10",
+    "@typescript-eslint/eslint-plugin": "^8.39.1",
+    "@typescript-eslint/parser": "^8.39.1",
+    "cross-env": "10.0.0",
+    "eslint": "^9.33.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-filenames": "^1.3.2",
+    "eslint-plugin-prettier": "^5.5.4",
+    "jest": "^30.0.5",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.6.2",
+    "rimraf": "^6.0.1",
+    "semantic-release": "24.2.7",
+    "ts-jest": "^29.4.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  }
+}
