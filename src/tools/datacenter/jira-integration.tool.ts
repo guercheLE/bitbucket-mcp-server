@@ -646,7 +646,7 @@ export class DataCenterJiraIntegrationTools {
 
     // Test Jira Integration Connection
     server.registerTool(
-      'datacenter-test-jira-integration-connection',
+      'jira_test_integration_connection',
       {
         description: `Test Jira integration connection from Bitbucket Data Center.
 
@@ -666,7 +666,7 @@ export class DataCenterJiraIntegrationTools {
 
     // Get Jira Issue Link
     server.registerTool(
-      'datacenter-get-jira-issue-link',
+      'jira_get_issue_link',
       {
         description: `Get specific Jira issue link from Bitbucket Data Center.
 
@@ -692,7 +692,7 @@ export class DataCenterJiraIntegrationTools {
 
     // Delete Jira Issue Link
     server.registerTool(
-      'datacenter-delete-jira-issue-link',
+      'jira_delete_issue_link',
       {
         description: `Delete Jira issue link from Bitbucket Data Center.
 
@@ -718,7 +718,7 @@ export class DataCenterJiraIntegrationTools {
 
     // Get Jira Issue Links for Repository
     server.registerTool(
-      'datacenter-get-jira-issue-links-for-repository',
+      'jira_get_issue_links_for_repository',
       {
         description: `Get Jira issue links for repository from Bitbucket Data Center.
 
@@ -754,7 +754,7 @@ export class DataCenterJiraIntegrationTools {
 
     // Get Jira Issue Links for Commit
     server.registerTool(
-      'datacenter-get-jira-issue-links-for-commit',
+      'jira_get_issue_links_for_commit',
       {
         description: `Get Jira issue links for commit from Bitbucket Data Center.
 
@@ -792,7 +792,7 @@ export class DataCenterJiraIntegrationTools {
 
     // Get Jira Issue Links for Pull Request
     server.registerTool(
-      'datacenter-get-jira-issue-links-for-pull-request',
+      'jira_get_issue_links_for_pull_request',
       {
         description: `Get Jira issue links for pull request from Bitbucket Data Center.
 

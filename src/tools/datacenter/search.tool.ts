@@ -1012,7 +1012,7 @@ export class DataCenterSearchTools {
 
     // Get Search Suggestions
     server.registerTool(
-      'datacenter-get-search-suggestions',
+      'search_get_suggestions',
       {
         title: 'Obter Sugestões de Busca',
         description: `Obter sugestões de busca do Bitbucket Data Center.
@@ -1044,7 +1044,7 @@ export class DataCenterSearchTools {
 
     // Get Search Configuration
     server.registerTool(
-      'datacenter-get-search-configuration',
+      'search_get_configuration',
       {
         title: 'Obter Configuração de Busca',
         description: `Obter configuração de busca do Bitbucket Data Center.
@@ -1073,7 +1073,7 @@ export class DataCenterSearchTools {
 
     // Update Search Configuration
     server.registerTool(
-      'datacenter-update-search-configuration',
+      'search_update_configuration',
       {
         description: `Update search configuration in Bitbucket Data Center.
 
@@ -1104,7 +1104,7 @@ export class DataCenterSearchTools {
 
     // Get Search Indexes
     server.registerTool(
-      'datacenter-get-search-indexes',
+      'search_get_indexes',
       {
         description: `Get search indexes from Bitbucket Data Center.
 
@@ -1132,7 +1132,7 @@ export class DataCenterSearchTools {
 
     // Get Search Index
     server.registerTool(
-      'datacenter-get-search-index',
+      'search_get_index',
       {
         description: `Get specific search index from Bitbucket Data Center.
 
@@ -1161,7 +1161,7 @@ export class DataCenterSearchTools {
 
     // Rebuild Search Index
     server.registerTool(
-      'datacenter-rebuild-search-index',
+      'search_rebuild_index',
       {
         description: `Rebuild search index in Bitbucket Data Center.
 
@@ -1193,7 +1193,7 @@ export class DataCenterSearchTools {
 
     // Stop Search Index
     server.registerTool(
-      'datacenter-stop-search-index',
+      'search_stop_index',
       {
         description: `Stop search index in Bitbucket Data Center.
 
@@ -1224,7 +1224,7 @@ export class DataCenterSearchTools {
 
     // Get Search History
     server.registerTool(
-      'datacenter-get-search-history',
+      'search_get_history',
       {
         description: `Get search history from Bitbucket Data Center.
 
@@ -1252,7 +1252,7 @@ export class DataCenterSearchTools {
 
     // Get User Search History
     server.registerTool(
-      'datacenter-get-user-search-history',
+      'search_get_user_history',
       {
         description: `Get user search history from Bitbucket Data Center.
 
@@ -1283,7 +1283,7 @@ export class DataCenterSearchTools {
 
     // Clear Search History
     server.registerTool(
-      'datacenter-clear-search-history',
+      'search_clear_history',
       {
         description: `Clear search history in Bitbucket Data Center.
 
@@ -1311,7 +1311,7 @@ export class DataCenterSearchTools {
 
     // Clear User Search History
     server.registerTool(
-      'datacenter-clear-user-search-history',
+      'search_clear_user_history',
       {
         description: `Clear user search history in Bitbucket Data Center.
 
@@ -1342,7 +1342,7 @@ export class DataCenterSearchTools {
 
     // Get Search Analytics
     server.registerTool(
-      'datacenter-get-search-analytics',
+      'search_get_analytics',
       {
         description: `Get search analytics from Bitbucket Data Center.
 
@@ -1370,7 +1370,7 @@ export class DataCenterSearchTools {
 
     // Get Query Analytics
     server.registerTool(
-      'datacenter-get-query-analytics',
+      'search_get_query_analytics',
       {
         title: 'Obter Análise de Query',
         description: `Obter análise de query do Bitbucket Data Center.
@@ -1402,7 +1402,7 @@ export class DataCenterSearchTools {
 
     // Get Search Statistics
     server.registerTool(
-      'datacenter-get-search-statistics',
+      'search_get_statistics',
       {
         title: 'Obter Estatísticas de Busca',
         description: `Obter estatísticas de busca do Bitbucket Data Center.
@@ -1432,7 +1432,7 @@ export class DataCenterSearchTools {
 
     // Get Search Statistics for Range
     server.registerTool(
-      'datacenter-get-search-statistics-for-range',
+      'search_get_statistics_for_range',
       {
         title: 'Obter Estatísticas de Busca por Período',
         description: `Obter estatísticas de busca por período do Bitbucket Data Center.
@@ -1467,7 +1467,7 @@ export class DataCenterSearchTools {
 
     // Record Search Analytics
     server.registerTool(
-      'datacenter-record-search-analytics',
+      'search_record_analytics',
       {
         title: 'Registrar Análise de Busca',
         description: `Registrar análise de busca no Bitbucket Data Center.

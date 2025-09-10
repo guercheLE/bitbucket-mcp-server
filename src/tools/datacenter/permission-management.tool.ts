@@ -727,7 +727,7 @@ export class DataCenterPermissionManagementTools {
 
     // Grant Permission
     server.registerTool(
-      'datacenter-grant-permission',
+      'permission_grant',
       {
         description: `Concede uma permissão no Bitbucket Data Center.
 
@@ -761,7 +761,7 @@ export class DataCenterPermissionManagementTools {
 
     // Get Permission
     server.registerTool(
-      'datacenter-get-permission',
+      'permission_get',
       {
         description: `Obtém uma permissão específica no Bitbucket Data Center.
 
@@ -784,7 +784,7 @@ export class DataCenterPermissionManagementTools {
 
     // Revoke Permission
     server.registerTool(
-      'datacenter-revoke-permission',
+      'permission_revoke',
       {
         description: `Revoga uma permissão no Bitbucket Data Center.
 
@@ -807,7 +807,7 @@ export class DataCenterPermissionManagementTools {
 
     // Create Permission Template
     server.registerTool(
-      'datacenter-create-permission-template',
+      'permission_create_template',
       {
         description: `Cria um template de permissão no Bitbucket Data Center.
 
@@ -839,7 +839,7 @@ export class DataCenterPermissionManagementTools {
 
     // Get Permission Template
     server.registerTool(
-      'datacenter-get-permission-template',
+      'permission_get_template',
       {
         description: `Obtém um template de permissão específico no Bitbucket Data Center.
 
@@ -862,7 +862,7 @@ export class DataCenterPermissionManagementTools {
 
     // Update Permission Template
     server.registerTool(
-      'datacenter-update-permission-template',
+      'permission_update_template',
       {
         description: `Atualiza um template de permissão no Bitbucket Data Center.
 
@@ -896,7 +896,7 @@ export class DataCenterPermissionManagementTools {
 
     // Delete Permission Template
     server.registerTool(
-      'datacenter-delete-permission-template',
+      'permission_delete_template',
       {
         description: `Remove um template de permissão no Bitbucket Data Center.
 
@@ -922,7 +922,7 @@ export class DataCenterPermissionManagementTools {
 
     // Apply Permission Template
     server.registerTool(
-      'datacenter-apply-permission-template',
+      'permission_apply_template',
       {
         description: `Aplica um template de permissão no Bitbucket Data Center.
 
@@ -954,7 +954,7 @@ export class DataCenterPermissionManagementTools {
 
     // Get Project Permissions
     server.registerTool(
-      'datacenter-get-project-permissions',
+      'permission_get_projects',
       {
         description: `Obtém permissões de um projeto específico no Bitbucket Data Center.
 
@@ -988,7 +988,7 @@ export class DataCenterPermissionManagementTools {
 
     // Get Repository Permissions
     server.registerTool(
-      'datacenter-get-repository-permissions',
+      'permission_get_repositorys',
       {
         description: `Obtém permissões de um repositório específico no Bitbucket Data Center.
 

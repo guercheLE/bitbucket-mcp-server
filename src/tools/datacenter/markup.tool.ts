@@ -580,7 +580,7 @@ export class DataCenterMarkupTools {
 
     // Render Markup for Repository
     server.registerTool(
-      'datacenter-render-markup-for-repository',
+      'markup_render_for_repository',
       {
         description: `Renderiza markup para HTML em um repositório específico no Bitbucket Data Center.
 
@@ -616,7 +616,7 @@ export class DataCenterMarkupTools {
 
     // Preview Markup for Repository
     server.registerTool(
-      'datacenter-preview-markup-for-repository',
+      'markup_preview_for_repository',
       {
         description: `Visualiza markup em um repositório específico no Bitbucket Data Center.
 
@@ -652,7 +652,7 @@ export class DataCenterMarkupTools {
 
     // Validate Markup for Repository
     server.registerTool(
-      'datacenter-validate-markup-for-repository',
+      'markup_validate_for_repository',
       {
         description: `Valida markup em um repositório específico no Bitbucket Data Center.
 
@@ -688,7 +688,7 @@ export class DataCenterMarkupTools {
 
     // Render Markup for Project
     server.registerTool(
-      'datacenter-render-markup-for-project',
+      'markup_render_for_project',
       {
         description: `Renderiza markup para HTML em um projeto específico no Bitbucket Data Center.
 
@@ -722,7 +722,7 @@ export class DataCenterMarkupTools {
 
     // Preview Markup for Project
     server.registerTool(
-      'datacenter-preview-markup-for-project',
+      'markup_preview_for_project',
       {
         description: `Visualiza markup em um projeto específico no Bitbucket Data Center.
 
@@ -756,7 +756,7 @@ export class DataCenterMarkupTools {
 
     // Validate Markup for Project
     server.registerTool(
-      'datacenter-validate-markup-for-project',
+      'markup_validate_for_project',
       {
         description: `Valida markup em um projeto específico no Bitbucket Data Center.
 

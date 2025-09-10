@@ -1088,7 +1088,7 @@ export class DataCenterPullRequestTools {
 
     // Delete Pull Request (Data Center)
     server.registerTool(
-      'datacenter-delete-pull-request',
+      'pull_request_delete',
       {
         description: `Remove um pull request no Bitbucket Data Center.
 
@@ -1119,7 +1119,7 @@ export class DataCenterPullRequestTools {
 
     // Reopen Pull Request
     server.registerTool(
-      'datacenter-reopen-pull-request',
+      'pull_request_reopen',
       {
         description: `Reabre um pull request no Bitbucket Data Center.
 
@@ -1150,7 +1150,7 @@ export class DataCenterPullRequestTools {
 
     // Create Pull Request Comment
     server.registerTool(
-      'datacenter-create-pull-request-comment',
+      'pull_request_create_comment',
       {
         description: `Cria um comentário em um pull request no Bitbucket Data Center.
 
@@ -1187,7 +1187,7 @@ export class DataCenterPullRequestTools {
 
     // Get Pull Request Comment
     server.registerTool(
-      'datacenter-get-pull-request-comment',
+      'pull_request_get_comment',
       {
         description: `Obtém um comentário específico de um pull request no Bitbucket Data Center.
 
@@ -1220,7 +1220,7 @@ export class DataCenterPullRequestTools {
 
     // Update Pull Request Comment
     server.registerTool(
-      'datacenter-update-pull-request-comment',
+      'pull_request_update_comment',
       {
         description: `Atualiza um comentário de um pull request no Bitbucket Data Center.
 
@@ -1259,7 +1259,7 @@ export class DataCenterPullRequestTools {
 
     // Delete Pull Request Comment
     server.registerTool(
-      'datacenter-delete-pull-request-comment',
+      'pull_request_delete_comment',
       {
         description: `Remove um comentário de um pull request no Bitbucket Data Center.
 
@@ -1292,7 +1292,7 @@ export class DataCenterPullRequestTools {
 
     // Get Pull Request Activity
     server.registerTool(
-      'datacenter-get-pull-request-activity',
+      'pull_request_get_activity',
       {
         description: `Obtém a atividade de um pull request no Bitbucket Data Center.
 
@@ -1329,7 +1329,7 @@ export class DataCenterPullRequestTools {
 
     // Get Pull Request Diff
     server.registerTool(
-      'datacenter-get-pull-request-diff',
+      'pull_request_get_diff',
       {
         description: `Obtém o diff de um pull request no Bitbucket Data Center.
 
@@ -1364,7 +1364,7 @@ export class DataCenterPullRequestTools {
 
     // Get Pull Request Changes
     server.registerTool(
-      'datacenter-get-pull-request-changes',
+      'pull_request_get_changes',
       {
         description: `Obtém as mudanças de um pull request no Bitbucket Data Center.
 
