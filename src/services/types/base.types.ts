@@ -223,7 +223,7 @@ function tryCreateTable(data: any[]): string | null {
   const tableSeparator = `| ${headers.map(() => '---').join(' | ')} |`;
   const tableRows = rows.map(row => `| ${row.join(' | ')} |`).join('\n');
 
-  return `\n${tableHeader}\n${tableSeparator}\n${tableRows}`;
+  return `\n${tableHeader}\n${tableSeparator}\n${tableRows}\n`;
 }
 
 function formatPaginationResponse(data: any): string {
