@@ -40,9 +40,9 @@ const UpdatePullRequestSchema = z.object({
 });
 
 const DeletePullRequestSchema = z.object({
-  project_key: z.string(),
-  repo_slug: z.string(),
-  pull_request_id: z.number(),
+  projectKey: z.string(),
+  repositorySlug: z.string(),
+  pullRequestId: z.number(),
   output: z.enum(['markdown', 'json']).optional().default('json'),
 });
 
@@ -135,14 +135,6 @@ const GetPullRequestChangesSchema = z.object({
   pull_request_id: z.number(),
   start: z.number().optional(),
   limit: z.number().optional(),
-  output: z.enum(['markdown', 'json']).optional().default('json'),
-});
-
-// Additional schemas for tools that use different parameter names
-const DeletePullRequestDataCenterSchema = z.object({
-  projectKey: z.string(),
-  repositorySlug: z.string(),
-  pullRequestId: z.number(),
   output: z.enum(['markdown', 'json']).optional().default('json'),
 });
 
@@ -971,9 +963,9 @@ export class DataCenterPullRequestTools {
       async (params: z.infer<typeof DeletePullRequestSchema>) => {
         const validatedParams = DeletePullRequestSchema.parse(params);
         return await this.deletePullRequest(
-          validatedParams.project_key,
-          validatedParams.repo_slug,
-          validatedParams.pull_request_id,
+          validatedParams.projectKey,
+          validatedParams.repositorySlug,
+          validatedParams.pullRequestId,
           validatedParams.output
         );
       }
@@ -1081,37 +1073,6 @@ export class DataCenterPullRequestTools {
           {
             message: validatedParams.reason,
           },
-          validatedParams.output
-        );
-      }
-    );
-
-    // Delete Pull Request (Data Center)
-    server.registerTool(
-      'pull_request_delete',
-      {
-        description: `Remove um pull request no Bitbucket Data Center.
-
-**Funcionalidades:**
-- Remoção de pull request
-- Limpeza de dados
-- Confirmação de operação
-
-**Parâmetros:**
-- \`projectKey\`: Chave do projeto
-- \`repositorySlug\`: Slug do repositório
-- \`pullRequestId\`: ID do pull request
-- \`output\`: Formato de saída - 'markdown' ou 'json' (padrão)
-
-**Retorna:** Objeto com content contendo array de objetos com type: 'text' e text com o resultado da operação.`,
-        inputSchema: DeletePullRequestDataCenterSchema.shape,
-      },
-      async (params: z.infer<typeof DeletePullRequestDataCenterSchema>) => {
-        const validatedParams = DeletePullRequestDataCenterSchema.parse(params);
-        return await this.deletePullRequest(
-          validatedParams.projectKey,
-          validatedParams.repositorySlug,
-          validatedParams.pullRequestId,
           validatedParams.output
         );
       }
