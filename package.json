@@ -1,14 +1,13 @@
 {
   "name": "@guerchele/bitbucket-mcp-server",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "MCP server for Bitbucket Cloud and Server with enhanced functionality",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
     "bitbucket-mcp-server": "dist/index.js",
-    "bitbucket-mcp-server-cli": "dist/index.js",
-    "bitbucket-mcp-server": "dist/index.js"
+    "bitbucket-mcp-server-cli": "dist/index.js"
   },
   "exports": {
     ".": {
