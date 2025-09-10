@@ -134,7 +134,7 @@ export function objectToMarkdown(data: any, depth: number = 0): string {
         const value = objectToMarkdown(data[key], depth + 1);
         return `**${key}**: ${value}`;
       })
-      .join('\n\n');
+      .join('\n');
 
     return properties;
   }
@@ -223,7 +223,7 @@ function tryCreateTable(data: any[]): string | null {
   const tableSeparator = `| ${headers.map(() => '---').join(' | ')} |`;
   const tableRows = rows.map(row => `| ${row.join(' | ')} |`).join('\n');
 
-  return `${tableHeader}\n${tableSeparator}\n${tableRows}`;
+  return `\n${tableHeader}\n${tableSeparator}\n${tableRows}`;
 }
 
 function formatPaginationResponse(data: any): string {
