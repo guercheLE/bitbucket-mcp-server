@@ -1,6 +1,6 @@
 {
   "name": "@guerchele/bitbucket-mcp-server",
-  "version": "2.2.4",
+  "version": "2.2.5",
   "description": "MCP server for Bitbucket Cloud and Server with enhanced functionality",
   "type": "module",
   "main": "dist/index.js",
