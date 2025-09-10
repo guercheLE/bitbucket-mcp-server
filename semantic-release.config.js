@@ -57,6 +57,21 @@ module.exports = {
         npmPublish: true,
         tarballDir: 'dist'
       }
+    ],
+    [
+      '@semantic-release/git',
+      {
+        assets: ['CHANGELOG.md', 'package.json', 'package-lock.json'],
+        message: 'chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}'
+      }
+    ],
+    [
+      '@semantic-release/github',
+      {
+        successComment: 'This ${issue.pull_request ? \'PR is included\' : \'issue is fixed\'} in version ${nextRelease.version} :tada:',
+        releasedLabels: ['released on ${nextRelease.gitTag}'],
+        addReleases: 'bottom'
+      }
     ]
   ]
 };

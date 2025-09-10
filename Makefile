@@ -123,7 +123,23 @@ clean-docker: ## Clean Docker images and containers
 ## Release
 release: ## Create a new release
 	@echo "$(BLUE)Creating new release...$(NC)"
-	npx semantic-release
+	npm run release
+
+release-dry-run: ## Test release without publishing
+	@echo "$(BLUE)Testing release (dry run)...$(NC)"
+	npm run release:dry-run
+
+release-patch: ## Create a patch release
+	@echo "$(BLUE)Creating patch release...$(NC)"
+	npm run release:patch
+
+release-minor: ## Create a minor release
+	@echo "$(BLUE)Creating minor release...$(NC)"
+	npm run release:minor
+
+release-major: ## Create a major release
+	@echo "$(BLUE)Creating major release...$(NC)"
+	npm run release:major
 
 ## Setup
 setup: install build ## Setup the project (install + build)

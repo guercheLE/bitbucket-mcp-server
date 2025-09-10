@@ -49,7 +49,12 @@
     "mcp:inspect": "npm run build && cross-env TRANSPORT_MODE=http node dist/index.js & (timeout 2 || sleep 2) && npx @modelcontextprotocol/inspector http://localhost:3000/mcp",
     "npx:cli": "node dist/index.js --help",
     "npx:server": "node dist/index.js",
-    "npx:server:http": "cross-env TRANSPORT_MODE=http node dist/index.js"
+    "npx:server:http": "cross-env TRANSPORT_MODE=http node dist/index.js",
+    "release": "semantic-release",
+    "release:dry-run": "semantic-release --dry-run",
+    "release:patch": "node scripts/force-release.js patch",
+    "release:minor": "node scripts/force-release.js minor",
+    "release:major": "node scripts/force-release.js major"
   },
   "keywords": [
     "mcp",
