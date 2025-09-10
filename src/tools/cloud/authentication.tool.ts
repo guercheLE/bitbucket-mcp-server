@@ -173,7 +173,7 @@ export class CloudAuthenticationTools {
     workspace: string,
     repoSlug: string,
     request: { name: string; scopes: string[]; expires_at?: string },
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createRepositoryAccessToken');
     let service: AuthenticationService | null = null;
@@ -211,7 +211,7 @@ export class CloudAuthenticationTools {
     workspace: string,
     projectKey: string,
     request: { name: string; scopes: string[]; expires_at?: string },
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createProjectAccessToken');
     let service: AuthenticationService | null = null;
@@ -248,7 +248,7 @@ export class CloudAuthenticationTools {
   static async createWorkspaceAccessToken(
     workspace: string,
     request: { name: string; scopes: string[]; expires_at?: string },
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createWorkspaceAccessToken');
     let service: AuthenticationService | null = null;
@@ -285,7 +285,7 @@ export class CloudAuthenticationTools {
     workspace: string,
     repoSlug: string,
     params?: { page?: number; pagelen?: number },
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listRepositoryAccessTokens');
     let service: AuthenticationService | null = null;
@@ -324,7 +324,7 @@ export class CloudAuthenticationTools {
     workspace: string,
     projectKey: string,
     params?: { page?: number; pagelen?: number },
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listProjectAccessTokens');
     let service: AuthenticationService | null = null;
@@ -362,7 +362,7 @@ export class CloudAuthenticationTools {
   static async listWorkspaceAccessTokens(
     workspace: string,
     params?: { page?: number; pagelen?: number },
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listWorkspaceAccessTokens');
     let service: AuthenticationService | null = null;
@@ -396,7 +396,7 @@ export class CloudAuthenticationTools {
   /**
    * Delete Access Token
    */
-  static async deleteAccessToken(tokenId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async deleteAccessToken(tokenId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('deleteAccessToken');
     let service: AuthenticationService | null = null;
 
@@ -429,7 +429,7 @@ export class CloudAuthenticationTools {
     tokenId: string,
     name: string,
     scopes: string[],
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateAccessToken');
     let service: AuthenticationService | null = null;
@@ -465,7 +465,7 @@ export class CloudAuthenticationTools {
    */
   static async createAppPassword(
     request: { name: string; scopes: string[] },
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createAppPassword');
     let service: AuthenticationService | null = null;
@@ -495,7 +495,7 @@ export class CloudAuthenticationTools {
   /**
    * List App Passwords
    */
-  static async listAppPasswords(output: 'markdown' | 'json' = 'markdown') {
+  static async listAppPasswords(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listAppPasswords');
     let service: AuthenticationService | null = null;
 
@@ -524,7 +524,7 @@ export class CloudAuthenticationTools {
   /**
    * Delete App Password
    */
-  static async deleteAppPassword(appPasswordId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async deleteAppPassword(appPasswordId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('deleteAppPassword');
     let service: AuthenticationService | null = null;
 
@@ -555,7 +555,7 @@ export class CloudAuthenticationTools {
    */
   static async createApiToken(
     request: { name: string; scopes: string[]; expires_at: string },
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createApiToken');
     let service: AuthenticationService | null = null;
@@ -585,7 +585,7 @@ export class CloudAuthenticationTools {
   /**
    * List API Tokens
    */
-  static async listApiTokens(output: 'markdown' | 'json' = 'markdown') {
+  static async listApiTokens(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listApiTokens');
     let service: AuthenticationService | null = null;
 
@@ -614,7 +614,7 @@ export class CloudAuthenticationTools {
   /**
    * Delete API Token
    */
-  static async deleteApiToken(apiTokenId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async deleteApiToken(apiTokenId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('deleteApiToken');
     let service: AuthenticationService | null = null;
 
@@ -681,7 +681,7 @@ export class CloudAuthenticationTools {
       client_id: string;
       client_secret: string;
     },
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('exchangeCodeForToken');
     let service: AuthenticationService | null = null;
@@ -718,7 +718,7 @@ export class CloudAuthenticationTools {
       client_id: string;
       client_secret: string;
     },
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('refreshOAuthToken');
     let service: AuthenticationService | null = null;
@@ -755,7 +755,7 @@ export class CloudAuthenticationTools {
       client_id: string;
       client_secret: string;
     },
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('exchangeJwtForToken');
     let service: AuthenticationService | null = null;
@@ -792,7 +792,7 @@ export class CloudAuthenticationTools {
       client_id: string;
       client_secret: string;
     },
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('revokeOAuthToken');
     let service: AuthenticationService | null = null;
@@ -822,7 +822,7 @@ export class CloudAuthenticationTools {
   /**
    * Validate Token
    */
-  static async validateToken(token: string, output: 'markdown' | 'json' = 'markdown') {
+  static async validateToken(token: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('validateToken');
     let service: AuthenticationService | null = null;
 

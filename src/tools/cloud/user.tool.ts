@@ -49,7 +49,7 @@ export class CloudUserTools {
     this.logger.info('Cloud User tools initialized');
   }
 
-  static async getCurrentUser(output: 'markdown' | 'json' = 'markdown') {
+  static async getCurrentUser(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getCurrentUser');
     let service: UserService | null = null;
 
@@ -75,7 +75,7 @@ export class CloudUserTools {
     }
   }
 
-  static async listUserEmails(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async listUserEmails(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listUserEmails');
     let service: UserService | null = null;
 
@@ -107,7 +107,7 @@ export class CloudUserTools {
     }
   }
 
-  static async getUserEmail(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async getUserEmail(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getUserEmail');
     let service: UserService | null = null;
 
@@ -137,7 +137,7 @@ export class CloudUserTools {
     }
   }
 
-  static async getUser(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async getUser(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getUser');
     let service: UserService | null = null;
 

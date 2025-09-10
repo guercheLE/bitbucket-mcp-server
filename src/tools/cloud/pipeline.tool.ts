@@ -106,7 +106,7 @@ export class CloudPipelineTools {
     this.logger.info('Cloud Pipeline tools initialized');
   }
 
-  static async listPipelines(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async listPipelines(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listPipelines');
     let service: PipelineService | null = null;
 
@@ -146,7 +146,7 @@ export class CloudPipelineTools {
     }
   }
 
-  static async runPipeline(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async runPipeline(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('runPipeline');
     let service: PipelineService | null = null;
 
@@ -190,7 +190,7 @@ export class CloudPipelineTools {
     }
   }
 
-  static async getPipeline(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async getPipeline(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getPipeline');
     let service: PipelineService | null = null;
 
@@ -224,7 +224,7 @@ export class CloudPipelineTools {
     }
   }
 
-  static async listPipelineSteps(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async listPipelineSteps(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listPipelineSteps');
     let service: PipelineService | null = null;
 
@@ -262,7 +262,7 @@ export class CloudPipelineTools {
     }
   }
 
-  static async getPipelineStep(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async getPipelineStep(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getPipelineStep');
     let service: PipelineService | null = null;
 
@@ -298,7 +298,7 @@ export class CloudPipelineTools {
     }
   }
 
-  static async getPipelineStepLog(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async getPipelineStepLog(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getPipelineStepLog');
     let service: PipelineService | null = null;
 
@@ -334,7 +334,7 @@ export class CloudPipelineTools {
     }
   }
 
-  static async stopPipeline(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async stopPipeline(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('stopPipeline');
     let service: PipelineService | null = null;
 
@@ -368,7 +368,7 @@ export class CloudPipelineTools {
     }
   }
 
-  static async getConfiguration(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async getConfiguration(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getConfiguration');
     let service: PipelineService | null = null;
 
@@ -400,7 +400,7 @@ export class CloudPipelineTools {
     }
   }
 
-  static async updateConfiguration(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async updateConfiguration(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('updateConfiguration');
     let service: PipelineService | null = null;
 
@@ -433,7 +433,7 @@ export class CloudPipelineTools {
     }
   }
 
-  static async updateNextBuildNumber(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async updateNextBuildNumber(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('updateNextBuildNumber');
     let service: PipelineService | null = null;
 

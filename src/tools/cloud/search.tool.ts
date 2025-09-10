@@ -52,7 +52,7 @@ export class CloudSearchTools {
     this.logger.info('Cloud Search tools initialized');
   }
 
-  static async searchTeamCode(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async searchTeamCode(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('searchTeamCode');
     let service: SearchService | null = null;
 
@@ -88,7 +88,7 @@ export class CloudSearchTools {
     }
   }
 
-  static async searchUserCode(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async searchUserCode(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('searchUserCode');
     let service: SearchService | null = null;
 
@@ -124,7 +124,7 @@ export class CloudSearchTools {
     }
   }
 
-  static async searchWorkspaceCode(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async searchWorkspaceCode(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('searchWorkspaceCode');
     let service: SearchService | null = null;
 

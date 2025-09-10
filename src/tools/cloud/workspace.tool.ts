@@ -163,7 +163,7 @@ export class CloudWorkspaceTools {
   /**
    * Get workspace details
    */
-  static async getWorkspace(workspace: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getWorkspace(workspace: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getWorkspace');
     let service: WorkspaceService | null = null;
 
@@ -198,7 +198,7 @@ export class CloudWorkspaceTools {
     sort?: 'created_on' | 'name' | 'updated_on',
     page?: number,
     pagelen?: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listWorkspaces');
     let service: WorkspaceService | null = null;
@@ -237,7 +237,7 @@ export class CloudWorkspaceTools {
   static async createWorkspace(
     name: string,
     isPrivate?: boolean,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createWorkspace');
     let service: WorkspaceService | null = null;
@@ -274,7 +274,7 @@ export class CloudWorkspaceTools {
     workspace: string,
     name?: string,
     isPrivate?: boolean,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateWorkspace');
     let service: WorkspaceService | null = null;
@@ -307,7 +307,7 @@ export class CloudWorkspaceTools {
   /**
    * Delete workspace
    */
-  static async deleteWorkspace(workspace: string, output: 'markdown' | 'json' = 'markdown') {
+  static async deleteWorkspace(workspace: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('deleteWorkspace');
     let service: WorkspaceService | null = null;
 
@@ -342,7 +342,7 @@ export class CloudWorkspaceTools {
     sort?: 'created_on' | 'display_name',
     page?: number,
     pagelen?: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listWorkspaceMembers');
     let service: WorkspaceService | null = null;
@@ -380,7 +380,7 @@ export class CloudWorkspaceTools {
   static async getWorkspaceMember(
     workspace: string,
     member: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getWorkspaceMember');
     let service: WorkspaceService | null = null;
@@ -416,7 +416,7 @@ export class CloudWorkspaceTools {
     sort?: 'created_on' | 'display_name',
     page?: number,
     pagelen?: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listWorkspacePermissions');
     let service: WorkspaceService | null = null;
@@ -451,7 +451,7 @@ export class CloudWorkspaceTools {
   /**
    * List workspace hooks
    */
-  static async listWorkspaceHooks(workspace: string, output: 'markdown' | 'json' = 'markdown') {
+  static async listWorkspaceHooks(workspace: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listWorkspaceHooks');
     let service: WorkspaceService | null = null;
 
@@ -483,7 +483,7 @@ export class CloudWorkspaceTools {
   static async getWorkspaceHook(
     workspace: string,
     hookUid: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getWorkspaceHook');
     let service: WorkspaceService | null = null;
@@ -519,7 +519,7 @@ export class CloudWorkspaceTools {
     url: string,
     events: string[],
     active?: boolean,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createWorkspaceHook');
     let service: WorkspaceService | null = null;
@@ -561,7 +561,7 @@ export class CloudWorkspaceTools {
     url?: string,
     events?: string[],
     active?: boolean,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateWorkspaceHook');
     let service: WorkspaceService | null = null;
@@ -605,7 +605,7 @@ export class CloudWorkspaceTools {
   static async deleteWorkspaceHook(
     workspace: string,
     hookUid: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('deleteWorkspaceHook');
     let service: WorkspaceService | null = null;
@@ -635,7 +635,7 @@ export class CloudWorkspaceTools {
   /**
    * List workspace variables
    */
-  static async listWorkspaceVariables(workspace: string, output: 'markdown' | 'json' = 'markdown') {
+  static async listWorkspaceVariables(workspace: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listWorkspaceVariables');
     let service: WorkspaceService | null = null;
 
@@ -667,7 +667,7 @@ export class CloudWorkspaceTools {
   static async getWorkspaceVariable(
     workspace: string,
     variableUuid: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getWorkspaceVariable');
     let service: WorkspaceService | null = null;
@@ -702,7 +702,7 @@ export class CloudWorkspaceTools {
     key: string,
     value: string,
     secured?: boolean,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createWorkspaceVariable');
     let service: WorkspaceService | null = null;
@@ -742,7 +742,7 @@ export class CloudWorkspaceTools {
     key?: string,
     value?: string,
     secured?: boolean,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateWorkspaceVariable');
     let service: WorkspaceService | null = null;
@@ -779,7 +779,7 @@ export class CloudWorkspaceTools {
   static async deleteWorkspaceVariable(
     workspace: string,
     variableUuid: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('deleteWorkspaceVariable');
     let service: WorkspaceService | null = null;

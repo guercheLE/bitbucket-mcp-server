@@ -145,7 +145,7 @@ export class CloudSnippetTools {
     this.logger.info('Cloud Snippet tools initialized');
   }
 
-  static async listSnippets(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async listSnippets(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listSnippets');
     let service: SnippetService | null = null;
 
@@ -179,7 +179,7 @@ export class CloudSnippetTools {
     }
   }
 
-  static async createSnippet(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async createSnippet(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('createSnippet');
     let service: SnippetService | null = null;
 
@@ -217,7 +217,7 @@ export class CloudSnippetTools {
     }
   }
 
-  static async listWorkspaceSnippets(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async listWorkspaceSnippets(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listWorkspaceSnippets');
     let service: SnippetService | null = null;
 
@@ -253,7 +253,7 @@ export class CloudSnippetTools {
     }
   }
 
-  static async createWorkspaceSnippet(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async createWorkspaceSnippet(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('createWorkspaceSnippet');
     let service: SnippetService | null = null;
 
@@ -298,7 +298,7 @@ export class CloudSnippetTools {
   static async getSnippet(
     workspace: string,
     encodedId: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getSnippet');
     let service: SnippetService | null = null;
@@ -331,7 +331,7 @@ export class CloudSnippetTools {
     }
   }
 
-  static async updateSnippet(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async updateSnippet(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('updateSnippet');
     let service: SnippetService | null = null;
 
@@ -376,7 +376,7 @@ export class CloudSnippetTools {
   static async deleteSnippet(
     workspace: string,
     encodedId: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('deleteSnippet');
     let service: SnippetService | null = null;
@@ -409,7 +409,7 @@ export class CloudSnippetTools {
     }
   }
 
-  static async listSnippetComments(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async listSnippetComments(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listSnippetComments');
     let service: SnippetService | null = null;
 
@@ -445,7 +445,7 @@ export class CloudSnippetTools {
     }
   }
 
-  static async createSnippetComment(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async createSnippetComment(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('createSnippetComment');
     let service: SnippetService | null = null;
 
@@ -485,7 +485,7 @@ export class CloudSnippetTools {
     }
   }
 
-  static async getSnippetComment(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async getSnippetComment(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSnippetComment');
     let service: SnippetService | null = null;
 
@@ -519,7 +519,7 @@ export class CloudSnippetTools {
     }
   }
 
-  static async updateSnippetComment(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async updateSnippetComment(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('updateSnippetComment');
     let service: SnippetService | null = null;
 
@@ -559,7 +559,7 @@ export class CloudSnippetTools {
     }
   }
 
-  static async deleteSnippetComment(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async deleteSnippetComment(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('deleteSnippetComment');
     let service: SnippetService | null = null;
 
@@ -593,7 +593,7 @@ export class CloudSnippetTools {
     }
   }
 
-  static async listSnippetChanges(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async listSnippetChanges(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listSnippetChanges');
     let service: SnippetService | null = null;
 
@@ -629,7 +629,7 @@ export class CloudSnippetTools {
     }
   }
 
-  static async getSnippetCommit(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async getSnippetCommit(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSnippetCommit');
     let service: SnippetService | null = null;
 
@@ -663,7 +663,7 @@ export class CloudSnippetTools {
     }
   }
 
-  static async getSnippetFile(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async getSnippetFile(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSnippetFile');
     let service: SnippetService | null = null;
 
@@ -699,7 +699,7 @@ export class CloudSnippetTools {
     }
   }
 
-  static async watchSnippet(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async watchSnippet(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('watchSnippet');
     let service: SnippetService | null = null;
 
@@ -731,7 +731,7 @@ export class CloudSnippetTools {
     }
   }
 
-  static async stopWatchingSnippet(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async stopWatchingSnippet(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('stopWatchingSnippet');
     let service: SnippetService | null = null;
 
@@ -763,7 +763,7 @@ export class CloudSnippetTools {
     }
   }
 
-  static async listSnippetWatchers(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async listSnippetWatchers(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listSnippetWatchers');
     let service: SnippetService | null = null;
 

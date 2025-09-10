@@ -77,7 +77,7 @@ export class CloudTokenManagementTools {
     workspace: string,
     repoSlug: string,
     token: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createRepositoryAccessToken');
     let tokenManagementService = null;
@@ -111,7 +111,7 @@ export class CloudTokenManagementTools {
   /**
    * List app passwords
    */
-  static async listAppPasswords(output: 'markdown' | 'json' = 'markdown') {
+  static async listAppPasswords(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listAppPasswords');
     let tokenManagementService = null;
 
@@ -140,7 +140,7 @@ export class CloudTokenManagementTools {
   /**
    * Create app password
    */
-  static async createAppPassword(appPassword: any, output: 'markdown' | 'json' = 'markdown') {
+  static async createAppPassword(appPassword: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('createAppPassword');
     let tokenManagementService = null;
 
@@ -169,7 +169,7 @@ export class CloudTokenManagementTools {
   /**
    * Delete app password
    */
-  static async deleteAppPassword(appPasswordId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async deleteAppPassword(appPasswordId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('deleteAppPassword');
     let tokenManagementService = null;
 
@@ -198,7 +198,7 @@ export class CloudTokenManagementTools {
   /**
    * List API tokens
    */
-  static async listApiTokens(output: 'markdown' | 'json' = 'markdown') {
+  static async listApiTokens(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listApiTokens');
     let tokenManagementService = null;
 
@@ -227,7 +227,7 @@ export class CloudTokenManagementTools {
   /**
    * Create API token
    */
-  static async createApiToken(apiToken: any, output: 'markdown' | 'json' = 'markdown') {
+  static async createApiToken(apiToken: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('createApiToken');
     let tokenManagementService = null;
 
@@ -256,7 +256,7 @@ export class CloudTokenManagementTools {
   /**
    * Delete API token
    */
-  static async deleteApiToken(apiTokenId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async deleteApiToken(apiTokenId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('deleteApiToken');
     let tokenManagementService = null;
 
@@ -285,7 +285,7 @@ export class CloudTokenManagementTools {
   /**
    * Validate token
    */
-  static async validateToken(token: string, output: 'markdown' | 'json' = 'markdown') {
+  static async validateToken(token: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('validateToken');
     let tokenManagementService = null;
 

@@ -149,7 +149,7 @@ export class CloudPullRequestTools {
     workspaceSlug: string,
     repoSlug: string,
     pullRequestId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getPullRequest');
     let pullRequestService = null;
@@ -189,7 +189,7 @@ export class CloudPullRequestTools {
     state?: string,
     page?: number,
     pagelen?: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listPullRequests');
     let pullRequestService = null;
@@ -232,7 +232,7 @@ export class CloudPullRequestTools {
     destinationBranch: string,
     description?: string,
     closeSourceBranch?: boolean,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createPullRequest');
     let pullRequestService = null;
@@ -277,7 +277,7 @@ export class CloudPullRequestTools {
     title?: string,
     description?: string,
     closeSourceBranch?: boolean,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updatePullRequest');
     let pullRequestService = null;
@@ -321,7 +321,7 @@ export class CloudPullRequestTools {
     workspaceSlug: string,
     repoSlug: string,
     pullRequestId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('declinePullRequest');
     let pullRequestService = null;
@@ -359,7 +359,7 @@ export class CloudPullRequestTools {
     workspaceSlug: string,
     repoSlug: string,
     pullRequestId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('mergePullRequest');
     let pullRequestService = null;
@@ -397,7 +397,7 @@ export class CloudPullRequestTools {
     workspaceSlug: string,
     repoSlug: string,
     pullRequestId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('approvePullRequest');
     let pullRequestService = null;
@@ -435,7 +435,7 @@ export class CloudPullRequestTools {
     workspaceSlug: string,
     repoSlug: string,
     pullRequestId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('unapprovePullRequest');
     let pullRequestService = null;
@@ -473,7 +473,7 @@ export class CloudPullRequestTools {
     workspaceSlug: string,
     repoSlug: string,
     pullRequestId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('requestChangesPullRequest');
     let pullRequestService = null;
@@ -517,7 +517,7 @@ export class CloudPullRequestTools {
     pullRequestId: number,
     page?: number,
     pagelen?: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listPullRequestComments');
     let pullRequestService = null;
@@ -565,7 +565,7 @@ export class CloudPullRequestTools {
     repoSlug: string,
     pullRequestId: number,
     content: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createPullRequestComment');
     let pullRequestService = null;
@@ -612,7 +612,7 @@ export class CloudPullRequestTools {
     workspaceSlug: string,
     repoSlug: string,
     pullRequestId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getPullRequestDiff');
     let pullRequestService = null;
@@ -650,7 +650,7 @@ export class CloudPullRequestTools {
     workspaceSlug: string,
     repoSlug: string,
     pullRequestId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getPullRequestPatch');
     let pullRequestService = null;

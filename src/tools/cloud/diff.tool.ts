@@ -84,7 +84,7 @@ export class CloudDiffTools {
     renames?: boolean,
     merge?: boolean,
     topic?: boolean,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getDiff');
     let diffService = null;
@@ -134,7 +134,7 @@ export class CloudDiffTools {
     path?: string,
     renames?: boolean,
     topic?: boolean,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getDiffStat');
     let diffService = null;
@@ -177,7 +177,7 @@ export class CloudDiffTools {
     workspace: string,
     repoSlug: string,
     spec: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getPatch');
     let diffService = null;
@@ -215,7 +215,7 @@ export class CloudDiffTools {
     workspace: string,
     repoSlug: string,
     revspec: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getMergeBase');
     let diffService = null;

@@ -39,7 +39,7 @@ export class CloudWebhookTools {
     this.logger.info('Cloud Webhook tools initialized');
   }
 
-  static async getWebhookResource(output: 'markdown' | 'json' = 'markdown') {
+  static async getWebhookResource(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getWebhookResource');
     let service: WebhookService | null = null;
 
@@ -65,7 +65,7 @@ export class CloudWebhookTools {
     }
   }
 
-  static async listWebhookTypes(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async listWebhookTypes(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listWebhookTypes');
     let service: WebhookService | null = null;
 

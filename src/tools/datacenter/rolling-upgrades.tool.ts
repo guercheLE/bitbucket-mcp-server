@@ -54,7 +54,7 @@ export class DataCenterRollingUpgradesTools {
   }
 
   // Static Methods
-  static async getCluster(output: 'markdown' | 'json' = 'markdown') {
+  static async getCluster(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getCluster');
     let service: RollingUpgradesService | null = null;
 
@@ -80,7 +80,7 @@ export class DataCenterRollingUpgradesTools {
     }
   }
 
-  static async getClusterState(output: 'markdown' | 'json' = 'markdown') {
+  static async getClusterState(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getClusterState');
     let service: RollingUpgradesService | null = null;
 
@@ -106,7 +106,7 @@ export class DataCenterRollingUpgradesTools {
     }
   }
 
-  static async getNode(nodeId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getNode(nodeId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getNode');
     let service: RollingUpgradesService | null = null;
 
@@ -134,7 +134,7 @@ export class DataCenterRollingUpgradesTools {
     }
   }
 
-  static async getNodes(output: 'markdown' | 'json' = 'markdown') {
+  static async getNodes(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getNodes');
     let service: RollingUpgradesService | null = null;
 
@@ -160,7 +160,7 @@ export class DataCenterRollingUpgradesTools {
     }
   }
 
-  static async getNodeWithBuildInfo(nodeId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getNodeWithBuildInfo(nodeId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getNodeWithBuildInfo');
     let service: RollingUpgradesService | null = null;
 
@@ -188,7 +188,7 @@ export class DataCenterRollingUpgradesTools {
     }
   }
 
-  static async startRollingUpgrade(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async startRollingUpgrade(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('startRollingUpgrade');
     let service: RollingUpgradesService | null = null;
 
@@ -222,7 +222,7 @@ export class DataCenterRollingUpgradesTools {
     }
   }
 
-  static async getRollingUpgradeStatus(output: 'markdown' | 'json' = 'markdown') {
+  static async getRollingUpgradeStatus(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getRollingUpgradeStatus');
     let service: RollingUpgradesService | null = null;
 
@@ -248,7 +248,7 @@ export class DataCenterRollingUpgradesTools {
     }
   }
 
-  static async cancelRollingUpgrade(output: 'markdown' | 'json' = 'markdown') {
+  static async cancelRollingUpgrade(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('cancelRollingUpgrade');
     let service: RollingUpgradesService | null = null;
 
@@ -274,7 +274,7 @@ export class DataCenterRollingUpgradesTools {
     }
   }
 
-  static async getRollingUpgradeConfiguration(output: 'markdown' | 'json' = 'markdown') {
+  static async getRollingUpgradeConfiguration(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getRollingUpgradeConfiguration');
     let service: RollingUpgradesService | null = null;
 
@@ -302,7 +302,7 @@ export class DataCenterRollingUpgradesTools {
 
   static async updateRollingUpgradeConfiguration(
     params: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateRollingUpgradeConfiguration');
     let service: RollingUpgradesService | null = null;
@@ -365,7 +365,7 @@ export class DataCenterRollingUpgradesTools {
     }
   }
 
-  static async getRollingUpgradeHistory(output: 'markdown' | 'json' = 'markdown') {
+  static async getRollingUpgradeHistory(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getRollingUpgradeHistory');
     let service: RollingUpgradesService | null = null;
 
@@ -391,7 +391,7 @@ export class DataCenterRollingUpgradesTools {
     }
   }
 
-  static async enableUpgradeMode(output: 'markdown' | 'json' = 'markdown') {
+  static async enableUpgradeMode(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('enableUpgradeMode');
     let service: RollingUpgradesService | null = null;
 
@@ -417,7 +417,7 @@ export class DataCenterRollingUpgradesTools {
     }
   }
 
-  static async disableUpgradeMode(output: 'markdown' | 'json' = 'markdown') {
+  static async disableUpgradeMode(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('disableUpgradeMode');
     let service: RollingUpgradesService | null = null;
 
@@ -443,7 +443,7 @@ export class DataCenterRollingUpgradesTools {
     }
   }
 
-  static async getUpgradeModeStatus(output: 'markdown' | 'json' = 'markdown') {
+  static async getUpgradeModeStatus(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getUpgradeModeStatus');
     let service: RollingUpgradesService | null = null;
 

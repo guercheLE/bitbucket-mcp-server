@@ -121,7 +121,7 @@ export class DataCenterSamlConfigurationTools {
   }
 
   // Static Methods
-  static async listSamlConfigurations(output: 'markdown' | 'json' = 'markdown') {
+  static async listSamlConfigurations(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listSamlConfigurations');
     let service: SamlConfigurationService | null = null;
 
@@ -147,7 +147,7 @@ export class DataCenterSamlConfigurationTools {
     }
   }
 
-  static async createSamlConfiguration(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async createSamlConfiguration(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('createSamlConfiguration');
     let service: SamlConfigurationService | null = null;
 
@@ -189,10 +189,7 @@ export class DataCenterSamlConfigurationTools {
     }
   }
 
-  static async getSamlConfiguration(
-    configurationId: number,
-    output: 'markdown' | 'json' = 'markdown'
-  ) {
+  static async getSamlConfiguration(configurationId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSamlConfiguration');
     let service: SamlConfigurationService | null = null;
 
@@ -223,7 +220,7 @@ export class DataCenterSamlConfigurationTools {
   static async updateSamlConfiguration(
     configurationId: number,
     params: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateSamlConfiguration');
     let service: SamlConfigurationService | null = null;
@@ -267,7 +264,7 @@ export class DataCenterSamlConfigurationTools {
 
   static async deleteSamlConfiguration(
     configurationId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('deleteSamlConfiguration');
     let service: SamlConfigurationService | null = null;
@@ -296,7 +293,7 @@ export class DataCenterSamlConfigurationTools {
     }
   }
 
-  static async testSamlConfiguration(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async testSamlConfiguration(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('testSamlConfiguration');
     let service: SamlConfigurationService | null = null;
 
@@ -336,7 +333,7 @@ export class DataCenterSamlConfigurationTools {
     }
   }
 
-  static async getSamlMetadata(output: 'markdown' | 'json' = 'markdown') {
+  static async getSamlMetadata(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSamlMetadata');
     let service: SamlConfigurationService | null = null;
 
@@ -362,7 +359,7 @@ export class DataCenterSamlConfigurationTools {
     }
   }
 
-  static async uploadSamlCertificate(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async uploadSamlCertificate(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('uploadSamlCertificate');
     let service: SamlConfigurationService | null = null;
 
@@ -392,7 +389,7 @@ export class DataCenterSamlConfigurationTools {
     }
   }
 
-  static async getSamlCertificate(certificateId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getSamlCertificate(certificateId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSamlCertificate');
     let service: SamlConfigurationService | null = null;
 
@@ -420,10 +417,7 @@ export class DataCenterSamlConfigurationTools {
     }
   }
 
-  static async deleteSamlCertificate(
-    certificateId: string,
-    output: 'markdown' | 'json' = 'markdown'
-  ) {
+  static async deleteSamlCertificate(certificateId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('deleteSamlCertificate');
     let service: SamlConfigurationService | null = null;
 
@@ -451,7 +445,7 @@ export class DataCenterSamlConfigurationTools {
     }
   }
 
-  static async getSamlUserMappings(output: 'markdown' | 'json' = 'markdown') {
+  static async getSamlUserMappings(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSamlUserMappings');
     let service: SamlConfigurationService | null = null;
 
@@ -477,7 +471,7 @@ export class DataCenterSamlConfigurationTools {
     }
   }
 
-  static async getSamlUserMapping(username: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getSamlUserMapping(username: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSamlUserMapping');
     let service: SamlConfigurationService | null = null;
 
@@ -505,7 +499,7 @@ export class DataCenterSamlConfigurationTools {
     }
   }
 
-  static async getSamlGroupMappings(output: 'markdown' | 'json' = 'markdown') {
+  static async getSamlGroupMappings(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSamlGroupMappings');
     let service: SamlConfigurationService | null = null;
 
@@ -531,7 +525,7 @@ export class DataCenterSamlConfigurationTools {
     }
   }
 
-  static async getSamlGroupMapping(samlGroup: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getSamlGroupMapping(samlGroup: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSamlGroupMapping');
     let service: SamlConfigurationService | null = null;
 
@@ -561,7 +555,7 @@ export class DataCenterSamlConfigurationTools {
 
   static async enableSamlConfiguration(
     configurationId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('enableSamlConfiguration');
     let service: SamlConfigurationService | null = null;
@@ -592,7 +586,7 @@ export class DataCenterSamlConfigurationTools {
 
   static async disableSamlConfiguration(
     configurationId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('disableSamlConfiguration');
     let service: SamlConfigurationService | null = null;

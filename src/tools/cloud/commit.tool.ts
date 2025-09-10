@@ -156,7 +156,7 @@ export class CloudCommitTools {
     workspaceSlug: string,
     repoSlug: string,
     commit: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getCommit');
     let commitService = null;
@@ -194,7 +194,7 @@ export class CloudCommitTools {
     workspaceSlug: string,
     repoSlug: string,
     commit: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('approveCommit');
     let commitService = null;
@@ -232,7 +232,7 @@ export class CloudCommitTools {
     workspaceSlug: string,
     repoSlug: string,
     commit: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('unapproveCommit');
     let commitService = null;
@@ -272,7 +272,7 @@ export class CloudCommitTools {
     commit: string,
     page?: number,
     pagelen?: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listCommitComments');
     let commitService = null;
@@ -314,7 +314,7 @@ export class CloudCommitTools {
     commit: string,
     content: string,
     inline?: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createCommitComment');
     let commitService = null;
@@ -355,7 +355,7 @@ export class CloudCommitTools {
     repoSlug: string,
     commit: string,
     commentId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getCommitComment');
     let commitService = null;
@@ -396,7 +396,7 @@ export class CloudCommitTools {
     commit: string,
     commentId: number,
     content: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateCommitComment');
     let commitService = null;
@@ -442,7 +442,7 @@ export class CloudCommitTools {
     repoSlug: string,
     commit: string,
     commentId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('deleteCommitComment');
     let commitService = null;
@@ -491,7 +491,7 @@ export class CloudCommitTools {
     exclude?: string,
     q?: string,
     sort?: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listCommits');
     let commitService = null;
@@ -540,7 +540,7 @@ export class CloudCommitTools {
     exclude?: string,
     q?: string,
     sort?: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listCommitsForRevision');
     let commitService = null;
@@ -584,7 +584,7 @@ export class CloudCommitTools {
     workspaceSlug: string,
     repoSlug: string,
     spec: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('compareCommits');
     let commitService = null;
@@ -622,7 +622,7 @@ export class CloudCommitTools {
     workspaceSlug: string,
     repoSlug: string,
     spec: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getCommitDiffStats');
     let commitService = null;
@@ -660,7 +660,7 @@ export class CloudCommitTools {
     workspaceSlug: string,
     repoSlug: string,
     spec: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getCommonAncestor');
     let commitService = null;
@@ -698,7 +698,7 @@ export class CloudCommitTools {
     workspaceSlug: string,
     repoSlug: string,
     spec: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getCommitPatch');
     let commitService = null;

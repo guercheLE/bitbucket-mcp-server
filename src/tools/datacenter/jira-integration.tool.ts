@@ -111,7 +111,7 @@ export class DataCenterJiraIntegrationTools {
     this.logger.info('Data Center Jira Integration tools initialized');
   }
 
-  static async getJiraIntegrationSettings(output: 'markdown' | 'json' = 'markdown') {
+  static async getJiraIntegrationSettings(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getJiraIntegrationSettings');
     let jiraIntegrationService = null;
 
@@ -137,10 +137,7 @@ export class DataCenterJiraIntegrationTools {
     }
   }
 
-  static async updateJiraIntegrationSettings(
-    settings: any,
-    output: 'markdown' | 'json' = 'markdown'
-  ) {
+  static async updateJiraIntegrationSettings(settings: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('updateJiraIntegrationSettings');
     let jiraIntegrationService = null;
 
@@ -166,10 +163,7 @@ export class DataCenterJiraIntegrationTools {
     }
   }
 
-  static async testJiraIntegrationConnection(
-    request: any,
-    output: 'markdown' | 'json' = 'markdown'
-  ) {
+  static async testJiraIntegrationConnection(request: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('testJiraIntegrationConnection');
     let jiraIntegrationService = null;
 
@@ -195,7 +189,7 @@ export class DataCenterJiraIntegrationTools {
     }
   }
 
-  static async getJiraIssueLink(linkId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getJiraIssueLink(linkId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getJiraIssueLink');
     let jiraIntegrationService = null;
 
@@ -221,7 +215,7 @@ export class DataCenterJiraIntegrationTools {
     }
   }
 
-  static async deleteJiraIssueLink(linkId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async deleteJiraIssueLink(linkId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('deleteJiraIssueLink');
     let jiraIntegrationService = null;
 
@@ -251,7 +245,7 @@ export class DataCenterJiraIntegrationTools {
     projectKey: string,
     repositorySlug: string,
     params: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getJiraIssueLinksForRepository');
     let jiraIntegrationService = null;
@@ -291,7 +285,7 @@ export class DataCenterJiraIntegrationTools {
     repositorySlug: string,
     commitId: string,
     params: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getJiraIssueLinksForCommit');
     let jiraIntegrationService = null;
@@ -328,7 +322,7 @@ export class DataCenterJiraIntegrationTools {
     }
   }
 
-  static async getJiraIssue(issueKey: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getJiraIssue(issueKey: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getJiraIssue');
     let jiraIntegrationService = null;
 
@@ -354,7 +348,7 @@ export class DataCenterJiraIntegrationTools {
     }
   }
 
-  static async getJiraProject(projectKey: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getJiraProject(projectKey: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getJiraProject');
     let jiraIntegrationService = null;
 
@@ -380,7 +374,7 @@ export class DataCenterJiraIntegrationTools {
     }
   }
 
-  static async listJiraIssueLinks(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async listJiraIssueLinks(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listJiraIssueLinks');
     let jiraIntegrationService = null;
 
@@ -406,7 +400,7 @@ export class DataCenterJiraIntegrationTools {
     }
   }
 
-  static async createJiraIssueLink(request: any, output: 'markdown' | 'json' = 'markdown') {
+  static async createJiraIssueLink(request: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('createJiraIssueLink');
     let jiraIntegrationService = null;
 
@@ -437,7 +431,7 @@ export class DataCenterJiraIntegrationTools {
     repositorySlug: string,
     pullRequestId: number,
     params: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getJiraIssueLinksForPullRequest');
     let jiraIntegrationService = null;

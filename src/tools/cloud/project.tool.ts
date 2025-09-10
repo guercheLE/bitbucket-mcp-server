@@ -162,7 +162,7 @@ export class CloudProjectTools {
     description?: string,
     isPrivate?: boolean,
     hasPubliclyVisibleRepos?: boolean,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createProject');
     let projectService = null;
@@ -203,7 +203,7 @@ export class CloudProjectTools {
   static async getProject(
     workspace: string,
     projectKey: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getProject');
     let projectService = null;
@@ -243,7 +243,7 @@ export class CloudProjectTools {
     description?: string,
     isPrivate?: boolean,
     hasPubliclyVisibleRepos?: boolean,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateProject');
     let projectService = null;
@@ -284,7 +284,7 @@ export class CloudProjectTools {
   static async deleteProject(
     workspace: string,
     projectKey: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('deleteProject');
     let projectService = null;
@@ -322,7 +322,7 @@ export class CloudProjectTools {
     projectKey: string,
     page?: number,
     pagelen?: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listDefaultReviewers');
     let projectService = null;
@@ -361,7 +361,7 @@ export class CloudProjectTools {
     workspace: string,
     projectKey: string,
     selectedUser: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getDefaultReviewer');
     let projectService = null;
@@ -399,7 +399,7 @@ export class CloudProjectTools {
     workspace: string,
     projectKey: string,
     selectedUser: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('addDefaultReviewer');
     let projectService = null;
@@ -437,7 +437,7 @@ export class CloudProjectTools {
     workspace: string,
     projectKey: string,
     selectedUser: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('removeDefaultReviewer');
     let projectService = null;
@@ -476,7 +476,7 @@ export class CloudProjectTools {
     projectKey: string,
     page?: number,
     pagelen?: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listGroupPermissions');
     let projectService = null;
@@ -515,7 +515,7 @@ export class CloudProjectTools {
     workspace: string,
     projectKey: string,
     groupSlug: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getGroupPermission');
     let projectService = null;
@@ -554,7 +554,7 @@ export class CloudProjectTools {
     projectKey: string,
     groupSlug: string,
     permission: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateGroupPermission');
     let projectService = null;
@@ -598,7 +598,7 @@ export class CloudProjectTools {
     workspace: string,
     projectKey: string,
     groupSlug: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('deleteGroupPermission');
     let projectService = null;
@@ -637,7 +637,7 @@ export class CloudProjectTools {
     projectKey: string,
     page?: number,
     pagelen?: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listUserPermissions');
     let projectService = null;
@@ -676,7 +676,7 @@ export class CloudProjectTools {
     workspace: string,
     projectKey: string,
     selectedUserId: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getUserPermission');
     let projectService = null;
@@ -715,7 +715,7 @@ export class CloudProjectTools {
     projectKey: string,
     selectedUserId: string,
     permission: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateUserPermission');
     let projectService = null;
@@ -759,7 +759,7 @@ export class CloudProjectTools {
     workspace: string,
     projectKey: string,
     selectedUserId: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('deleteUserPermission');
     let projectService = null;

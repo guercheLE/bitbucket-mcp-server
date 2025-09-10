@@ -145,7 +145,7 @@ export class DataCenterPermissionManagementTools {
     this.logger.info('Data Center Permission Management tools initialized');
   }
 
-  static async listPermissions(params?: any, output: 'markdown' | 'json' = 'markdown') {
+  static async listPermissions(params?: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listPermissions');
     let service: PermissionManagementService | null = null;
 
@@ -171,7 +171,7 @@ export class DataCenterPermissionManagementTools {
     }
   }
 
-  static async grantPermission(request: any, output: 'markdown' | 'json' = 'markdown') {
+  static async grantPermission(request: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('grantPermission');
     let service: PermissionManagementService | null = null;
 
@@ -197,7 +197,7 @@ export class DataCenterPermissionManagementTools {
     }
   }
 
-  static async getPermission(permissionId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async getPermission(permissionId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getPermission');
     let service: PermissionManagementService | null = null;
 
@@ -223,7 +223,7 @@ export class DataCenterPermissionManagementTools {
     }
   }
 
-  static async revokePermission(permissionId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async revokePermission(permissionId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('revokePermission');
     let service: PermissionManagementService | null = null;
 
@@ -249,7 +249,7 @@ export class DataCenterPermissionManagementTools {
     }
   }
 
-  static async listPermissionSummaries(params?: any, output: 'markdown' | 'json' = 'markdown') {
+  static async listPermissionSummaries(params?: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listPermissionSummaries');
     let service: PermissionManagementService | null = null;
 
@@ -275,7 +275,7 @@ export class DataCenterPermissionManagementTools {
     }
   }
 
-  static async getPermissionAuditLog(params?: any, output: 'markdown' | 'json' = 'markdown') {
+  static async getPermissionAuditLog(params?: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getPermissionAuditLog');
     let service: PermissionManagementService | null = null;
 
@@ -301,7 +301,7 @@ export class DataCenterPermissionManagementTools {
     }
   }
 
-  static async bulkGrantPermissions(request: any, output: 'markdown' | 'json' = 'markdown') {
+  static async bulkGrantPermissions(request: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('bulkGrantPermissions');
     let service: PermissionManagementService | null = null;
 
@@ -327,7 +327,7 @@ export class DataCenterPermissionManagementTools {
     }
   }
 
-  static async listPermissionTemplates(output: 'markdown' | 'json' = 'markdown') {
+  static async listPermissionTemplates(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listPermissionTemplates');
     let service: PermissionManagementService | null = null;
 
@@ -353,7 +353,7 @@ export class DataCenterPermissionManagementTools {
     }
   }
 
-  static async createPermissionTemplate(request: any, output: 'markdown' | 'json' = 'markdown') {
+  static async createPermissionTemplate(request: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('createPermissionTemplate');
     let service: PermissionManagementService | null = null;
 
@@ -379,7 +379,7 @@ export class DataCenterPermissionManagementTools {
     }
   }
 
-  static async getPermissionTemplate(templateId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async getPermissionTemplate(templateId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getPermissionTemplate');
     let service: PermissionManagementService | null = null;
 
@@ -408,7 +408,7 @@ export class DataCenterPermissionManagementTools {
   static async updatePermissionTemplate(
     templateId: number,
     request: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updatePermissionTemplate');
     let service: PermissionManagementService | null = null;
@@ -435,10 +435,7 @@ export class DataCenterPermissionManagementTools {
     }
   }
 
-  static async deletePermissionTemplate(
-    templateId: number,
-    output: 'markdown' | 'json' = 'markdown'
-  ) {
+  static async deletePermissionTemplate(templateId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('deletePermissionTemplate');
     let service: PermissionManagementService | null = null;
 
@@ -467,7 +464,7 @@ export class DataCenterPermissionManagementTools {
   static async applyPermissionTemplate(
     templateId: number,
     request: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('applyPermissionTemplate');
     let service: PermissionManagementService | null = null;
@@ -497,7 +494,7 @@ export class DataCenterPermissionManagementTools {
   static async getProjectPermissions(
     projectKey: string,
     params?: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getProjectPermissions');
     let service: PermissionManagementService | null = null;
@@ -528,7 +525,7 @@ export class DataCenterPermissionManagementTools {
     projectKey: string,
     repositorySlug: string,
     params?: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getRepositoryPermissions');
     let service: PermissionManagementService | null = null;

@@ -104,7 +104,7 @@ export class DataCenterMarkupTools {
     this.logger.info('Data Center Markup tools initialized');
   }
 
-  static async renderMarkup(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async renderMarkup(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('renderMarkup');
     let service: MarkupService | null = null;
 
@@ -133,7 +133,7 @@ export class DataCenterMarkupTools {
     }
   }
 
-  static async validateMarkup(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async validateMarkup(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('validateMarkup');
     let service: MarkupService | null = null;
 
@@ -162,7 +162,7 @@ export class DataCenterMarkupTools {
     }
   }
 
-  static async getMarkupTypes(output: 'markdown' | 'json' = 'markdown') {
+  static async getMarkupTypes(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getMarkupTypes');
     let service: MarkupService | null = null;
 
@@ -188,7 +188,7 @@ export class DataCenterMarkupTools {
     }
   }
 
-  static async previewMarkup(request: any, output: 'markdown' | 'json' = 'markdown') {
+  static async previewMarkup(request: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('previewMarkup');
     let service: MarkupService | null = null;
 
@@ -214,7 +214,7 @@ export class DataCenterMarkupTools {
     }
   }
 
-  static async getSupportedMarkupTypes(output: 'markdown' | 'json' = 'markdown') {
+  static async getSupportedMarkupTypes(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSupportedMarkupTypes');
     let service: MarkupService | null = null;
 
@@ -244,7 +244,7 @@ export class DataCenterMarkupTools {
     projectKey: string,
     repositorySlug: string,
     request: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('renderMarkupForRepository');
     let markupService = null;
@@ -283,7 +283,7 @@ export class DataCenterMarkupTools {
     projectKey: string,
     repositorySlug: string,
     request: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('previewMarkupForRepository');
     let markupService = null;
@@ -322,7 +322,7 @@ export class DataCenterMarkupTools {
     projectKey: string,
     repositorySlug: string,
     request: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('validateMarkupForRepository');
     let markupService = null;
@@ -360,7 +360,7 @@ export class DataCenterMarkupTools {
   static async renderMarkupForProject(
     projectKey: string,
     request: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('renderMarkupForProject');
     let markupService = null;
@@ -393,7 +393,7 @@ export class DataCenterMarkupTools {
   static async previewMarkupForProject(
     projectKey: string,
     request: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('previewMarkupForProject');
     let markupService = null;
@@ -426,7 +426,7 @@ export class DataCenterMarkupTools {
   static async validateMarkupForProject(
     projectKey: string,
     request: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('validateMarkupForProject');
     let markupService = null;

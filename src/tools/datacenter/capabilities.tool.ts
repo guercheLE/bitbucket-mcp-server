@@ -233,7 +233,7 @@ export class DataCenterCapabilitiesTools {
   /**
    * Get system capabilities
    */
-  static async getSystemCapabilities(output: 'markdown' | 'json' = 'markdown') {
+  static async getSystemCapabilities(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSystemCapabilities');
     let capabilitiesService = null;
 
@@ -262,7 +262,7 @@ export class DataCenterCapabilitiesTools {
   /**
    * Get feature capabilities
    */
-  static async getFeatureCapabilities(feature: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getFeatureCapabilities(feature: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getFeatureCapabilities');
     let capabilitiesService = null;
 
@@ -293,7 +293,7 @@ export class DataCenterCapabilitiesTools {
    */
   static async getIntegrationCapabilities(
     integration: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getIntegrationCapabilities');
     let capabilitiesService = null;
@@ -323,7 +323,7 @@ export class DataCenterCapabilitiesTools {
   /**
    * Get plugin capabilities
    */
-  static async getPluginCapabilities(plugin: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getPluginCapabilities(plugin: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getPluginCapabilities');
     let capabilitiesService = null;
 
@@ -352,7 +352,7 @@ export class DataCenterCapabilitiesTools {
   /**
    * Get system status
    */
-  static async getSystemStatus(output: 'markdown' | 'json' = 'markdown') {
+  static async getSystemStatus(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSystemStatus');
     let capabilitiesService = null;
 
@@ -381,7 +381,7 @@ export class DataCenterCapabilitiesTools {
   /**
    * Get system configuration
    */
-  static async getSystemConfiguration(output: 'markdown' | 'json' = 'markdown') {
+  static async getSystemConfiguration(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSystemConfiguration');
     let capabilitiesService = null;
 
@@ -410,7 +410,7 @@ export class DataCenterCapabilitiesTools {
   /**
    * Get system metrics
    */
-  static async getSystemMetrics(output: 'markdown' | 'json' = 'markdown') {
+  static async getSystemMetrics(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSystemMetrics');
     let capabilitiesService = null;
 
@@ -442,7 +442,7 @@ export class DataCenterCapabilitiesTools {
   static async getSystemEvents(
     page?: number,
     limit?: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getSystemEvents');
     let capabilitiesService = null;
@@ -472,7 +472,7 @@ export class DataCenterCapabilitiesTools {
   /**
    * List capabilities
    */
-  static async listCapabilities(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async listCapabilities(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listCapabilities');
     let capabilitiesService = null;
 
@@ -501,7 +501,7 @@ export class DataCenterCapabilitiesTools {
   /**
    * Get capability
    */
-  static async getCapability(capabilityId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getCapability(capabilityId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getCapability');
     let capabilitiesService = null;
 
@@ -530,7 +530,7 @@ export class DataCenterCapabilitiesTools {
   /**
    * Enable capability
    */
-  static async enableCapability(capabilityId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async enableCapability(capabilityId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('enableCapability');
     let capabilitiesService = null;
 
@@ -559,7 +559,7 @@ export class DataCenterCapabilitiesTools {
   /**
    * Disable capability
    */
-  static async disableCapability(capabilityId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async disableCapability(capabilityId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('disableCapability');
     let capabilitiesService = null;
 
@@ -587,7 +587,7 @@ export class DataCenterCapabilitiesTools {
 
   static async getCapabilityConfiguration(
     capabilityId: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getCapabilityConfiguration');
     let capabilitiesService = null;
@@ -617,7 +617,7 @@ export class DataCenterCapabilitiesTools {
   static async updateCapabilityConfiguration(
     capabilityId: string,
     configuration: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateCapabilityConfiguration');
     let capabilitiesService = null;
@@ -647,7 +647,7 @@ export class DataCenterCapabilitiesTools {
     }
   }
 
-  static async getCapabilityStatus(capabilityId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getCapabilityStatus(capabilityId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getCapabilityStatus');
     let capabilitiesService = null;
 
@@ -673,7 +673,7 @@ export class DataCenterCapabilitiesTools {
     }
   }
 
-  static async listCapabilityStatuses(output: 'markdown' | 'json' = 'markdown') {
+  static async listCapabilityStatuses(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listCapabilityStatuses');
     let capabilitiesService = null;
 
@@ -699,10 +699,7 @@ export class DataCenterCapabilitiesTools {
     }
   }
 
-  static async getCapabilityMetrics(
-    capabilityId: string,
-    output: 'markdown' | 'json' = 'markdown'
-  ) {
+  static async getCapabilityMetrics(capabilityId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getCapabilityMetrics');
     let capabilitiesService = null;
 
@@ -728,7 +725,7 @@ export class DataCenterCapabilitiesTools {
     }
   }
 
-  static async listCapabilityMetrics(output: 'markdown' | 'json' = 'markdown') {
+  static async listCapabilityMetrics(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listCapabilityMetrics');
     let capabilitiesService = null;
 
@@ -757,7 +754,7 @@ export class DataCenterCapabilitiesTools {
   static async getCapabilityEvents(
     capabilityId: string,
     params: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getCapabilityEvents');
     let capabilitiesService = null;
@@ -784,7 +781,7 @@ export class DataCenterCapabilitiesTools {
     }
   }
 
-  static async listCapabilityEvents(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async listCapabilityEvents(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listCapabilityEvents');
     let capabilitiesService = null;
 
@@ -810,7 +807,7 @@ export class DataCenterCapabilitiesTools {
     }
   }
 
-  static async listPluginCapabilities(output: 'markdown' | 'json' = 'markdown') {
+  static async listPluginCapabilities(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listPluginCapabilities');
     let capabilitiesService = null;
 
@@ -836,7 +833,7 @@ export class DataCenterCapabilitiesTools {
     }
   }
 
-  static async getPluginCapability(pluginKey: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getPluginCapability(pluginKey: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getPluginCapability');
     let capabilitiesService = null;
 
@@ -862,7 +859,7 @@ export class DataCenterCapabilitiesTools {
     }
   }
 
-  static async enablePluginCapability(pluginKey: string, output: 'markdown' | 'json' = 'markdown') {
+  static async enablePluginCapability(pluginKey: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('enablePluginCapability');
     let capabilitiesService = null;
 
@@ -888,10 +885,7 @@ export class DataCenterCapabilitiesTools {
     }
   }
 
-  static async disablePluginCapability(
-    pluginKey: string,
-    output: 'markdown' | 'json' = 'markdown'
-  ) {
+  static async disablePluginCapability(pluginKey: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('disablePluginCapability');
     let capabilitiesService = null;
 

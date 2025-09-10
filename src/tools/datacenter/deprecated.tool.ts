@@ -122,7 +122,7 @@ export class DataCenterDeprecatedTools {
     this.logger.info('Data Center Deprecated tools initialized');
   }
 
-  static async getDeprecatedEndpoints(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async getDeprecatedEndpoints(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getDeprecatedEndpoints');
     let deprecatedService = null;
 
@@ -151,7 +151,7 @@ export class DataCenterDeprecatedTools {
   static async getDeprecatedEndpoint(
     endpoint: string,
     method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH',
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getDeprecatedEndpoint');
     let deprecatedService = null;
@@ -178,7 +178,7 @@ export class DataCenterDeprecatedTools {
     }
   }
 
-  static async getDeprecatedEndpointUsage(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async getDeprecatedEndpointUsage(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getDeprecatedEndpointUsage');
     let deprecatedService = null;
 
@@ -204,7 +204,7 @@ export class DataCenterDeprecatedTools {
     }
   }
 
-  static async getDeprecatedFeatures(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async getDeprecatedFeatures(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getDeprecatedFeatures');
     let deprecatedService = null;
 
@@ -230,7 +230,7 @@ export class DataCenterDeprecatedTools {
     }
   }
 
-  static async getDeprecatedFeature(feature: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getDeprecatedFeature(feature: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getDeprecatedFeature');
     let deprecatedService = null;
 
@@ -256,7 +256,7 @@ export class DataCenterDeprecatedTools {
     }
   }
 
-  static async getDeprecatedApiVersions(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async getDeprecatedApiVersions(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getDeprecatedApiVersions');
     let deprecatedService = null;
 
@@ -282,7 +282,7 @@ export class DataCenterDeprecatedTools {
     }
   }
 
-  static async getDeprecatedApiVersion(version: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getDeprecatedApiVersion(version: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getDeprecatedApiVersion');
     let deprecatedService = null;
 
@@ -308,7 +308,7 @@ export class DataCenterDeprecatedTools {
     }
   }
 
-  static async getDeprecationNotices(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async getDeprecationNotices(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getDeprecationNotices');
     let deprecatedService = null;
 
@@ -334,7 +334,7 @@ export class DataCenterDeprecatedTools {
     }
   }
 
-  static async getDeprecationNotice(noticeId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getDeprecationNotice(noticeId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getDeprecationNotice');
     let deprecatedService = null;
 
@@ -360,7 +360,7 @@ export class DataCenterDeprecatedTools {
     }
   }
 
-  static async getDeprecationPolicy(output: 'markdown' | 'json' = 'markdown') {
+  static async getDeprecationPolicy(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getDeprecationPolicy');
     let deprecatedService = null;
 
@@ -386,7 +386,7 @@ export class DataCenterDeprecatedTools {
     }
   }
 
-  static async getDeprecationTimeline(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async getDeprecationTimeline(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getDeprecationTimeline');
     let deprecatedService = null;
 
@@ -414,7 +414,7 @@ export class DataCenterDeprecatedTools {
 
   static async getResourceDeprecationTimeline(
     resource: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getResourceDeprecationTimeline');
     let deprecatedService = null;
@@ -444,7 +444,7 @@ export class DataCenterDeprecatedTools {
   static async checkEndpointDeprecation(
     endpoint: string,
     method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH',
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('checkEndpointDeprecation');
     let deprecatedService = null;
@@ -474,7 +474,7 @@ export class DataCenterDeprecatedTools {
   static async getMigrationRecommendations(
     resource: string,
     type: 'ENDPOINT' | 'FEATURE' | 'API_VERSION' | 'PARAMETER',
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getMigrationRecommendations');
     let deprecatedService = null;

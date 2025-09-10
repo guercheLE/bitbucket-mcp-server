@@ -180,7 +180,7 @@ export class DataCenterDashboardTools {
     this.logger.info('Data Center Dashboard tools initialized');
   }
 
-  static async createDashboard(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async createDashboard(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('createDashboard');
     let service: DashboardService | null = null;
 
@@ -208,7 +208,7 @@ export class DataCenterDashboardTools {
     }
   }
 
-  static async getDashboard(dashboardId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getDashboard(dashboardId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getDashboard');
     let service: DashboardService | null = null;
 
@@ -239,7 +239,7 @@ export class DataCenterDashboardTools {
   static async updateDashboard(
     dashboardId: string,
     params: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateDashboard');
     let service: DashboardService | null = null;
@@ -268,7 +268,7 @@ export class DataCenterDashboardTools {
     }
   }
 
-  static async deleteDashboard(dashboardId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async deleteDashboard(dashboardId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('deleteDashboard');
     let service: DashboardService | null = null;
 
@@ -296,7 +296,7 @@ export class DataCenterDashboardTools {
     }
   }
 
-  static async listDashboards(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async listDashboards(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listDashboards');
     let service: DashboardService | null = null;
 
@@ -325,7 +325,7 @@ export class DataCenterDashboardTools {
   static async cloneDashboard(
     dashboardId: string,
     newName: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('cloneDashboard');
     let service: DashboardService | null = null;
@@ -355,11 +355,7 @@ export class DataCenterDashboardTools {
     }
   }
 
-  static async addWidget(
-    dashboardId: string,
-    params: any,
-    output: 'markdown' | 'json' = 'markdown'
-  ) {
+  static async addWidget(dashboardId: string, params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('addWidget');
     let service: DashboardService | null = null;
 
@@ -391,7 +387,7 @@ export class DataCenterDashboardTools {
     dashboardId: string,
     widgetId: string,
     params: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateWidget');
     let service: DashboardService | null = null;
@@ -424,7 +420,7 @@ export class DataCenterDashboardTools {
   static async removeWidget(
     dashboardId: string,
     widgetId: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('removeWidget');
     let service: DashboardService | null = null;
@@ -454,7 +450,7 @@ export class DataCenterDashboardTools {
     }
   }
 
-  static async listAvailableWidgets(output: 'markdown' | 'json' = 'markdown') {
+  static async listAvailableWidgets(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listAvailableWidgets');
     let service: DashboardService | null = null;
 
@@ -480,7 +476,7 @@ export class DataCenterDashboardTools {
     }
   }
 
-  static async getWidget(widgetId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getWidget(widgetId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getWidget');
     let service: DashboardService | null = null;
 
@@ -508,7 +504,7 @@ export class DataCenterDashboardTools {
     }
   }
 
-  static async getData(dashboardId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getData(dashboardId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getData');
     let service: DashboardService | null = null;
 
@@ -537,7 +533,7 @@ export class DataCenterDashboardTools {
   static async getWidgetData(
     dashboardId: string,
     widgetId: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getWidgetData');
     let service: DashboardService | null = null;
@@ -564,7 +560,7 @@ export class DataCenterDashboardTools {
     }
   }
 
-  static async refreshData(dashboardId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async refreshData(dashboardId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('refreshData');
     let service: DashboardService | null = null;
 
@@ -593,7 +589,7 @@ export class DataCenterDashboardTools {
   static async refreshWidgetData(
     dashboardId: string,
     widgetId: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('refreshWidgetData');
     let service: DashboardService | null = null;
@@ -623,7 +619,7 @@ export class DataCenterDashboardTools {
   static async shareDashboard(
     dashboardId: string,
     params: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('shareDashboard');
     let service: DashboardService | null = null;
@@ -650,7 +646,7 @@ export class DataCenterDashboardTools {
     }
   }
 
-  static async listShares(dashboardId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async listShares(dashboardId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listShares');
     let service: DashboardService | null = null;
 
@@ -680,7 +676,7 @@ export class DataCenterDashboardTools {
     dashboardId: string,
     shareId: string,
     params: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateShare');
     let service: DashboardService | null = null;
@@ -710,7 +706,7 @@ export class DataCenterDashboardTools {
   static async removeShare(
     dashboardId: string,
     shareId: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('removeShare');
     let service: DashboardService | null = null;
@@ -737,7 +733,7 @@ export class DataCenterDashboardTools {
     }
   }
 
-  static async listTemplates(output: 'markdown' | 'json' = 'markdown') {
+  static async listTemplates(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listTemplates');
     let service: DashboardService | null = null;
 
@@ -763,7 +759,7 @@ export class DataCenterDashboardTools {
     }
   }
 
-  static async getTemplate(templateId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getTemplate(templateId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getTemplate');
     let service: DashboardService | null = null;
 
@@ -792,7 +788,7 @@ export class DataCenterDashboardTools {
   static async createFromTemplate(
     templateId: string,
     name: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createFromTemplate');
     let service: DashboardService | null = null;
@@ -819,7 +815,7 @@ export class DataCenterDashboardTools {
     }
   }
 
-  static async getPreferences(output: 'markdown' | 'json' = 'markdown') {
+  static async getPreferences(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getPreferences');
     let service: DashboardService | null = null;
 
@@ -845,7 +841,7 @@ export class DataCenterDashboardTools {
     }
   }
 
-  static async updatePreferences(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async updatePreferences(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('updatePreferences');
     let service: DashboardService | null = null;
 
@@ -871,7 +867,7 @@ export class DataCenterDashboardTools {
     }
   }
 
-  static async getAnalytics(dashboardId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getAnalytics(dashboardId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getAnalytics');
     let service: DashboardService | null = null;
 
@@ -899,7 +895,7 @@ export class DataCenterDashboardTools {
 
   static async listAnalytics(
     params?: { start?: number; limit?: number },
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listAnalytics');
     let service: DashboardService | null = null;

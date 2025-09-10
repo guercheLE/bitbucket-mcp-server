@@ -71,7 +71,7 @@ export class CloudSSHTools {
     selectedUser: string,
     page?: number,
     pagelen?: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listSSHKeys');
     let sshService = null;
@@ -109,7 +109,7 @@ export class CloudSSHTools {
     selectedUser: string,
     sshKey: any,
     expiresOn?: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createSSHKey');
     let sshService = null;
@@ -146,7 +146,7 @@ export class CloudSSHTools {
   static async getSSHKey(
     selectedUser: string,
     keyId: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getSSHKey');
     let sshService = null;
@@ -183,7 +183,7 @@ export class CloudSSHTools {
     selectedUser: string,
     keyId: string,
     sshKey: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateSSHKey');
     let sshService = null;
@@ -220,7 +220,7 @@ export class CloudSSHTools {
   static async deleteSSHKey(
     selectedUser: string,
     keyId: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('deleteSSHKey');
     let sshService = null;

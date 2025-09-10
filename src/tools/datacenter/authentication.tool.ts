@@ -131,7 +131,7 @@ export class DataCenterAuthenticationTools {
     clientId?: string,
     clientSecret?: string,
     refreshToken?: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getOAuthToken');
     let authenticationService = null;
@@ -173,7 +173,7 @@ export class DataCenterAuthenticationTools {
     refreshToken: string,
     clientId: string,
     clientSecret: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('refreshOAuthToken');
     let authenticationService = null;
@@ -212,7 +212,7 @@ export class DataCenterAuthenticationTools {
     redirectUri: string,
     scope: string,
     state?: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getOAuthAuthorizationUrl');
     let authenticationService = null;
@@ -249,7 +249,7 @@ export class DataCenterAuthenticationTools {
   /**
    * Get access token information
    */
-  static async getAccessTokenInfo(accessToken: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getAccessTokenInfo(accessToken: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getAccessTokenInfo');
     let authenticationService = null;
 
@@ -277,7 +277,7 @@ export class DataCenterAuthenticationTools {
   /**
    * Revoke access token
    */
-  static async revokeAccessToken(accessToken: string, output: 'markdown' | 'json' = 'markdown') {
+  static async revokeAccessToken(accessToken: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('revokeAccessToken');
     let authenticationService = null;
 
@@ -313,7 +313,7 @@ export class DataCenterAuthenticationTools {
     description?: string,
     url?: string,
     callbackUrl?: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createOAuthApplication');
     let authenticationService = null;
@@ -349,10 +349,7 @@ export class DataCenterAuthenticationTools {
   /**
    * Get OAuth application
    */
-  static async getOAuthApplication(
-    applicationId: string,
-    output: 'markdown' | 'json' = 'markdown'
-  ) {
+  static async getOAuthApplication(applicationId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getOAuthApplication');
     let authenticationService = null;
 
@@ -386,7 +383,7 @@ export class DataCenterAuthenticationTools {
     description?: string,
     url?: string,
     callbackUrl?: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateOAuthApplication');
     let authenticationService = null;
@@ -422,10 +419,7 @@ export class DataCenterAuthenticationTools {
   /**
    * Delete OAuth application
    */
-  static async deleteOAuthApplication(
-    applicationId: string,
-    output: 'markdown' | 'json' = 'markdown'
-  ) {
+  static async deleteOAuthApplication(applicationId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('deleteOAuthApplication');
     let authenticationService = null;
 
@@ -456,7 +450,7 @@ export class DataCenterAuthenticationTools {
   /**
    * List OAuth applications
    */
-  static async listOAuthApplications(output: 'markdown' | 'json' = 'markdown') {
+  static async listOAuthApplications(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listOAuthApplications');
     let authenticationService = null;
 
@@ -484,7 +478,7 @@ export class DataCenterAuthenticationTools {
   /**
    * Get current user session
    */
-  static async getCurrentSession(output: 'markdown' | 'json' = 'markdown') {
+  static async getCurrentSession(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getCurrentSession');
     let authenticationService = null;
 
@@ -512,7 +506,7 @@ export class DataCenterAuthenticationTools {
   /**
    * Create user session
    */
-  static async createSession(userId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async createSession(userId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('createSession');
     let authenticationService = null;
 
@@ -540,7 +534,7 @@ export class DataCenterAuthenticationTools {
   /**
    * Refresh user session
    */
-  static async refreshSession(sessionId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async refreshSession(sessionId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('refreshSession');
     let authenticationService = null;
 
@@ -568,7 +562,7 @@ export class DataCenterAuthenticationTools {
   /**
    * Revoke user session
    */
-  static async revokeSession(sessionId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async revokeSession(sessionId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('revokeSession');
     let authenticationService = null;
 
@@ -599,7 +593,7 @@ export class DataCenterAuthenticationTools {
   /**
    * List active sessions for user
    */
-  static async listActiveSessions(userId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async listActiveSessions(userId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listActiveSessions');
     let authenticationService = null;
 

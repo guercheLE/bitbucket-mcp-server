@@ -254,7 +254,7 @@ export class DataCenterSearchTools {
     this.logger.info('Data Center Search tools initialized');
   }
 
-  static async searchRepositories(request: any, output: 'markdown' | 'json' = 'markdown') {
+  static async searchRepositories(request: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('searchRepositories');
     let searchService = null;
 
@@ -280,7 +280,7 @@ export class DataCenterSearchTools {
     }
   }
 
-  static async searchPullRequests(request: any, output: 'markdown' | 'json' = 'markdown') {
+  static async searchPullRequests(request: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('searchPullRequests');
     let searchService = null;
 
@@ -306,7 +306,7 @@ export class DataCenterSearchTools {
     }
   }
 
-  static async searchCommits(request: any, output: 'markdown' | 'json' = 'markdown') {
+  static async searchCommits(request: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('searchCommits');
     let searchService = null;
 
@@ -332,7 +332,7 @@ export class DataCenterSearchTools {
     }
   }
 
-  static async searchCode(request: any, output: 'markdown' | 'json' = 'markdown') {
+  static async searchCode(request: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('searchCode');
     let searchService = null;
 
@@ -358,7 +358,7 @@ export class DataCenterSearchTools {
     }
   }
 
-  static async searchUsers(request: any, output: 'markdown' | 'json' = 'markdown') {
+  static async searchUsers(request: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('searchUsers');
     let searchService = null;
 
@@ -384,7 +384,7 @@ export class DataCenterSearchTools {
     }
   }
 
-  static async getSearchSuggestions(query: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getSearchSuggestions(query: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSearchSuggestions');
     let searchService = null;
 
@@ -410,7 +410,7 @@ export class DataCenterSearchTools {
     }
   }
 
-  static async getSearchConfiguration(output: 'markdown' | 'json' = 'markdown') {
+  static async getSearchConfiguration(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSearchConfiguration');
     let searchService = null;
 
@@ -436,10 +436,7 @@ export class DataCenterSearchTools {
     }
   }
 
-  static async updateSearchConfiguration(
-    configuration: any,
-    output: 'markdown' | 'json' = 'markdown'
-  ) {
+  static async updateSearchConfiguration(configuration: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('updateSearchConfiguration');
     let searchService = null;
 
@@ -465,7 +462,7 @@ export class DataCenterSearchTools {
     }
   }
 
-  static async getSearchIndexes(output: 'markdown' | 'json' = 'markdown') {
+  static async getSearchIndexes(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSearchIndexes');
     let searchService = null;
 
@@ -491,7 +488,7 @@ export class DataCenterSearchTools {
     }
   }
 
-  static async getSearchIndex(indexId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getSearchIndex(indexId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSearchIndex');
     let searchService = null;
 
@@ -517,7 +514,7 @@ export class DataCenterSearchTools {
     }
   }
 
-  static async rebuildSearchIndex(indexId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async rebuildSearchIndex(indexId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('rebuildSearchIndex');
     let searchService = null;
 
@@ -543,7 +540,7 @@ export class DataCenterSearchTools {
     }
   }
 
-  static async stopSearchIndex(indexId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async stopSearchIndex(indexId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('stopSearchIndex');
     let searchService = null;
 
@@ -569,7 +566,7 @@ export class DataCenterSearchTools {
     }
   }
 
-  static async getSearchHistory(output: 'markdown' | 'json' = 'markdown') {
+  static async getSearchHistory(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSearchHistory');
     let searchService = null;
 
@@ -595,7 +592,7 @@ export class DataCenterSearchTools {
     }
   }
 
-  static async getUserSearchHistory(userId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async getUserSearchHistory(userId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getUserSearchHistory');
     let searchService = null;
 
@@ -621,7 +618,7 @@ export class DataCenterSearchTools {
     }
   }
 
-  static async clearSearchHistory(output: 'markdown' | 'json' = 'markdown') {
+  static async clearSearchHistory(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('clearSearchHistory');
     let searchService = null;
 
@@ -647,7 +644,7 @@ export class DataCenterSearchTools {
     }
   }
 
-  static async clearUserSearchHistory(userId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async clearUserSearchHistory(userId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('clearUserSearchHistory');
     let searchService = null;
 
@@ -673,7 +670,7 @@ export class DataCenterSearchTools {
     }
   }
 
-  static async getSearchAnalytics(output: 'markdown' | 'json' = 'markdown') {
+  static async getSearchAnalytics(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSearchAnalytics');
     let searchService = null;
 
@@ -699,7 +696,7 @@ export class DataCenterSearchTools {
     }
   }
 
-  static async getQueryAnalytics(query: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getQueryAnalytics(query: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getQueryAnalytics');
     let searchService = null;
 
@@ -725,7 +722,7 @@ export class DataCenterSearchTools {
     }
   }
 
-  static async getSearchStatistics(output: 'markdown' | 'json' = 'markdown') {
+  static async getSearchStatistics(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSearchStatistics');
     let searchService = null;
 
@@ -754,7 +751,7 @@ export class DataCenterSearchTools {
   static async getSearchStatisticsForRange(
     startDate: string,
     endDate: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getSearchStatisticsForRange');
     let searchService = null;
@@ -784,7 +781,7 @@ export class DataCenterSearchTools {
     }
   }
 
-  static async recordSearchAnalytics(analytics: any, output: 'markdown' | 'json' = 'markdown') {
+  static async recordSearchAnalytics(analytics: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('recordSearchAnalytics');
     let searchService = null;
 

@@ -18,10 +18,7 @@ export interface ErrorResponse {
 }
 
 // Helper functions for creating MCP responses
-export function createMcpResponse(
-  data: any,
-  output: 'markdown' | 'json' = 'markdown'
-): McpResponse {
+export function createMcpResponse(data: any, output: 'markdown' | 'json' = 'json'): McpResponse {
   let result: string;
 
   if (output === 'markdown') {

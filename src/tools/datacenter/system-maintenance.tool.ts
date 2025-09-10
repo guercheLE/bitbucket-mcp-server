@@ -208,7 +208,7 @@ export class DataCenterSystemMaintenanceTools {
   }
 
   // Static Methods
-  static async getSystemStatus(output: 'markdown' | 'json' = 'markdown') {
+  static async getSystemStatus(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSystemStatus');
     let service: SystemMaintenanceService | null = null;
 
@@ -234,7 +234,7 @@ export class DataCenterSystemMaintenanceTools {
     }
   }
 
-  static async getSystemConfiguration(output: 'markdown' | 'json' = 'markdown') {
+  static async getSystemConfiguration(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSystemConfiguration');
     let service: SystemMaintenanceService | null = null;
 
@@ -260,7 +260,7 @@ export class DataCenterSystemMaintenanceTools {
     }
   }
 
-  static async getSystemMetrics(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async getSystemMetrics(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSystemMetrics');
     let service: SystemMaintenanceService | null = null;
 
@@ -290,7 +290,7 @@ export class DataCenterSystemMaintenanceTools {
     }
   }
 
-  static async listMaintenanceTasks(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async listMaintenanceTasks(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listMaintenanceTasks');
     let service: SystemMaintenanceService | null = null;
 
@@ -328,7 +328,7 @@ export class DataCenterSystemMaintenanceTools {
     }
   }
 
-  static async createMaintenanceTask(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async createMaintenanceTask(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('createMaintenanceTask');
     let service: SystemMaintenanceService | null = null;
 
@@ -374,7 +374,7 @@ export class DataCenterSystemMaintenanceTools {
     }
   }
 
-  static async getMaintenanceTask(taskId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getMaintenanceTask(taskId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getMaintenanceTask');
     let service: SystemMaintenanceService | null = null;
 
@@ -403,7 +403,7 @@ export class DataCenterSystemMaintenanceTools {
   static async updateMaintenanceTask(
     taskId: string,
     updates: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateMaintenanceTask');
     let service: SystemMaintenanceService | null = null;
@@ -430,7 +430,7 @@ export class DataCenterSystemMaintenanceTools {
     }
   }
 
-  static async deleteMaintenanceTask(taskId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async deleteMaintenanceTask(taskId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('deleteMaintenanceTask');
     let service: SystemMaintenanceService | null = null;
 
@@ -456,7 +456,7 @@ export class DataCenterSystemMaintenanceTools {
     }
   }
 
-  static async startMaintenanceTask(taskId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async startMaintenanceTask(taskId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('startMaintenanceTask');
     let service: SystemMaintenanceService | null = null;
 
@@ -482,7 +482,7 @@ export class DataCenterSystemMaintenanceTools {
     }
   }
 
-  static async stopMaintenanceTask(taskId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async stopMaintenanceTask(taskId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('stopMaintenanceTask');
     let service: SystemMaintenanceService | null = null;
 
@@ -508,7 +508,7 @@ export class DataCenterSystemMaintenanceTools {
     }
   }
 
-  static async pauseMaintenanceTask(taskId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async pauseMaintenanceTask(taskId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('pauseMaintenanceTask');
     let service: SystemMaintenanceService | null = null;
 
@@ -534,7 +534,7 @@ export class DataCenterSystemMaintenanceTools {
     }
   }
 
-  static async resumeMaintenanceTask(taskId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async resumeMaintenanceTask(taskId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('resumeMaintenanceTask');
     let service: SystemMaintenanceService | null = null;
 
@@ -563,7 +563,7 @@ export class DataCenterSystemMaintenanceTools {
   static async getMaintenanceTaskLogs(
     taskId: string,
     params: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getMaintenanceTaskLogs');
     let service: SystemMaintenanceService | null = null;
@@ -593,7 +593,7 @@ export class DataCenterSystemMaintenanceTools {
   static async getMaintenanceTaskHistory(
     taskId: string,
     params: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getMaintenanceTaskHistory');
     let service: SystemMaintenanceService | null = null;
@@ -620,7 +620,7 @@ export class DataCenterSystemMaintenanceTools {
     }
   }
 
-  static async getMaintenanceTaskStatus(taskId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getMaintenanceTaskStatus(taskId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getMaintenanceTaskStatus');
     let service: SystemMaintenanceService | null = null;
 
@@ -646,10 +646,7 @@ export class DataCenterSystemMaintenanceTools {
     }
   }
 
-  static async getMaintenanceTaskProgress(
-    taskId: string,
-    output: 'markdown' | 'json' = 'markdown'
-  ) {
+  static async getMaintenanceTaskProgress(taskId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getMaintenanceTaskProgress');
     let service: SystemMaintenanceService | null = null;
 
@@ -678,7 +675,7 @@ export class DataCenterSystemMaintenanceTools {
   static async getMaintenanceTaskResults(
     taskId: string,
     params: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getMaintenanceTaskResults');
     let service: SystemMaintenanceService | null = null;
@@ -705,10 +702,7 @@ export class DataCenterSystemMaintenanceTools {
     }
   }
 
-  static async getMaintenanceTaskSchedule(
-    taskId: string,
-    output: 'markdown' | 'json' = 'markdown'
-  ) {
+  static async getMaintenanceTaskSchedule(taskId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getMaintenanceTaskSchedule');
     let service: SystemMaintenanceService | null = null;
 
@@ -737,7 +731,7 @@ export class DataCenterSystemMaintenanceTools {
   static async updateMaintenanceTaskSchedule(
     taskId: string,
     schedule: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateMaintenanceTaskSchedule');
     let service: SystemMaintenanceService | null = null;
@@ -766,7 +760,7 @@ export class DataCenterSystemMaintenanceTools {
 
   static async getMaintenanceTaskDependencies(
     taskId: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getMaintenanceTaskDependencies');
     let service: SystemMaintenanceService | null = null;
@@ -796,7 +790,7 @@ export class DataCenterSystemMaintenanceTools {
   static async addMaintenanceTaskDependency(
     taskId: string,
     dependencyId: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('addMaintenanceTaskDependency');
     let service: SystemMaintenanceService | null = null;
@@ -829,7 +823,7 @@ export class DataCenterSystemMaintenanceTools {
   static async removeMaintenanceTaskDependency(
     taskId: string,
     dependencyId: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('removeMaintenanceTaskDependency');
     let service: SystemMaintenanceService | null = null;
@@ -861,7 +855,7 @@ export class DataCenterSystemMaintenanceTools {
 
   static async getMaintenanceTaskNotifications(
     taskId: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getMaintenanceTaskNotifications');
     let service: SystemMaintenanceService | null = null;
@@ -891,7 +885,7 @@ export class DataCenterSystemMaintenanceTools {
   static async updateMaintenanceTaskNotifications(
     taskId: string,
     notifications: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateMaintenanceTaskNotifications');
     let service: SystemMaintenanceService | null = null;
@@ -929,7 +923,7 @@ export class DataCenterSystemMaintenanceTools {
   static async getMaintenanceTaskMetrics(
     taskId: string,
     params: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getMaintenanceTaskMetrics');
     let service: SystemMaintenanceService | null = null;
@@ -959,7 +953,7 @@ export class DataCenterSystemMaintenanceTools {
   static async getMaintenanceTaskReports(
     taskId: string,
     params: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getMaintenanceTaskReports');
     let service: SystemMaintenanceService | null = null;
@@ -989,7 +983,7 @@ export class DataCenterSystemMaintenanceTools {
   static async generateMaintenanceTaskReport(
     taskId: string,
     params: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('generateMaintenanceTaskReport');
     let service: SystemMaintenanceService | null = null;

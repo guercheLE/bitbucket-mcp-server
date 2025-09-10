@@ -154,7 +154,7 @@ export class DataCenterOtherOperationsTools {
     this.logger.info('Data Center Other Operations tools initialized');
   }
 
-  static async getSystemInformation(output: 'markdown' | 'json' = 'markdown') {
+  static async getSystemInformation(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSystemInformation');
     let service: OtherOperationsService | null = null;
 
@@ -180,7 +180,7 @@ export class DataCenterOtherOperationsTools {
     }
   }
 
-  static async getHealthCheck(output: 'markdown' | 'json' = 'markdown') {
+  static async getHealthCheck(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getHealthCheck');
     let service: OtherOperationsService | null = null;
 
@@ -206,7 +206,7 @@ export class DataCenterOtherOperationsTools {
     }
   }
 
-  static async getMetrics(output: 'markdown' | 'json' = 'markdown') {
+  static async getMetrics(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getMetrics');
     let service: OtherOperationsService | null = null;
 
@@ -232,7 +232,7 @@ export class DataCenterOtherOperationsTools {
     }
   }
 
-  static async listConfigurations(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async listConfigurations(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listConfigurations');
     let service: OtherOperationsService | null = null;
 
@@ -258,7 +258,7 @@ export class DataCenterOtherOperationsTools {
     }
   }
 
-  static async getSystemBackupConfiguration(output: 'markdown' | 'json' = 'markdown') {
+  static async getSystemBackupConfiguration(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSystemBackupConfiguration');
     let service: OtherOperationsService | null = null;
 
@@ -284,7 +284,7 @@ export class DataCenterOtherOperationsTools {
     }
   }
 
-  static async listBackupResults(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async listBackupResults(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listBackupResults');
     let service: OtherOperationsService | null = null;
 
@@ -310,7 +310,7 @@ export class DataCenterOtherOperationsTools {
     }
   }
 
-  static async getLogEntries(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async getLogEntries(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getLogEntries');
     let service: OtherOperationsService | null = null;
 
@@ -336,7 +336,7 @@ export class DataCenterOtherOperationsTools {
     }
   }
 
-  static async listPluginInformation(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async listPluginInformation(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listPluginInformation');
     let service: OtherOperationsService | null = null;
 
@@ -362,7 +362,7 @@ export class DataCenterOtherOperationsTools {
     }
   }
 
-  static async getConfiguration(key: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getConfiguration(key: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getConfiguration');
     let service: OtherOperationsService | null = null;
 
@@ -388,11 +388,7 @@ export class DataCenterOtherOperationsTools {
     }
   }
 
-  static async updateConfiguration(
-    key: string,
-    value: any,
-    output: 'markdown' | 'json' = 'markdown'
-  ) {
+  static async updateConfiguration(key: string, value: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('updateConfiguration');
     let service: OtherOperationsService | null = null;
 
@@ -418,7 +414,7 @@ export class DataCenterOtherOperationsTools {
     }
   }
 
-  static async createConfiguration(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async createConfiguration(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('createConfiguration');
     let service: OtherOperationsService | null = null;
 
@@ -444,7 +440,7 @@ export class DataCenterOtherOperationsTools {
     }
   }
 
-  static async deleteConfiguration(key: string, output: 'markdown' | 'json' = 'markdown') {
+  static async deleteConfiguration(key: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('deleteConfiguration');
     let service: OtherOperationsService | null = null;
 
@@ -470,7 +466,7 @@ export class DataCenterOtherOperationsTools {
     }
   }
 
-  static async listBackupConfigurations(output: 'markdown' | 'json' = 'markdown') {
+  static async listBackupConfigurations(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listBackupConfigurations');
     let service: OtherOperationsService | null = null;
 
@@ -496,7 +492,7 @@ export class DataCenterOtherOperationsTools {
     }
   }
 
-  static async createBackupConfiguration(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async createBackupConfiguration(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('createBackupConfiguration');
     let service: OtherOperationsService | null = null;
 
@@ -522,7 +518,7 @@ export class DataCenterOtherOperationsTools {
     }
   }
 
-  static async getBackupConfiguration(backupId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async getBackupConfiguration(backupId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getBackupConfiguration');
     let service: OtherOperationsService | null = null;
 
@@ -551,7 +547,7 @@ export class DataCenterOtherOperationsTools {
   static async updateBackupConfiguration(
     backupId: number,
     updates: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateBackupConfiguration');
     let service: OtherOperationsService | null = null;
@@ -578,10 +574,7 @@ export class DataCenterOtherOperationsTools {
     }
   }
 
-  static async deleteBackupConfiguration(
-    backupId: number,
-    output: 'markdown' | 'json' = 'markdown'
-  ) {
+  static async deleteBackupConfiguration(backupId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('deleteBackupConfiguration');
     let service: OtherOperationsService | null = null;
 
@@ -607,7 +600,7 @@ export class DataCenterOtherOperationsTools {
     }
   }
 
-  static async startBackup(backupId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async startBackup(backupId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('startBackup');
     let service: OtherOperationsService | null = null;
 
@@ -633,7 +626,7 @@ export class DataCenterOtherOperationsTools {
     }
   }
 
-  static async getBackupResults(backupId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async getBackupResults(backupId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getBackupResults');
     let service: OtherOperationsService | null = null;
 
@@ -659,7 +652,7 @@ export class DataCenterOtherOperationsTools {
     }
   }
 
-  static async getLogEntry(logId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async getLogEntry(logId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getLogEntry');
     let service: OtherOperationsService | null = null;
 
@@ -685,7 +678,7 @@ export class DataCenterOtherOperationsTools {
     }
   }
 
-  static async listPlugins(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async listPlugins(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listPlugins');
     let service: OtherOperationsService | null = null;
 
@@ -711,7 +704,7 @@ export class DataCenterOtherOperationsTools {
     }
   }
 
-  static async getPlugin(pluginKey: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getPlugin(pluginKey: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getPlugin');
     let service: OtherOperationsService | null = null;
 
@@ -737,7 +730,7 @@ export class DataCenterOtherOperationsTools {
     }
   }
 
-  static async enablePlugin(pluginKey: string, output: 'markdown' | 'json' = 'markdown') {
+  static async enablePlugin(pluginKey: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('enablePlugin');
     let service: OtherOperationsService | null = null;
 
@@ -763,7 +756,7 @@ export class DataCenterOtherOperationsTools {
     }
   }
 
-  static async disablePlugin(pluginKey: string, output: 'markdown' | 'json' = 'markdown') {
+  static async disablePlugin(pluginKey: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('disablePlugin');
     let service: OtherOperationsService | null = null;
 
@@ -789,7 +782,7 @@ export class DataCenterOtherOperationsTools {
     }
   }
 
-  static async restartSystem(output: 'markdown' | 'json' = 'markdown') {
+  static async restartSystem(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('restartSystem');
     let service: OtherOperationsService | null = null;
 
@@ -815,7 +808,7 @@ export class DataCenterOtherOperationsTools {
     }
   }
 
-  static async shutdownSystem(output: 'markdown' | 'json' = 'markdown') {
+  static async shutdownSystem(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('shutdownSystem');
     let service: OtherOperationsService | null = null;
 

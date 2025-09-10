@@ -187,7 +187,7 @@ export class DataCenterSecurityTools {
   }
 
   // Static Methods
-  static async getSecurityAuditLogs(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async getSecurityAuditLogs(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSecurityAuditLogs');
     let service: SecurityService | null = null;
 
@@ -225,7 +225,7 @@ export class DataCenterSecurityTools {
     }
   }
 
-  static async getSecurityConfiguration(output: 'markdown' | 'json' = 'markdown') {
+  static async getSecurityConfiguration(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSecurityConfiguration');
     let service: SecurityService | null = null;
 
@@ -251,7 +251,7 @@ export class DataCenterSecurityTools {
     }
   }
 
-  static async getSecurityMetrics(output: 'markdown' | 'json' = 'markdown') {
+  static async getSecurityMetrics(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSecurityMetrics');
     let service: SecurityService | null = null;
 
@@ -277,7 +277,7 @@ export class DataCenterSecurityTools {
     }
   }
 
-  static async listSecurityPolicies(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async listSecurityPolicies(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listSecurityPolicies');
     let service: SecurityService | null = null;
 
@@ -313,7 +313,7 @@ export class DataCenterSecurityTools {
     }
   }
 
-  static async createSecurityPolicy(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async createSecurityPolicy(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('createSecurityPolicy');
     let service: SecurityService | null = null;
 
@@ -350,7 +350,7 @@ export class DataCenterSecurityTools {
     }
   }
 
-  static async getSecurityAuditLog(auditId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getSecurityAuditLog(auditId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSecurityAuditLog');
     let service: SecurityService | null = null;
 
@@ -376,7 +376,7 @@ export class DataCenterSecurityTools {
     }
   }
 
-  static async exportSecurityAuditLogs(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async exportSecurityAuditLogs(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('exportSecurityAuditLogs');
     let service: SecurityService | null = null;
 
@@ -409,7 +409,7 @@ export class DataCenterSecurityTools {
     }
   }
 
-  static async getSecurityPolicy(policyId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getSecurityPolicy(policyId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSecurityPolicy');
     let service: SecurityService | null = null;
 
@@ -438,7 +438,7 @@ export class DataCenterSecurityTools {
   static async updateSecurityPolicy(
     policyId: string,
     updates: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateSecurityPolicy');
     let service: SecurityService | null = null;
@@ -465,7 +465,7 @@ export class DataCenterSecurityTools {
     }
   }
 
-  static async deleteSecurityPolicy(policyId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async deleteSecurityPolicy(policyId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('deleteSecurityPolicy');
     let service: SecurityService | null = null;
 
@@ -491,7 +491,7 @@ export class DataCenterSecurityTools {
     }
   }
 
-  static async enableSecurityPolicy(policyId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async enableSecurityPolicy(policyId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('enableSecurityPolicy');
     let service: SecurityService | null = null;
 
@@ -517,7 +517,7 @@ export class DataCenterSecurityTools {
     }
   }
 
-  static async disableSecurityPolicy(policyId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async disableSecurityPolicy(policyId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('disableSecurityPolicy');
     let service: SecurityService | null = null;
 
@@ -543,7 +543,7 @@ export class DataCenterSecurityTools {
     }
   }
 
-  static async listSecurityViolations(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async listSecurityViolations(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listSecurityViolations');
     let service: SecurityService | null = null;
 
@@ -581,7 +581,7 @@ export class DataCenterSecurityTools {
     }
   }
 
-  static async getSecurityViolation(violationId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getSecurityViolation(violationId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSecurityViolation');
     let service: SecurityService | null = null;
 
@@ -610,7 +610,7 @@ export class DataCenterSecurityTools {
   static async updateSecurityViolation(
     violationId: string,
     updates: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateSecurityViolation');
     let service: SecurityService | null = null;
@@ -640,7 +640,7 @@ export class DataCenterSecurityTools {
   static async resolveSecurityViolation(
     violationId: string,
     resolution: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('resolveSecurityViolation');
     let service: SecurityService | null = null;
@@ -670,7 +670,7 @@ export class DataCenterSecurityTools {
   static async ignoreSecurityViolation(
     violationId: string,
     reason: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('ignoreSecurityViolation');
     let service: SecurityService | null = null;
@@ -697,7 +697,7 @@ export class DataCenterSecurityTools {
     }
   }
 
-  static async listSecurityScans(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async listSecurityScans(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listSecurityScans');
     let service: SecurityService | null = null;
 
@@ -735,7 +735,7 @@ export class DataCenterSecurityTools {
     }
   }
 
-  static async getSecurityScan(scanId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getSecurityScan(scanId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSecurityScan');
     let service: SecurityService | null = null;
 
@@ -761,7 +761,7 @@ export class DataCenterSecurityTools {
     }
   }
 
-  static async createSecurityScan(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async createSecurityScan(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('createSecurityScan');
     let service: SecurityService | null = null;
 
@@ -797,7 +797,7 @@ export class DataCenterSecurityTools {
     }
   }
 
-  static async startSecurityScan(scanId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async startSecurityScan(scanId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('startSecurityScan');
     let service: SecurityService | null = null;
 
@@ -823,7 +823,7 @@ export class DataCenterSecurityTools {
     }
   }
 
-  static async stopSecurityScan(scanId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async stopSecurityScan(scanId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('stopSecurityScan');
     let service: SecurityService | null = null;
 
@@ -849,7 +849,7 @@ export class DataCenterSecurityTools {
     }
   }
 
-  static async cancelSecurityScan(scanId: string, output: 'markdown' | 'json' = 'markdown') {
+  static async cancelSecurityScan(scanId: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('cancelSecurityScan');
     let service: SecurityService | null = null;
 
@@ -877,7 +877,7 @@ export class DataCenterSecurityTools {
 
   static async updateSecurityConfiguration(
     configuration: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateSecurityConfiguration');
     let service: SecurityService | null = null;
@@ -904,7 +904,7 @@ export class DataCenterSecurityTools {
     }
   }
 
-  static async getSecurityMetricsForRange(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async getSecurityMetricsForRange(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSecurityMetricsForRange');
     let service: SecurityService | null = null;
 

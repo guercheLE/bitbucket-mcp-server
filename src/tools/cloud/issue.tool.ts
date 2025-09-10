@@ -38,7 +38,7 @@ export class CloudIssueTools {
     repoSlug: string,
     page?: number,
     pagelen?: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listComponents');
     let issueService = null;
@@ -77,7 +77,7 @@ export class CloudIssueTools {
     workspace: string,
     repoSlug: string,
     componentId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getComponent');
     let issueService = null;
@@ -118,7 +118,7 @@ export class CloudIssueTools {
     pagelen?: number,
     q?: string,
     sort?: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listIssues');
     let issueService = null;
@@ -166,7 +166,7 @@ export class CloudIssueTools {
     component?: string,
     milestone?: string,
     version?: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createIssue');
     let issueService = null;
@@ -213,7 +213,7 @@ export class CloudIssueTools {
     workspace: string,
     repoSlug: string,
     issueId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getIssue');
     let issueService = null;
@@ -260,7 +260,7 @@ export class CloudIssueTools {
     milestone?: string,
     version?: string,
     state?: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateIssue');
     let issueService = null;
@@ -309,7 +309,7 @@ export class CloudIssueTools {
     workspace: string,
     repoSlug: string,
     issueId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('deleteIssue');
     let issueService = null;
@@ -349,7 +349,7 @@ export class CloudIssueTools {
     issueId: number,
     page?: number,
     pagelen?: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listIssueComments');
     let issueService = null;
@@ -391,7 +391,7 @@ export class CloudIssueTools {
     issueId: number,
     content: string,
     parent?: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createIssueComment');
     let issueService = null;
@@ -434,7 +434,7 @@ export class CloudIssueTools {
     repoSlug: string,
     issueId: number,
     commentId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getIssueComment');
     let issueService = null;
@@ -475,7 +475,7 @@ export class CloudIssueTools {
     issueId: number,
     commentId: number,
     content: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateIssueComment');
     let issueService = null;
@@ -518,7 +518,7 @@ export class CloudIssueTools {
     repoSlug: string,
     issueId: number,
     commentId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('deleteIssueComment');
     let issueService = null;
@@ -557,7 +557,7 @@ export class CloudIssueTools {
     workspace: string,
     repoSlug: string,
     issueId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('voteIssue');
     let issueService = null;
@@ -595,7 +595,7 @@ export class CloudIssueTools {
     workspace: string,
     repoSlug: string,
     issueId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('removeVoteIssue');
     let issueService = null;
@@ -633,7 +633,7 @@ export class CloudIssueTools {
     workspace: string,
     repoSlug: string,
     issueId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('watchIssue');
     let issueService = null;
@@ -671,7 +671,7 @@ export class CloudIssueTools {
     workspace: string,
     repoSlug: string,
     issueId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('stopWatchingIssue');
     let issueService = null;
@@ -710,7 +710,7 @@ export class CloudIssueTools {
     repoSlug: string,
     page?: number,
     pagelen?: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listMilestones');
     let issueService = null;
@@ -749,7 +749,7 @@ export class CloudIssueTools {
     workspace: string,
     repoSlug: string,
     milestoneId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getMilestone');
     let issueService = null;
@@ -788,7 +788,7 @@ export class CloudIssueTools {
     repoSlug: string,
     page?: number,
     pagelen?: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listVersions');
     let issueService = null;
@@ -827,7 +827,7 @@ export class CloudIssueTools {
     workspace: string,
     repoSlug: string,
     versionId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getVersion');
     let issueService = null;

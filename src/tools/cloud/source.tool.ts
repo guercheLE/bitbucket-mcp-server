@@ -72,7 +72,7 @@ export class CloudSourceTools {
     path: string,
     page?: number,
     pagelen?: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listFileHistory');
     let sourceService = null;
@@ -120,7 +120,7 @@ export class CloudSourceTools {
     workspace: string,
     repoSlug: string,
     revision?: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getRootDirectory');
     let sourceService = null;
@@ -157,7 +157,7 @@ export class CloudSourceTools {
     workspace: string,
     repoSlug: string,
     commit: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createCommit');
     let sourceService = null;
@@ -196,7 +196,7 @@ export class CloudSourceTools {
     repoSlug: string,
     commit: string,
     path: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getFileOrDirectory');
     let sourceService = null;

@@ -228,7 +228,7 @@ export class DataCenterRepositoryTools {
     description?: string,
     forkable?: boolean,
     isPublic?: boolean,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createRepository');
     let repositoryService = null;
@@ -267,7 +267,7 @@ export class DataCenterRepositoryTools {
   static async getRepository(
     projectKey: string,
     repositorySlug: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getRepository');
     let repositoryService = null;
@@ -303,7 +303,7 @@ export class DataCenterRepositoryTools {
     description?: string,
     forkable?: boolean,
     isPublic?: boolean,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateRepository');
     let repositoryService = null;
@@ -342,7 +342,7 @@ export class DataCenterRepositoryTools {
   static async deleteRepository(
     projectKey: string,
     repositorySlug: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('deleteRepository');
     let repositoryService = null;
@@ -380,7 +380,7 @@ export class DataCenterRepositoryTools {
     limit?: number,
     name?: string,
     permission?: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listRepositories');
     let repositoryService = null;
@@ -424,7 +424,7 @@ export class DataCenterRepositoryTools {
   static async getRepositoryPermissions(
     projectKey: string,
     repositorySlug: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getRepositoryPermissions');
     let repositoryService = null;
@@ -459,7 +459,7 @@ export class DataCenterRepositoryTools {
     user?: string,
     group?: string,
     permission: string = 'REPO_READ',
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('addRepositoryPermission');
     let repositoryService = null;
@@ -513,7 +513,7 @@ export class DataCenterRepositoryTools {
     user?: string,
     group?: string,
     permission: string = 'REPO_READ',
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('removeRepositoryPermission');
     let repositoryService = null;
@@ -566,7 +566,7 @@ export class DataCenterRepositoryTools {
     repositorySlug: string,
     start?: number,
     limit?: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getRepositoryBranches');
     let repositoryService = null;
@@ -610,7 +610,7 @@ export class DataCenterRepositoryTools {
     name: string,
     startPoint: string,
     message?: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createRepositoryBranch');
     let repositoryService = null;
@@ -654,7 +654,7 @@ export class DataCenterRepositoryTools {
     repositorySlug: string,
     start?: number,
     limit?: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getRepositoryTags');
     let repositoryService = null;
@@ -694,7 +694,7 @@ export class DataCenterRepositoryTools {
     name: string,
     startPoint: string,
     message?: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createRepositoryTag');
     let repositoryService = null;
@@ -733,7 +733,7 @@ export class DataCenterRepositoryTools {
   static async getRepositorySettings(
     projectKey: string,
     repositorySlug: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getRepositorySettings');
     let repositoryService = null;
@@ -764,7 +764,7 @@ export class DataCenterRepositoryTools {
     projectKey: string,
     repositorySlug: string,
     settings: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateRepositorySettings');
     let repositoryService = null;
@@ -798,7 +798,7 @@ export class DataCenterRepositoryTools {
   static async getRepositoryHooks(
     projectKey: string,
     repositorySlug: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getRepositoryHooks');
     let repositoryService = null;
@@ -829,7 +829,7 @@ export class DataCenterRepositoryTools {
     projectKey: string,
     repositorySlug: string,
     hook: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createRepositoryHook');
     let repositoryService = null;
@@ -860,7 +860,7 @@ export class DataCenterRepositoryTools {
     projectKey: string,
     repositorySlug: string,
     hookId: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getRepositoryHook');
     let repositoryService = null;
@@ -896,7 +896,7 @@ export class DataCenterRepositoryTools {
     repositorySlug: string,
     hookId: string,
     hook: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateRepositoryHook');
     let repositoryService = null;
@@ -932,7 +932,7 @@ export class DataCenterRepositoryTools {
     projectKey: string,
     repositorySlug: string,
     hookId: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('deleteRepositoryHook');
     let repositoryService = null;
@@ -962,7 +962,7 @@ export class DataCenterRepositoryTools {
   static async getRepositoryForks(
     projectKey: string,
     repositorySlug: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getRepositoryForks');
     let repositoryService = null;
@@ -993,7 +993,7 @@ export class DataCenterRepositoryTools {
     projectKey: string,
     repositorySlug: string,
     fork: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createRepositoryFork');
     let repositoryService = null;

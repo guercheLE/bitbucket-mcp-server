@@ -211,7 +211,7 @@ export class DataCenterPullRequestTools {
     this.logger.info('Data Center Pull Request tools initialized');
   }
 
-  static async createPullRequest(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async createPullRequest(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('createPullRequest');
     let service: PullRequestService | null = null;
 
@@ -245,7 +245,7 @@ export class DataCenterPullRequestTools {
     projectKey: string,
     repoSlug: string,
     pullRequestId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getPullRequest');
     let service: PullRequestService | null = null;
@@ -281,7 +281,7 @@ export class DataCenterPullRequestTools {
     repoSlug: string,
     pullRequestId: number,
     params: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updatePullRequest');
     let service: PullRequestService | null = null;
@@ -316,7 +316,7 @@ export class DataCenterPullRequestTools {
     projectKey: string,
     repoSlug: string,
     params: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listPullRequests');
     let service: PullRequestService | null = null;
@@ -351,7 +351,7 @@ export class DataCenterPullRequestTools {
     repoSlug: string,
     pullRequestId: number,
     params: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('mergePullRequest');
     let service: PullRequestService | null = null;
@@ -387,7 +387,7 @@ export class DataCenterPullRequestTools {
     repoSlug: string,
     pullRequestId: number,
     params: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('declinePullRequest');
     let service: PullRequestService | null = null;
@@ -422,7 +422,7 @@ export class DataCenterPullRequestTools {
     projectKey: string,
     repoSlug: string,
     pullRequestId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getPullRequestComments');
     let service: PullRequestService | null = null;
@@ -457,7 +457,7 @@ export class DataCenterPullRequestTools {
     projectKey: string,
     repositorySlug: string,
     pullRequestId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('deletePullRequest');
     let service: PullRequestService | null = null;
@@ -488,7 +488,7 @@ export class DataCenterPullRequestTools {
     projectKey: string,
     repositorySlug: string,
     pullRequestId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('reopenPullRequest');
     let service: PullRequestService | null = null;
@@ -522,7 +522,7 @@ export class DataCenterPullRequestTools {
     repositorySlug: string,
     pullRequestId: number,
     request: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createPullRequestComment');
     let service: PullRequestService | null = null;
@@ -564,7 +564,7 @@ export class DataCenterPullRequestTools {
     repositorySlug: string,
     pullRequestId: number,
     commentId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getPullRequestComment');
     let service: PullRequestService | null = null;
@@ -607,7 +607,7 @@ export class DataCenterPullRequestTools {
     pullRequestId: number,
     commentId: number,
     request: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updatePullRequestComment');
     let service: PullRequestService | null = null;
@@ -651,7 +651,7 @@ export class DataCenterPullRequestTools {
     repositorySlug: string,
     pullRequestId: number,
     commentId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('deletePullRequestComment');
     let service: PullRequestService | null = null;
@@ -688,7 +688,7 @@ export class DataCenterPullRequestTools {
     repositorySlug: string,
     pullRequestId: number,
     params?: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getPullRequestActivity');
     let service: PullRequestService | null = null;
@@ -730,7 +730,7 @@ export class DataCenterPullRequestTools {
     repositorySlug: string,
     pullRequestId: number,
     params?: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getPullRequestDiff');
     let service: PullRequestService | null = null;
@@ -772,7 +772,7 @@ export class DataCenterPullRequestTools {
     repositorySlug: string,
     pullRequestId: number,
     params?: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getPullRequestChanges');
     let service: PullRequestService | null = null;

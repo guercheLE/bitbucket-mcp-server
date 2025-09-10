@@ -76,7 +76,7 @@ export class DataCenterDiffTools {
     contextLines?: number,
     whitespace?: string,
     withComments?: boolean,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getPullRequestDiff');
     let pullRequestService = null;
@@ -123,7 +123,7 @@ export class DataCenterDiffTools {
     projectKey: string,
     repositorySlug: string,
     pullRequestId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getPullRequestDiffStat');
     let pullRequestService = null;
@@ -165,7 +165,7 @@ export class DataCenterDiffTools {
     projectKey: string,
     repositorySlug: string,
     pullRequestId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getPullRequestPatch');
     let pullRequestService = null;
@@ -207,7 +207,7 @@ export class DataCenterDiffTools {
     projectKey: string,
     repositorySlug: string,
     pullRequestId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getPullRequestCommits');
     let pullRequestService = null;

@@ -120,7 +120,7 @@ export class CloudScopeValidatorTools {
     this.logger.info('Cloud Scope Validator tools initialized');
   }
 
-  static async validateOAuthScopes(scopes: string, output: 'markdown' | 'json' = 'markdown') {
+  static async validateOAuthScopes(scopes: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('validateOAuthScopes');
     let service: ScopeValidatorService | null = null;
 
@@ -147,7 +147,7 @@ export class CloudScopeValidatorTools {
     }
   }
 
-  static async validateForgeAppScopes(scopes: string, output: 'markdown' | 'json' = 'markdown') {
+  static async validateForgeAppScopes(scopes: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('validateForgeAppScopes');
     let service: ScopeValidatorService | null = null;
 
@@ -176,7 +176,7 @@ export class CloudScopeValidatorTools {
 
   static async validateRepositoryAccessTokenScopes(
     scopes: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('validateRepositoryAccessTokenScopes');
     let service: ScopeValidatorService | null = null;
@@ -206,7 +206,7 @@ export class CloudScopeValidatorTools {
 
   static async validateProjectAccessTokenScopes(
     scopes: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('validateProjectAccessTokenScopes');
     let service: ScopeValidatorService | null = null;
@@ -236,7 +236,7 @@ export class CloudScopeValidatorTools {
 
   static async validateWorkspaceAccessTokenScopes(
     scopes: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('validateWorkspaceAccessTokenScopes');
     let service: ScopeValidatorService | null = null;
@@ -267,7 +267,7 @@ export class CloudScopeValidatorTools {
   static async validateAccessTokenScopesByType(
     scopes: string,
     tokenType: 'repository' | 'project' | 'workspace',
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('validateAccessTokenScopesByType');
     let service: ScopeValidatorService | null = null;
@@ -295,7 +295,7 @@ export class CloudScopeValidatorTools {
     }
   }
 
-  static async areScopesCompatible(scopes: string, output: 'markdown' | 'json' = 'markdown') {
+  static async areScopesCompatible(scopes: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('areScopesCompatible');
     let service: ScopeValidatorService | null = null;
 
@@ -324,7 +324,7 @@ export class CloudScopeValidatorTools {
 
   static async getRequiredScopesForOperation(
     operation: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getRequiredScopesForOperation');
     let service: ScopeValidatorService | null = null;
@@ -354,7 +354,7 @@ export class CloudScopeValidatorTools {
   static async hasRequiredScopes(
     tokenScopes: string,
     requiredScopes: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('hasRequiredScopes');
     let service: ScopeValidatorService | null = null;
@@ -386,7 +386,7 @@ export class CloudScopeValidatorTools {
   static async getMissingScopes(
     tokenScopes: string,
     requiredScopes: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getMissingScopes');
     let service: ScopeValidatorService | null = null;
@@ -417,7 +417,7 @@ export class CloudScopeValidatorTools {
 
   static async getScopeHierarchy(
     tokenType: 'repository' | 'project' | 'workspace',
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getScopeHierarchy');
     let service: ScopeValidatorService | null = null;
@@ -446,7 +446,7 @@ export class CloudScopeValidatorTools {
 
   static async getMinimumScopes(
     tokenType: 'repository' | 'project' | 'workspace',
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getMinimumScopes');
     let service: ScopeValidatorService | null = null;
@@ -475,7 +475,7 @@ export class CloudScopeValidatorTools {
 
   static async getMaximumScopes(
     tokenType: 'repository' | 'project' | 'workspace',
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getMaximumScopes');
     let service: ScopeValidatorService | null = null;
@@ -502,7 +502,7 @@ export class CloudScopeValidatorTools {
     }
   }
 
-  static async normalizeScopes(scopes: string, output: 'markdown' | 'json' = 'markdown') {
+  static async normalizeScopes(scopes: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('normalizeScopes');
     let service: ScopeValidatorService | null = null;
 
@@ -529,7 +529,7 @@ export class CloudScopeValidatorTools {
     }
   }
 
-  static async deduplicateScopes(scopes: string, output: 'markdown' | 'json' = 'markdown') {
+  static async deduplicateScopes(scopes: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('deduplicateScopes');
     let service: ScopeValidatorService | null = null;
 
@@ -556,7 +556,7 @@ export class CloudScopeValidatorTools {
     }
   }
 
-  static async getAllValidScopes(output: 'markdown' | 'json' = 'markdown') {
+  static async getAllValidScopes(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getAllValidScopes');
     let service: ScopeValidatorService | null = null;
 

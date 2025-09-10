@@ -83,7 +83,7 @@ export class CloudBranchRestrictionTools {
     pagelen?: number,
     kind?: string,
     pattern?: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listBranchRestrictions');
     let branchRestrictionService = null;
@@ -131,7 +131,7 @@ export class CloudBranchRestrictionTools {
     workspace: string,
     repoSlug: string,
     branchRestriction: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createBranchRestriction');
     let branchRestrictionService = null;
@@ -173,7 +173,7 @@ export class CloudBranchRestrictionTools {
     workspace: string,
     repoSlug: string,
     id: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getBranchRestriction');
     let branchRestrictionService = null;
@@ -212,7 +212,7 @@ export class CloudBranchRestrictionTools {
     repoSlug: string,
     id: string,
     branchRestriction: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateBranchRestriction');
     let branchRestrictionService = null;
@@ -256,7 +256,7 @@ export class CloudBranchRestrictionTools {
     workspace: string,
     repoSlug: string,
     id: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('deleteBranchRestriction');
     let branchRestrictionService = null;

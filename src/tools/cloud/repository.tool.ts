@@ -298,7 +298,7 @@ export class CloudRepositoryTools {
   static async getRepository(
     workspace: string,
     repoSlug: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getRepository');
     let repositoryService = null;
@@ -334,7 +334,7 @@ export class CloudRepositoryTools {
     sort?: string,
     page?: number,
     pagelen?: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listRepositories');
     let repositoryService = null;
@@ -377,7 +377,7 @@ export class CloudRepositoryTools {
     sort?: string,
     page?: number,
     pagelen?: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listWorkspaceRepositories');
     let repositoryService = null;
@@ -432,7 +432,7 @@ export class CloudRepositoryTools {
     hasWiki?: boolean,
     project?: any,
     language?: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createRepository');
     let repositoryService = null;
@@ -484,7 +484,7 @@ export class CloudRepositoryTools {
     hasWiki?: boolean,
     project?: any,
     language?: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateRepository');
     let repositoryService = null;
@@ -526,7 +526,7 @@ export class CloudRepositoryTools {
   static async deleteRepository(
     workspace: string,
     repoSlug: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('deleteRepository');
     let repositoryService = null;
@@ -567,7 +567,7 @@ export class CloudRepositoryTools {
     hasWiki?: boolean,
     project?: any,
     language?: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('forkRepository');
     let repositoryService = null;
@@ -613,7 +613,7 @@ export class CloudRepositoryTools {
     sort?: string,
     page?: number,
     pagelen?: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listRepositoryForks');
     let repositoryService = null;
@@ -664,7 +664,7 @@ export class CloudRepositoryTools {
     sort?: string,
     page?: number,
     pagelen?: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listRepositoryBranches');
     let repositoryService = null;
@@ -710,7 +710,7 @@ export class CloudRepositoryTools {
     workspace: string,
     repoSlug: string,
     branchName: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getRepositoryBranch');
     let repositoryService = null;
@@ -745,7 +745,7 @@ export class CloudRepositoryTools {
     repoSlug: string,
     name: string,
     targetHash: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createRepositoryBranch');
     let repositoryService = null;
@@ -782,7 +782,7 @@ export class CloudRepositoryTools {
     workspace: string,
     repoSlug: string,
     branchName: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('deleteRepositoryBranch');
     let repositoryService = null;
@@ -819,7 +819,7 @@ export class CloudRepositoryTools {
     sort?: string,
     page?: number,
     pagelen?: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listRepositoryTags');
     let repositoryService = null;
@@ -865,7 +865,7 @@ export class CloudRepositoryTools {
     workspace: string,
     repoSlug: string,
     tagName: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getRepositoryTag');
     let repositoryService = null;
@@ -901,7 +901,7 @@ export class CloudRepositoryTools {
     name: string,
     targetHash: string,
     message?: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createRepositoryTag');
     let repositoryService = null;
@@ -945,7 +945,7 @@ export class CloudRepositoryTools {
     workspace: string,
     repoSlug: string,
     tagName: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('deleteRepositoryTag');
     let repositoryService = null;
@@ -984,7 +984,7 @@ export class CloudRepositoryTools {
     sort?: string,
     page?: number,
     pagelen?: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listRepositoryCommits');
     let repositoryService = null;
@@ -1034,7 +1034,7 @@ export class CloudRepositoryTools {
     workspace: string,
     repoSlug: string,
     commit: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getRepositoryCommit');
     let repositoryService = null;
@@ -1067,7 +1067,7 @@ export class CloudRepositoryTools {
   static async listRepositoryWebhooks(
     workspace: string,
     repoSlug: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listRepositoryWebhooks');
     let repositoryService = null;
@@ -1101,7 +1101,7 @@ export class CloudRepositoryTools {
     workspace: string,
     repoSlug: string,
     hookUid: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getRepositoryWebhook');
     let repositoryService = null;
@@ -1138,7 +1138,7 @@ export class CloudRepositoryTools {
     description: string,
     events: string[],
     active?: boolean,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createRepositoryWebhook');
     let repositoryService = null;
@@ -1188,7 +1188,7 @@ export class CloudRepositoryTools {
     description?: string,
     events?: string[],
     active?: boolean,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateRepositoryWebhook');
     let repositoryService = null;
@@ -1235,7 +1235,7 @@ export class CloudRepositoryTools {
     workspace: string,
     repoSlug: string,
     hookUid: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('deleteRepositoryWebhook');
     let repositoryService = null;
@@ -1268,7 +1268,7 @@ export class CloudRepositoryTools {
   static async listRepositoryVariables(
     workspace: string,
     repoSlug: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listRepositoryVariables');
     let repositoryService = null;
@@ -1302,7 +1302,7 @@ export class CloudRepositoryTools {
     workspace: string,
     repoSlug: string,
     variableUuid: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getRepositoryVariable');
     let repositoryService = null;
@@ -1342,7 +1342,7 @@ export class CloudRepositoryTools {
     key: string,
     value: string,
     secured?: boolean,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createRepositoryVariable');
     let repositoryService = null;
@@ -1383,7 +1383,7 @@ export class CloudRepositoryTools {
     key?: string,
     value?: string,
     secured?: boolean,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateRepositoryVariable');
     let repositoryService = null;
@@ -1432,7 +1432,7 @@ export class CloudRepositoryTools {
     workspace: string,
     repoSlug: string,
     variableUuid: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('deleteRepositoryVariable');
     let repositoryService = null;

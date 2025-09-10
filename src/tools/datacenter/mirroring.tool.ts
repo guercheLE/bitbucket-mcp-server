@@ -125,7 +125,7 @@ export class DataCenterMirroringTools {
     this.logger.info('Data Center Mirroring tools initialized');
   }
 
-  static async listConfigurations(output: 'markdown' | 'json' = 'markdown') {
+  static async listConfigurations(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listConfigurations');
     let service: MirroringService | null = null;
 
@@ -151,7 +151,7 @@ export class DataCenterMirroringTools {
     }
   }
 
-  static async createConfiguration(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async createConfiguration(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('createConfiguration');
     let service: MirroringService | null = null;
 
@@ -180,7 +180,7 @@ export class DataCenterMirroringTools {
   static async updateConfiguration(
     configurationId: number,
     params: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateConfiguration');
     let service: MirroringService | null = null;
@@ -207,10 +207,7 @@ export class DataCenterMirroringTools {
     }
   }
 
-  static async deleteConfiguration(
-    configurationId: number,
-    output: 'markdown' | 'json' = 'markdown'
-  ) {
+  static async deleteConfiguration(configurationId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('deleteConfiguration');
     let service: MirroringService | null = null;
 
@@ -236,7 +233,7 @@ export class DataCenterMirroringTools {
     }
   }
 
-  static async startSync(configurationId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async startSync(configurationId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('startSync');
     let service: MirroringService | null = null;
 
@@ -262,7 +259,7 @@ export class DataCenterMirroringTools {
     }
   }
 
-  static async getSyncResults(configurationId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async getSyncResults(configurationId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getSyncResults');
     let service: MirroringService | null = null;
 
@@ -288,7 +285,7 @@ export class DataCenterMirroringTools {
     }
   }
 
-  static async getConfiguration(mirrorId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async getConfiguration(mirrorId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getConfiguration');
     let service: MirroringService | null = null;
 
@@ -314,7 +311,7 @@ export class DataCenterMirroringTools {
     }
   }
 
-  static async stopSync(mirrorId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async stopSync(mirrorId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('stopSync');
     let service: MirroringService | null = null;
 
@@ -343,7 +340,7 @@ export class DataCenterMirroringTools {
   static async getSyncResult(
     mirrorId: number,
     syncResultId: number,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getSyncResult');
     let service: MirroringService | null = null;
@@ -370,7 +367,7 @@ export class DataCenterMirroringTools {
     }
   }
 
-  static async listUpstreamMirrors(params?: any, output: 'markdown' | 'json' = 'markdown') {
+  static async listUpstreamMirrors(params?: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listUpstreamMirrors');
     let service: MirroringService | null = null;
 
@@ -396,7 +393,7 @@ export class DataCenterMirroringTools {
     }
   }
 
-  static async createUpstreamMirror(request: any, output: 'markdown' | 'json' = 'markdown') {
+  static async createUpstreamMirror(request: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('createUpstreamMirror');
     let service: MirroringService | null = null;
 
@@ -422,7 +419,7 @@ export class DataCenterMirroringTools {
     }
   }
 
-  static async getUpstreamMirror(mirrorId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async getUpstreamMirror(mirrorId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getUpstreamMirror');
     let service: MirroringService | null = null;
 
@@ -451,7 +448,7 @@ export class DataCenterMirroringTools {
   static async updateUpstreamMirror(
     mirrorId: number,
     request: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateUpstreamMirror');
     let service: MirroringService | null = null;
@@ -478,7 +475,7 @@ export class DataCenterMirroringTools {
     }
   }
 
-  static async deleteUpstreamMirror(mirrorId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async deleteUpstreamMirror(mirrorId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('deleteUpstreamMirror');
     let service: MirroringService | null = null;
 
@@ -504,7 +501,7 @@ export class DataCenterMirroringTools {
     }
   }
 
-  static async startUpstreamMirrorSync(mirrorId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async startUpstreamMirrorSync(mirrorId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('startUpstreamMirrorSync');
     let service: MirroringService | null = null;
 
@@ -530,7 +527,7 @@ export class DataCenterMirroringTools {
     }
   }
 
-  static async stopUpstreamMirrorSync(mirrorId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async stopUpstreamMirrorSync(mirrorId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('stopUpstreamMirrorSync');
     let service: MirroringService | null = null;
 

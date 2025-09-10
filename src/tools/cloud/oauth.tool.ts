@@ -202,7 +202,7 @@ export class CloudOAuthTools {
     this.logger.info('Cloud OAuth tools initialized');
   }
 
-  static async generateAuthorizationUrl(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async generateAuthorizationUrl(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('generateAuthorizationUrl');
     let service: OAuthService | null = null;
 
@@ -234,10 +234,7 @@ export class CloudOAuthTools {
     }
   }
 
-  static async generateAuthorizationUrlWithPKCE(
-    params: any,
-    output: 'markdown' | 'json' = 'markdown'
-  ) {
+  static async generateAuthorizationUrlWithPKCE(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('generateAuthorizationUrlWithPKCE');
     let service: OAuthService | null = null;
 
@@ -269,7 +266,7 @@ export class CloudOAuthTools {
     }
   }
 
-  static async exchangeCodeForToken(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async exchangeCodeForToken(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('exchangeCodeForToken');
     let service: OAuthService | null = null;
 
@@ -298,7 +295,7 @@ export class CloudOAuthTools {
     }
   }
 
-  static async generateImplicitGrantUrl(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async generateImplicitGrantUrl(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('generateImplicitGrantUrl');
     let service: OAuthService | null = null;
 
@@ -330,7 +327,7 @@ export class CloudOAuthTools {
     }
   }
 
-  static async parseImplicitGrantResponse(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async parseImplicitGrantResponse(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('parseImplicitGrantResponse');
     let service: OAuthService | null = null;
 
@@ -358,7 +355,7 @@ export class CloudOAuthTools {
     }
   }
 
-  static async refreshAccessToken(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async refreshAccessToken(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('refreshAccessToken');
     let service: OAuthService | null = null;
 
@@ -386,7 +383,7 @@ export class CloudOAuthTools {
     }
   }
 
-  static async getClientCredentialsToken(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async getClientCredentialsToken(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getClientCredentialsToken');
     let service: OAuthService | null = null;
 
@@ -414,7 +411,7 @@ export class CloudOAuthTools {
     }
   }
 
-  static async exchangeJWTForToken(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async exchangeJWTForToken(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('exchangeJWTForToken');
     let service: OAuthService | null = null;
 
@@ -442,7 +439,7 @@ export class CloudOAuthTools {
     }
   }
 
-  static async revokeToken(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async revokeToken(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('revokeToken');
     let service: OAuthService | null = null;
 
@@ -471,7 +468,7 @@ export class CloudOAuthTools {
     }
   }
 
-  static async introspectToken(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async introspectToken(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('introspectToken');
     let service: OAuthService | null = null;
 
@@ -500,7 +497,7 @@ export class CloudOAuthTools {
     }
   }
 
-  static async validateToken(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async validateToken(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('validateToken');
     let service: OAuthService | null = null;
 
@@ -528,7 +525,7 @@ export class CloudOAuthTools {
     }
   }
 
-  static async getAuthorizationServerMetadata(output: 'markdown' | 'json' = 'markdown') {
+  static async getAuthorizationServerMetadata(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getAuthorizationServerMetadata');
     let service: OAuthService | null = null;
 
@@ -554,7 +551,7 @@ export class CloudOAuthTools {
     }
   }
 
-  static async startDeviceFlow(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async startDeviceFlow(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('startDeviceFlow');
     let service: OAuthService | null = null;
 
@@ -582,7 +579,7 @@ export class CloudOAuthTools {
     }
   }
 
-  static async pollDeviceFlowToken(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async pollDeviceFlowToken(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('pollDeviceFlowToken');
     let service: OAuthService | null = null;
 
@@ -611,7 +608,7 @@ export class CloudOAuthTools {
     }
   }
 
-  static async createSession(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async createSession(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('createSession');
     let service: OAuthService | null = null;
 
@@ -639,7 +636,7 @@ export class CloudOAuthTools {
     }
   }
 
-  static async isSessionExpired(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async isSessionExpired(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('isSessionExpired');
     let service: OAuthService | null = null;
 
@@ -667,7 +664,7 @@ export class CloudOAuthTools {
     }
   }
 
-  static async refreshSessionIfNeeded(params: any, output: 'markdown' | 'json' = 'markdown') {
+  static async refreshSessionIfNeeded(params: any, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('refreshSessionIfNeeded');
     let service: OAuthService | null = null;
 

@@ -117,7 +117,7 @@ export class CloudRefTools {
     pagelen?: number,
     q?: string,
     sort?: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listRefs');
     let refService = null;
@@ -161,7 +161,7 @@ export class CloudRefTools {
     pagelen?: number,
     q?: string,
     sort?: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listBranches');
     let refService = null;
@@ -202,7 +202,7 @@ export class CloudRefTools {
     workspace: string,
     repoSlug: string,
     branch: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createBranch');
     let refService = null;
@@ -240,7 +240,7 @@ export class CloudRefTools {
     workspace: string,
     repoSlug: string,
     name: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getBranch');
     let refService = null;
@@ -278,7 +278,7 @@ export class CloudRefTools {
     workspace: string,
     repoSlug: string,
     name: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('deleteBranch');
     let refService = null;
@@ -319,7 +319,7 @@ export class CloudRefTools {
     pagelen?: number,
     q?: string,
     sort?: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listTags');
     let refService = null;
@@ -360,7 +360,7 @@ export class CloudRefTools {
     workspace: string,
     repoSlug: string,
     tag: any,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createTag');
     let refService = null;
@@ -398,7 +398,7 @@ export class CloudRefTools {
     workspace: string,
     repoSlug: string,
     name: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('getTag');
     let refService = null;
@@ -436,7 +436,7 @@ export class CloudRefTools {
     workspace: string,
     repoSlug: string,
     name: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('deleteTag');
     let refService = null;

@@ -189,7 +189,7 @@ export class DataCenterBuildsTools {
     name: string,
     planKey: string,
     request: { branch?: string; commit?: string },
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createBuild');
     let service: BuildsService | null = null;
@@ -228,7 +228,7 @@ export class DataCenterBuildsTools {
   /**
    * Get build by ID
    */
-  static async getBuild(buildId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async getBuild(buildId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getBuild');
     let service: BuildsService | null = null;
 
@@ -261,7 +261,7 @@ export class DataCenterBuildsTools {
     buildId: number,
     name: string,
     description: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateBuild');
     let service: BuildsService | null = null;
@@ -294,7 +294,7 @@ export class DataCenterBuildsTools {
   /**
    * Delete build
    */
-  static async deleteBuild(buildId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async deleteBuild(buildId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('deleteBuild');
     let service: BuildsService | null = null;
 
@@ -323,7 +323,7 @@ export class DataCenterBuildsTools {
   /**
    * List builds
    */
-  static async listBuilds(output: 'markdown' | 'json' = 'markdown') {
+  static async listBuilds(output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('listBuilds');
     let service: BuildsService | null = null;
 
@@ -352,7 +352,7 @@ export class DataCenterBuildsTools {
   /**
    * Start build
    */
-  static async startBuild(buildId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async startBuild(buildId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('startBuild');
     let service: BuildsService | null = null;
 
@@ -381,7 +381,7 @@ export class DataCenterBuildsTools {
   /**
    * Stop build
    */
-  static async stopBuild(buildId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async stopBuild(buildId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('stopBuild');
     let service: BuildsService | null = null;
 
@@ -416,7 +416,7 @@ export class DataCenterBuildsTools {
     projectKey: string,
     repositorySlug: string,
     description: string | undefined,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createBuildPlan');
     let service: BuildsService | null = null;
@@ -457,7 +457,7 @@ export class DataCenterBuildsTools {
   /**
    * Get build plan by key
    */
-  static async getBuildPlan(planKey: string, output: 'markdown' | 'json' = 'markdown') {
+  static async getBuildPlan(planKey: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getBuildPlan');
     let service: BuildsService | null = null;
 
@@ -490,7 +490,7 @@ export class DataCenterBuildsTools {
     planKey: string,
     name: string | undefined,
     description: string | undefined,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateBuildPlan');
     let service: BuildsService | null = null;
@@ -523,7 +523,7 @@ export class DataCenterBuildsTools {
   /**
    * Delete build plan
    */
-  static async deleteBuildPlan(planKey: string, output: 'markdown' | 'json' = 'markdown') {
+  static async deleteBuildPlan(planKey: string, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('deleteBuildPlan');
     let service: BuildsService | null = null;
 
@@ -557,7 +557,7 @@ export class DataCenterBuildsTools {
     repositorySlug: string | undefined,
     start: number | undefined,
     limit: number | undefined,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listBuildPlans');
     let service: BuildsService | null = null;
@@ -602,7 +602,7 @@ export class DataCenterBuildsTools {
     name: string,
     environmentId: number,
     buildKey: string,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createDeployment');
     let service: BuildsService | null = null;
@@ -640,7 +640,7 @@ export class DataCenterBuildsTools {
   /**
    * Get deployment by ID
    */
-  static async getDeployment(deploymentId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async getDeployment(deploymentId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getDeployment');
     let service: BuildsService | null = null;
 
@@ -673,7 +673,7 @@ export class DataCenterBuildsTools {
     deploymentId: number,
     name: string | undefined,
     description: string | undefined,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateDeployment');
     let service: BuildsService | null = null;
@@ -706,7 +706,7 @@ export class DataCenterBuildsTools {
   /**
    * Delete deployment
    */
-  static async deleteDeployment(deploymentId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async deleteDeployment(deploymentId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('deleteDeployment');
     let service: BuildsService | null = null;
 
@@ -740,7 +740,7 @@ export class DataCenterBuildsTools {
     status: string | undefined,
     start: number | undefined,
     limit: number | undefined,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listDeployments');
     let service: BuildsService | null = null;
@@ -780,7 +780,7 @@ export class DataCenterBuildsTools {
   /**
    * Start deployment
    */
-  static async startDeployment(deploymentId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async startDeployment(deploymentId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('startDeployment');
     let service: BuildsService | null = null;
 
@@ -809,7 +809,7 @@ export class DataCenterBuildsTools {
   /**
    * Stop deployment
    */
-  static async stopDeployment(deploymentId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async stopDeployment(deploymentId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('stopDeployment');
     let service: BuildsService | null = null;
 
@@ -842,7 +842,7 @@ export class DataCenterBuildsTools {
   static async createEnvironment(
     name: string,
     description: string | undefined,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('createEnvironment');
     let service: BuildsService | null = null;
@@ -877,7 +877,7 @@ export class DataCenterBuildsTools {
   /**
    * Get environment by ID
    */
-  static async getEnvironment(environmentId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async getEnvironment(environmentId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('getEnvironment');
     let service: BuildsService | null = null;
 
@@ -910,7 +910,7 @@ export class DataCenterBuildsTools {
     environmentId: number,
     name: string | undefined,
     description: string | undefined,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('updateEnvironment');
     let service: BuildsService | null = null;
@@ -943,7 +943,7 @@ export class DataCenterBuildsTools {
   /**
    * Delete environment
    */
-  static async deleteEnvironment(environmentId: number, output: 'markdown' | 'json' = 'markdown') {
+  static async deleteEnvironment(environmentId: number, output: 'markdown' | 'json' = 'json') {
     const methodLogger = this.logger.forMethod('deleteEnvironment');
     let service: BuildsService | null = null;
 
@@ -975,7 +975,7 @@ export class DataCenterBuildsTools {
   static async listEnvironments(
     start: number | undefined,
     limit: number | undefined,
-    output: 'markdown' | 'json' = 'markdown'
+    output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('listEnvironments');
     let service: BuildsService | null = null;
