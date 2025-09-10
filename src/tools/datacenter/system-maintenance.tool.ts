@@ -1024,7 +1024,7 @@ export class DataCenterSystemMaintenanceTools {
 
     // Get System Status
     server.registerTool(
-      'system_maintenance_get_system_status',
+      'maintenance_get_system_status',
       {
         description: `Obtém status do sistema no Bitbucket Data Center.
 
@@ -1044,7 +1044,7 @@ export class DataCenterSystemMaintenanceTools {
 
     // Get System Configuration
     server.registerTool(
-      'system_maintenance_get_system_configuration',
+      'maintenance_get_system_configuration',
       {
         description: `Obtém configuração do sistema no Bitbucket Data Center.
 
@@ -1064,7 +1064,7 @@ export class DataCenterSystemMaintenanceTools {
 
     // Get System Metrics
     server.registerTool(
-      'system_maintenance_get_system_metrics',
+      'maintenance_get_system_metrics',
       {
         description: `Obtém métricas do sistema no Bitbucket Data Center.
 
@@ -1100,7 +1100,7 @@ export class DataCenterSystemMaintenanceTools {
 
     // List Maintenance Tasks
     server.registerTool(
-      'system_maintenance_list_maintenance_tasks',
+      'maintenance_list_tasks',
       {
         description: `Lista tarefas de manutenção no Bitbucket Data Center.
 
@@ -1136,7 +1136,7 @@ export class DataCenterSystemMaintenanceTools {
 
     // Create Maintenance Task
     server.registerTool(
-      'system_maintenance_create_maintenance_task',
+      'maintenance_create_task',
       {
         description: `Cria uma nova tarefa de manutenção no Bitbucket Data Center.
 
@@ -1172,7 +1172,7 @@ export class DataCenterSystemMaintenanceTools {
 
     // Get Maintenance Task
     server.registerTool(
-      'system_maintenance_get_maintenance_task',
+      'maintenance_get_task',
       {
         description: `Obtém uma tarefa de manutenção específica no Bitbucket Data Center.
 
@@ -1195,7 +1195,7 @@ export class DataCenterSystemMaintenanceTools {
 
     // Update Maintenance Task
     server.registerTool(
-      'system_maintenance_update_maintenance_task',
+      'maintenance_update_task',
       {
         description: `Atualiza uma tarefa de manutenção no Bitbucket Data Center.
 
@@ -1223,7 +1223,7 @@ export class DataCenterSystemMaintenanceTools {
 
     // Delete Maintenance Task
     server.registerTool(
-      'system_maintenance_delete_maintenance_task',
+      'maintenance_delete_task',
       {
         description: `Remove uma tarefa de manutenção no Bitbucket Data Center.
 
@@ -1246,7 +1246,7 @@ export class DataCenterSystemMaintenanceTools {
 
     // Start Maintenance Task
     server.registerTool(
-      'system_maintenance_start_maintenance_task',
+      'maintenance_start_task',
       {
         description: `Inicia uma tarefa de manutenção no Bitbucket Data Center.
 
@@ -1269,7 +1269,7 @@ export class DataCenterSystemMaintenanceTools {
 
     // Stop Maintenance Task
     server.registerTool(
-      'system_maintenance_stop_maintenance_task',
+      'maintenance_stop_task',
       {
         description: `Para uma tarefa de manutenção no Bitbucket Data Center.
 
@@ -1292,7 +1292,7 @@ export class DataCenterSystemMaintenanceTools {
 
     // Pause Maintenance Task
     server.registerTool(
-      'system_maintenance_pause_maintenance_task',
+      'maintenance_pause_task',
       {
         description: `Pausa uma tarefa de manutenção no Bitbucket Data Center.
 
@@ -1315,7 +1315,7 @@ export class DataCenterSystemMaintenanceTools {
 
     // Resume Maintenance Task
     server.registerTool(
-      'system_maintenance_resume_maintenance_task',
+      'maintenance_resume_task',
       {
         description: `Retoma uma tarefa de manutenção no Bitbucket Data Center.
 
@@ -1338,7 +1338,7 @@ export class DataCenterSystemMaintenanceTools {
 
     // Get Maintenance Task Logs
     server.registerTool(
-      'system_maintenance_get_maintenance_task_logs',
+      'maintenance_get_task_logs',
       {
         description: `Obtém logs de uma tarefa de manutenção no Bitbucket Data Center.
 
@@ -1376,7 +1376,7 @@ export class DataCenterSystemMaintenanceTools {
 
     // Get Maintenance Task History
     server.registerTool(
-      'system_maintenance_get_maintenance_task_history',
+      'maintenance_get_task_history',
       {
         description: `Obtém histórico de uma tarefa de manutenção no Bitbucket Data Center.
 
@@ -1414,7 +1414,7 @@ export class DataCenterSystemMaintenanceTools {
 
     // Get Maintenance Task Status
     server.registerTool(
-      'system_maintenance_get_maintenance_task_status',
+      'maintenance_get_task_status',
       {
         description: `Obtém status de uma tarefa de manutenção no Bitbucket Data Center.
 
@@ -1437,7 +1437,7 @@ export class DataCenterSystemMaintenanceTools {
 
     // Get Maintenance Task Progress
     server.registerTool(
-      'system_maintenance_get_maintenance_task_progress',
+      'maintenance_get_task_progress',
       {
         description: `Obtém progresso de uma tarefa de manutenção no Bitbucket Data Center.
 
@@ -1463,7 +1463,7 @@ export class DataCenterSystemMaintenanceTools {
 
     // Get Maintenance Task Results
     server.registerTool(
-      'system_maintenance_get_maintenance_task_results',
+      'maintenance_get_task_results',
       {
         description: `Obtém resultados de uma tarefa de manutenção no Bitbucket Data Center.
 
@@ -1501,7 +1501,7 @@ export class DataCenterSystemMaintenanceTools {
 
     // Get Maintenance Task Schedule
     server.registerTool(
-      'system_maintenance_get_maintenance_task_schedule',
+      'maintenance_get_task_schedule',
       {
         description: `Obtém agendamento de uma tarefa de manutenção no Bitbucket Data Center.
 
@@ -1527,7 +1527,7 @@ export class DataCenterSystemMaintenanceTools {
 
     // Update Maintenance Task Schedule
     server.registerTool(
-      'system_maintenance_update_maintenance_task_schedule',
+      'maintenance_update_task_schedule',
       {
         description: `Atualiza agendamento de uma tarefa de manutenção no Bitbucket Data Center.
 
@@ -1555,7 +1555,7 @@ export class DataCenterSystemMaintenanceTools {
 
     // Get Maintenance Task Dependencies
     server.registerTool(
-      'system_maintenance_get_maintenance_task_dependencies',
+      'maintenance_get_task_dependencies',
       {
         description: `Obtém dependências de uma tarefa de manutenção no Bitbucket Data Center.
 
@@ -1581,7 +1581,7 @@ export class DataCenterSystemMaintenanceTools {
 
     // Add Maintenance Task Dependency
     server.registerTool(
-      'system_maintenance_add_maintenance_task_dependency',
+      'maintenance_add_task_dependency',
       {
         description: `Adiciona dependência a uma tarefa de manutenção no Bitbucket Data Center.
 
@@ -1609,7 +1609,7 @@ export class DataCenterSystemMaintenanceTools {
 
     // Remove Maintenance Task Dependency
     server.registerTool(
-      'system_maintenance_remove_maintenance_task_dependency',
+      'maintenance_remove_task_dependency',
       {
         description: `Remove dependência de uma tarefa de manutenção no Bitbucket Data Center.
 
@@ -1637,7 +1637,7 @@ export class DataCenterSystemMaintenanceTools {
 
     // Get Maintenance Task Notifications
     server.registerTool(
-      'system_maintenance_get_maintenance_task_notifications',
+      'maintenance_get_task_notifications',
       {
         description: `Obtém notificações de uma tarefa de manutenção no Bitbucket Data Center.
 
@@ -1663,7 +1663,7 @@ export class DataCenterSystemMaintenanceTools {
 
     // Update Maintenance Task Notifications
     server.registerTool(
-      'system_maintenance_update_maintenance_task_notifications',
+      'maintenance_update_task_notifications',
       {
         description: `Atualiza notificações de uma tarefa de manutenção no Bitbucket Data Center.
 
@@ -1691,7 +1691,7 @@ export class DataCenterSystemMaintenanceTools {
 
     // Get Maintenance Task Metrics
     server.registerTool(
-      'system_maintenance_get_maintenance_task_metrics',
+      'maintenance_get_task_metrics',
       {
         description: `Obtém métricas de uma tarefa de manutenção no Bitbucket Data Center.
 
@@ -1729,7 +1729,7 @@ export class DataCenterSystemMaintenanceTools {
 
     // Get Maintenance Task Reports
     server.registerTool(
-      'system_maintenance_get_maintenance_task_reports',
+      'maintenance_get_task_reports',
       {
         description: `Obtém relatórios de uma tarefa de manutenção no Bitbucket Data Center.
 
@@ -1767,7 +1767,7 @@ export class DataCenterSystemMaintenanceTools {
 
     // Generate Maintenance Task Report
     server.registerTool(
-      'system_maintenance_generate_maintenance_task_report',
+      'maintenance_generate_task_report',
       {
         description: `Gera relatório de uma tarefa de manutenção no Bitbucket Data Center.
 

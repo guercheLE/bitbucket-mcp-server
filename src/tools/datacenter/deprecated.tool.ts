@@ -667,7 +667,7 @@ export class DataCenterDeprecatedTools {
 
     // Get Deprecated Endpoint
     server.registerTool(
-      'datacenter_get_deprecated_endpoint',
+      'deprecated_get_endpoint',
       {
         description: `Obtém um endpoint depreciado específico no Bitbucket Data Center.
 
@@ -695,7 +695,7 @@ export class DataCenterDeprecatedTools {
 
     // Get Deprecated Endpoint Usage
     server.registerTool(
-      'datacenter_get_deprecated_endpoint_usage',
+      'deprecated_get_endpoint_usage',
       {
         description: `Obtém uso de endpoint depreciado no Bitbucket Data Center.
 
@@ -733,7 +733,7 @@ export class DataCenterDeprecatedTools {
 
     // Get Deprecated Feature
     server.registerTool(
-      'datacenter_get_deprecated_feature',
+      'deprecated_get_feature',
       {
         description: `Obtém uma funcionalidade depreciada específica no Bitbucket Data Center.
 
@@ -756,7 +756,7 @@ export class DataCenterDeprecatedTools {
 
     // Get Deprecated API Versions
     server.registerTool(
-      'datacenter_get_deprecated_api_versions',
+      'deprecated_get_api_versions',
       {
         description: `Obtém versões de API depreciadas no Bitbucket Data Center.
 
@@ -790,7 +790,7 @@ export class DataCenterDeprecatedTools {
 
     // Get Deprecated API Version
     server.registerTool(
-      'datacenter_get_deprecated_api_version',
+      'deprecated_get_api_version',
       {
         description: `Obtém uma versão de API depreciada específica no Bitbucket Data Center.
 
@@ -813,7 +813,7 @@ export class DataCenterDeprecatedTools {
 
     // Get Deprecation Notice
     server.registerTool(
-      'datacenter_get_deprecation_notice',
+      'deprecated_get_deprecation_notice',
       {
         description: `Obtém um aviso de depreciação específico no Bitbucket Data Center.
 
@@ -836,7 +836,7 @@ export class DataCenterDeprecatedTools {
 
     // Get Resource Deprecation Timeline
     server.registerTool(
-      'datacenter_get_resource_deprecation_timeline',
+      'deprecated_get_resource_deprecation_timeline',
       {
         description: `Obtém cronograma de depreciação de recurso no Bitbucket Data Center.
 
@@ -862,7 +862,7 @@ export class DataCenterDeprecatedTools {
 
     // Check Endpoint Deprecation
     server.registerTool(
-      'datacenter_check_endpoint_deprecation',
+      'deprecated_check_endpoint_deprecation',
       {
         description: `Verifica status de depreciação de endpoint no Bitbucket Data Center.
 
@@ -890,7 +890,7 @@ export class DataCenterDeprecatedTools {
 
     // Get Migration Recommendations
     server.registerTool(
-      'datacenter_get_migration_recommendations',
+      'deprecated_get_migration_recommendations',
       {
         description: `Obtém recomendações de migração no Bitbucket Data Center.
 
