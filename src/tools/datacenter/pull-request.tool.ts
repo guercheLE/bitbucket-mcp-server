@@ -488,6 +488,7 @@ export class DataCenterPullRequestTools {
     projectKey: string,
     repositorySlug: string,
     pullRequestId: number,
+    params: any,
     output: 'markdown' | 'json' = 'json'
   ) {
     const methodLogger = this.logger.forMethod('reopenPullRequest');
@@ -497,9 +498,12 @@ export class DataCenterPullRequestTools {
       service = await this.pullRequestServicePool.acquire();
       methodLogger.debug('Reopening pull request:', { projectKey, repositorySlug, pullRequestId });
 
-      const result = await service.reopenPullRequest(projectKey, repositorySlug, pullRequestId, {
-        version: 0,
-      });
+      const result = await service.reopenPullRequest(
+        projectKey,
+        repositorySlug,
+        pullRequestId,
+        params
+      );
 
       methodLogger.info('Successfully reopened pull request');
       return createMcpResponse(result, output);
@@ -1031,11 +1035,24 @@ export class DataCenterPullRequestTools {
       },
       async (params: z.infer<typeof MergePullRequestSchema>) => {
         const validatedParams = MergePullRequestSchema.parse(params);
+
+        // First get the pull request to obtain the version
+        const pr = await this.getPullRequest(
+          validatedParams.project_key,
+          validatedParams.repo_slug,
+          validatedParams.pull_request_id,
+          'json'
+        );
+
+        // Extract version from the pull request response
+        const prData = JSON.parse(pr.content[0]?.text || '{}');
+
         return await this.mergePullRequest(
           validatedParams.project_key,
           validatedParams.repo_slug,
           validatedParams.pull_request_id,
           {
+            version: prData.version,
             mergeStrategy: validatedParams.merge_strategy as any,
           } as any,
           validatedParams.output
@@ -1066,11 +1083,24 @@ export class DataCenterPullRequestTools {
       },
       async (params: z.infer<typeof DeclinePullRequestSchema>) => {
         const validatedParams = DeclinePullRequestSchema.parse(params);
+
+        // First get the pull request to obtain the version
+        const pr = await this.getPullRequest(
+          validatedParams.project_key,
+          validatedParams.repo_slug,
+          validatedParams.pull_request_id,
+          'json'
+        );
+
+        // Extract version from the pull request response
+        const prData = JSON.parse(pr.content[0]?.text || '{}');
+
         return await this.declinePullRequest(
           validatedParams.project_key,
           validatedParams.repo_slug,
           validatedParams.pull_request_id,
           {
+            version: prData.version,
             message: validatedParams.reason,
           },
           validatedParams.output
@@ -1100,10 +1130,25 @@ export class DataCenterPullRequestTools {
       },
       async (params: z.infer<typeof ReopenPullRequestDataCenterSchema>) => {
         const validatedParams = ReopenPullRequestDataCenterSchema.parse(params);
+
+        // First get the pull request to obtain the version
+        const pr = await this.getPullRequest(
+          validatedParams.projectKey,
+          validatedParams.repositorySlug,
+          validatedParams.pullRequestId,
+          'json'
+        );
+
+        // Extract version from the pull request response
+        const prData = JSON.parse(pr.content[0]?.text || '{}');
+
         return await this.reopenPullRequest(
           validatedParams.projectKey,
           validatedParams.repositorySlug,
           validatedParams.pullRequestId,
+          {
+            version: prData.version,
+          },
           validatedParams.output
         );
       }
