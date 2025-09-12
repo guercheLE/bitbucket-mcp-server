@@ -1,0 +1,2268 @@
+openapi: 3.0.3
+info:
+  title: Bitbucket MCP CLI Commands API
+  description: API dos comandos CLI do cliente console integrado
+  version: 1.0.0
+
+paths:
+  /cli/auth/login:
+    post:
+      summary: Autenticar no Bitbucket
+      description: Autentica no servidor Bitbucket usando método configurado
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                method:
+                  type: string
+                  enum: [oauth, app_password, api_token, basic]
+                  description: Método de autenticação
+                credentials:
+                  type: object
+                  description: Credenciais baseadas no método
+              required:
+                - method
+                - credentials
+      responses:
+        '200':
+          description: Autenticação bem-sucedida
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Credenciais inválidas
+        '400':
+          description: Método de autenticação inválido
+
+  /cli/auth/logout:
+    post:
+      summary: Desautenticar
+      description: Remove credenciais de autenticação
+      responses:
+        '200':
+          description: Logout bem-sucedido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+
+  /cli/repository/list:
+    get:
+      summary: Listar repositórios
+      description: Lista repositórios do workspace/projeto
+      parameters:
+        - name: workspace
+          in: query
+          schema:
+            type: string
+          description: Workspace (Cloud) ou Project (Data Center)
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+          description: Limite de resultados
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Página
+      responses:
+        '200':
+          description: Lista de repositórios
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  repositories:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Repository'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+  /cli/repository/create:
+    post:
+      summary: Criar repositório
+      description: Cria um novo repositório
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Nome do repositório
+                description:
+                  type: string
+                  description: Descrição do repositório
+                isPrivate:
+                  type: boolean
+                  default: true
+                  description: Se o repositório é privado
+                workspace:
+                  type: string
+                  description: Workspace (Cloud) ou Project (Data Center)
+              required:
+                - name
+                - workspace
+      responses:
+        '201':
+          description: Repositório criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Repository'
+        '400':
+          description: Dados inválidos
+        '409':
+          description: Repositório já existe
+
+  /cli/repository/get:
+    get:
+      summary: Obter repositório
+      description: Obtém informações de um repositório específico
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Workspace (Cloud) ou Project (Data Center)
+        - name: repository
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Nome do repositório
+      responses:
+        '200':
+          description: Informações do repositório
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Repository'
+        '404':
+          description: Repositório não encontrado
+
+  /cli/repository/update:
+    put:
+      summary: Atualizar repositório
+      description: Atualiza informações de um repositório
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: repository
+          in: query
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                isPrivate:
+                  type: boolean
+      responses:
+        '200':
+          description: Repositório atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Repository'
+        '404':
+          description: Repositório não encontrado
+
+  /cli/repository/delete:
+    delete:
+      summary: Deletar repositório
+      description: Remove um repositório
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: repository
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Repositório deletado
+        '404':
+          description: Repositório não encontrado
+
+  /cli/pull-request/list:
+    get:
+      summary: Listar pull requests
+      description: Lista pull requests de um repositório
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: repository
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: state
+          in: query
+          schema:
+            type: string
+            enum: [open, merged, declined, superseded]
+          description: Estado do pull request
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Lista de pull requests
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pullRequests:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PullRequest'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+  /cli/pull-request/create:
+    post:
+      summary: Criar pull request
+      description: Cria um novo pull request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Título do pull request
+                description:
+                  type: string
+                  description: Descrição do pull request
+                sourceBranch:
+                  type: string
+                  description: Branch de origem
+                destinationBranch:
+                  type: string
+                  description: Branch de destino
+                workspace:
+                  type: string
+                  description: Workspace (Cloud) ou Project (Data Center)
+                repository:
+                  type: string
+                  description: Nome do repositório
+                reviewers:
+                  type: array
+                  items:
+                    type: string
+                  description: Lista de revisores
+              required:
+                - title
+                - sourceBranch
+                - destinationBranch
+                - workspace
+                - repository
+      responses:
+        '201':
+          description: Pull request criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PullRequest'
+        '400':
+          description: Dados inválidos
+
+  /cli/pull-request/merge:
+    post:
+      summary: Fazer merge do pull request
+      description: Faz merge de um pull request
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: repository
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: pullRequestId
+          in: query
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mergeStrategy:
+                  type: string
+                  enum: [merge_commit, squash, fast_forward]
+                  default: merge_commit
+                message:
+                  type: string
+                  description: Mensagem de merge
+      responses:
+        '200':
+          description: Merge realizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PullRequest'
+        '404':
+          description: Pull request não encontrado
+        '409':
+          description: Não é possível fazer merge
+
+  /cli/project/list:
+    get:
+      summary: Listar projetos (Data Center)
+      description: Lista projetos do Data Center
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+      responses:
+        '200':
+          description: Lista de projetos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  projects:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Project'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          description: Operação não suportada (Cloud)
+
+  /cli/issue/list:
+    get:
+      summary: Listar issues (Cloud)
+      description: Lista issues de um repositório
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: repository
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: state
+          in: query
+          schema:
+            type: string
+            enum: [new, open, resolved, on_hold, invalid, duplicate, wontfix, closed]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Lista de issues
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  issues:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Issue'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          description: Operação não suportada (Data Center)
+
+  /cli/branch/list:
+    get:
+      summary: Listar branches
+      description: Lista branches de um repositório
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: repository
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Lista de branches
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  branches:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Branch'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+  /cli/branch/create:
+    post:
+      summary: Criar branch
+      description: Cria uma nova branch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Nome da branch
+                startPoint:
+                  type: string
+                  description: Ponto de partida (commit ou branch)
+                workspace:
+                  type: string
+                  description: Workspace (Cloud) ou Project (Data Center)
+                repository:
+                  type: string
+                  description: Nome do repositório
+              required:
+                - name
+                - startPoint
+                - workspace
+                - repository
+      responses:
+        '201':
+          description: Branch criada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Branch'
+        '400':
+          description: Dados inválidos
+
+  /cli/tag/list:
+    get:
+      summary: Listar tags
+      description: Lista tags de um repositório
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: repository
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Lista de tags
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tags:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tag'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+  /cli/tag/create:
+    post:
+      summary: Criar tag
+      description: Cria uma nova tag
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Nome da tag
+                startPoint:
+                  type: string
+                  description: Ponto de partida (commit ou branch)
+                message:
+                  type: string
+                  description: Mensagem da tag
+                workspace:
+                  type: string
+                  description: Workspace (Cloud) ou Project (Data Center)
+                repository:
+                  type: string
+                  description: Nome do repositório
+              required:
+                - name
+                - startPoint
+                - workspace
+                - repository
+      responses:
+        '201':
+          description: Tag criada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+        '400':
+          description: Dados inválidos
+
+  /cli/commit/list:
+    get:
+      summary: Listar commits
+      description: Lista commits de um repositório
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: repository
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: branch
+          in: query
+          schema:
+            type: string
+          description: Branch específica
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Lista de commits
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  commits:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Commit'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+  /cli/commit/get:
+    get:
+      summary: Obter commit
+      description: Obtém informações de um commit específico
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: repository
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: commitId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Informações do commit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Commit'
+        '404':
+          description: Commit não encontrado
+
+  /cli/webhook/list:
+    get:
+      summary: Listar webhooks (Cloud)
+      description: Lista webhooks de um repositório
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: repository
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de webhooks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  webhooks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Webhook'
+        '400':
+          description: Operação não suportada (Data Center)
+
+  /cli/webhook/create:
+    post:
+      summary: Criar webhook (Cloud)
+      description: Cria um novo webhook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  description: URL do webhook
+                description:
+                  type: string
+                  description: Descrição do webhook
+                events:
+                  type: array
+                  items:
+                    type: string
+                  description: Eventos do webhook
+                workspace:
+                  type: string
+                  description: Workspace
+                repository:
+                  type: string
+                  description: Nome do repositório
+              required:
+                - url
+                - events
+                - workspace
+                - repository
+      responses:
+        '201':
+          description: Webhook criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Webhook'
+        '400':
+          description: Dados inválidos ou operação não suportada (Data Center)
+
+  /cli/pipeline/list:
+    get:
+      summary: Listar pipelines (Cloud)
+      description: Lista pipelines de um repositório
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: repository
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: state
+          in: query
+          schema:
+            type: string
+            enum: [PENDING, IN_PROGRESS, SUCCESSFUL, FAILED, STOPPED, PAUSED]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Lista de pipelines
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pipelines:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Pipeline'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          description: Operação não suportada (Data Center)
+
+  /cli/pipeline/get:
+    get:
+      summary: Obter pipeline (Cloud)
+      description: Obtém informações de um pipeline específico
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: repository
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: pipelineUuid
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Informações do pipeline
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pipeline'
+        '404':
+          description: Pipeline não encontrado
+        '400':
+          description: Operação não suportada (Data Center)
+
+  /cli/snippet/list:
+    get:
+      summary: Listar snippets (Cloud)
+      description: Lista snippets do usuário
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Lista de snippets
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  snippets:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Snippet'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          description: Operação não suportada (Data Center)
+
+  /cli/ssh-key/list:
+    get:
+      summary: Listar chaves SSH (Cloud)
+      description: Lista chaves SSH do usuário
+      responses:
+        '200':
+          description: Lista de chaves SSH
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sshKeys:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SSHKey'
+        '400':
+          description: Operação não suportada (Data Center)
+
+  /cli/ssh-key/create:
+    post:
+      summary: Criar chave SSH (Cloud)
+      description: Adiciona uma nova chave SSH
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                key:
+                  type: string
+                  description: Chave SSH pública
+                label:
+                  type: string
+                  description: Rótulo da chave
+              required:
+                - key
+                - label
+      responses:
+        '201':
+          description: Chave SSH criada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SSHKey'
+        '400':
+          description: Dados inválidos ou operação não suportada (Data Center)
+
+  /cli/gpg-key/list:
+    get:
+      summary: Listar chaves GPG (Cloud)
+      description: Lista chaves GPG do usuário
+      responses:
+        '200':
+          description: Lista de chaves GPG
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  gpgKeys:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GPGKey'
+        '400':
+          description: Operação não suportada (Data Center)
+
+  /cli/branch-restriction/list:
+    get:
+      summary: Listar restrições de branch (Cloud)
+      description: Lista restrições de branch de um repositório
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: repository
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de restrições de branch
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  restrictions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BranchRestriction'
+        '400':
+          description: Operação não suportada (Data Center)
+
+  /cli/commit-status/list:
+    get:
+      summary: Listar status de commit (Cloud)
+      description: Lista status de um commit
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: repository
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: commitId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de status de commit
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuses:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CommitStatus'
+        '400':
+          description: Operação não suportada (Data Center)
+
+  /cli/deployment/list:
+    get:
+      summary: Listar deployments (Cloud)
+      description: Lista deployments de um repositório
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: repository
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Lista de deployments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deployments:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Deployment'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          description: Operação não suportada (Data Center)
+
+  /cli/download/list:
+    get:
+      summary: Listar downloads (Cloud)
+      description: Lista downloads de um repositório
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: repository
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de downloads
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  downloads:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Download'
+        '400':
+          description: Operação não suportada (Data Center)
+
+  /cli/pull-request/update:
+    put:
+      summary: Atualizar pull request
+      description: Atualiza um pull request existente
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: repository
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: pullRequestId
+          in: query
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                reviewers:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Pull request atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PullRequest'
+        '404':
+          description: Pull request não encontrado
+
+  /cli/pull-request/decline:
+    post:
+      summary: Recusar pull request
+      description: Recusa um pull request
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: repository
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: pullRequestId
+          in: query
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  description: Motivo da recusa
+      responses:
+        '200':
+          description: Pull request recusado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PullRequest'
+        '404':
+          description: Pull request não encontrado
+
+  /cli/pull-request/reopen:
+    post:
+      summary: Reabrir pull request
+      description: Reabre um pull request recusado
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: repository
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: pullRequestId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Pull request reaberto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PullRequest'
+        '404':
+          description: Pull request não encontrado
+
+  /cli/branch/delete:
+    delete:
+      summary: Deletar branch
+      description: Remove uma branch
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: repository
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: branchName
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Branch deletada
+        '404':
+          description: Branch não encontrada
+
+  /cli/tag/delete:
+    delete:
+      summary: Deletar tag
+      description: Remove uma tag
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: repository
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: tagName
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Tag deletada
+        '404':
+          description: Tag não encontrada
+
+  /cli/webhook/update:
+    put:
+      summary: Atualizar webhook (Cloud)
+      description: Atualiza um webhook existente
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: repository
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: webhookUuid
+          in: query
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                description:
+                  type: string
+                events:
+                  type: array
+                  items:
+                    type: string
+                active:
+                  type: boolean
+      responses:
+        '200':
+          description: Webhook atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Webhook'
+        '404':
+          description: Webhook não encontrado
+        '400':
+          description: Operação não suportada (Data Center)
+
+  /cli/webhook/delete:
+    delete:
+      summary: Deletar webhook (Cloud)
+      description: Remove um webhook
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: repository
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: webhookUuid
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Webhook deletado
+        '404':
+          description: Webhook não encontrado
+        '400':
+          description: Operação não suportada (Data Center)
+
+  /cli/pipeline/create:
+    post:
+      summary: Criar pipeline (Cloud)
+      description: Cria um novo pipeline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                target:
+                  type: object
+                  description: Target do pipeline
+                workspace:
+                  type: string
+                  description: Workspace
+                repository:
+                  type: string
+                  description: Nome do repositório
+              required:
+                - target
+                - workspace
+                - repository
+      responses:
+        '201':
+          description: Pipeline criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pipeline'
+        '400':
+          description: Dados inválidos ou operação não suportada (Data Center)
+
+  /cli/pipeline/stop:
+    post:
+      summary: Parar pipeline (Cloud)
+      description: Para um pipeline em execução
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: repository
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: pipelineUuid
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Pipeline parado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pipeline'
+        '404':
+          description: Pipeline não encontrado
+        '400':
+          description: Operação não suportada (Data Center)
+
+  /cli/issue/create:
+    post:
+      summary: Criar issue (Cloud)
+      description: Cria uma nova issue
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Título da issue
+                content:
+                  type: string
+                  description: Conteúdo da issue
+                priority:
+                  type: string
+                  enum: [trivial, minor, major, critical, blocker]
+                kind:
+                  type: string
+                  enum: [bug, enhancement, proposal, task]
+                assignee:
+                  type: string
+                  description: Usuário responsável
+                workspace:
+                  type: string
+                  description: Workspace
+                repository:
+                  type: string
+                  description: Nome do repositório
+              required:
+                - title
+                - content
+                - priority
+                - kind
+                - workspace
+                - repository
+      responses:
+        '201':
+          description: Issue criada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+        '400':
+          description: Dados inválidos ou operação não suportada (Data Center)
+
+  /cli/issue/update:
+    put:
+      summary: Atualizar issue (Cloud)
+      description: Atualiza uma issue existente
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: repository
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: issueId
+          in: query
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                content:
+                  type: string
+                state:
+                  type: string
+                  enum: [new, open, resolved, on_hold, invalid, duplicate, wontfix, closed]
+                priority:
+                  type: string
+                  enum: [trivial, minor, major, critical, blocker]
+                kind:
+                  type: string
+                  enum: [bug, enhancement, proposal, task]
+                assignee:
+                  type: string
+      responses:
+        '200':
+          description: Issue atualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+        '404':
+          description: Issue não encontrada
+        '400':
+          description: Operação não suportada (Data Center)
+
+  /cli/issue/delete:
+    delete:
+      summary: Deletar issue (Cloud)
+      description: Remove uma issue
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: repository
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: issueId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Issue deletada
+        '404':
+          description: Issue não encontrada
+        '400':
+          description: Operação não suportada (Data Center)
+
+  /cli/search/repositories:
+    get:
+      summary: Buscar repositórios
+      description: Busca repositórios por query
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Query de busca
+        - name: workspace
+          in: query
+          schema:
+            type: string
+          description: Workspace específico
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Resultados da busca
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  repositories:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Repository'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+  /cli/search/commits:
+    get:
+      summary: Buscar commits
+      description: Busca commits por query
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Query de busca
+        - name: workspace
+          in: query
+          schema:
+            type: string
+          description: Workspace específico
+        - name: repository
+          in: query
+          schema:
+            type: string
+          description: Repositório específico
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Resultados da busca
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  commits:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Commit'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+  /cli/search/code:
+    get:
+      summary: Buscar código
+      description: Busca código por query
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Query de busca
+        - name: workspace
+          in: query
+          schema:
+            type: string
+          description: Workspace específico
+        - name: repository
+          in: query
+          schema:
+            type: string
+          description: Repositório específico
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Resultados da busca
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        path:
+                          type: string
+                        content:
+                          type: string
+                        repository:
+                          $ref: '#/components/schemas/Repository'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+  /cli/workspace/list:
+    get:
+      summary: Listar workspaces (Cloud)
+      description: Lista workspaces do usuário
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Lista de workspaces
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  workspaces:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        uuid:
+                          type: string
+                        name:
+                          type: string
+                        slug:
+                          type: string
+                        isPrivate:
+                          type: boolean
+                        createdOn:
+                          type: string
+                          format: date-time
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          description: Operação não suportada (Data Center)
+
+  /cli/workspace/get:
+    get:
+      summary: Obter workspace (Cloud)
+      description: Obtém informações de um workspace específico
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Informações do workspace
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uuid:
+                    type: string
+                  name:
+                    type: string
+                  slug:
+                    type: string
+                  isPrivate:
+                    type: boolean
+                  createdOn:
+                    type: string
+                    format: date-time
+                  links:
+                    type: object
+        '404':
+          description: Workspace não encontrado
+        '400':
+          description: Operação não suportada (Data Center)
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        displayName:
+          type: string
+        email:
+          type: string
+        avatarUrl:
+          type: string
+        accountStatus:
+          type: string
+          enum: [active, inactive, closed]
+      required:
+        - id
+        - username
+        - displayName
+        - accountStatus
+
+    Repository:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        fullName:
+          type: string
+        description:
+          type: string
+        isPrivate:
+          type: boolean
+        workspace:
+          type: string
+        project:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        links:
+          type: object
+          properties:
+            clone:
+              type: array
+              items:
+                type: object
+                properties:
+                  href:
+                    type: string
+                  name:
+                    type: string
+            self:
+              type: object
+              properties:
+                href:
+                  type: string
+      required:
+        - id
+        - name
+        - fullName
+        - isPrivate
+        - createdAt
+        - updatedAt
+
+    PullRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        state:
+          type: string
+          enum: [open, merged, declined, superseded]
+        sourceBranch:
+          type: string
+        destinationBranch:
+          type: string
+        author:
+          $ref: '#/components/schemas/User'
+        reviewers:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        repository:
+          $ref: '#/components/schemas/Repository'
+      required:
+        - id
+        - title
+        - state
+        - sourceBranch
+        - destinationBranch
+        - author
+        - createdAt
+        - updatedAt
+
+    Project:
+      type: object
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        isPublic:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        links:
+          type: object
+          properties:
+            self:
+              type: object
+              properties:
+                href:
+                  type: string
+      required:
+        - key
+        - name
+        - isPublic
+        - createdAt
+        - updatedAt
+
+    Issue:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+        state:
+          type: string
+          enum: [new, open, resolved, on_hold, invalid, duplicate, wontfix, closed]
+        priority:
+          type: string
+          enum: [trivial, minor, major, critical, blocker]
+        kind:
+          type: string
+          enum: [bug, enhancement, proposal, task]
+        assignee:
+          $ref: '#/components/schemas/User'
+        reporter:
+          $ref: '#/components/schemas/User'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        repository:
+          $ref: '#/components/schemas/Repository'
+      required:
+        - id
+        - title
+        - state
+        - priority
+        - kind
+        - reporter
+        - createdAt
+        - updatedAt
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        pages:
+          type: integer
+        hasNext:
+          type: boolean
+        hasPrev:
+          type: boolean
+      required:
+        - page
+        - limit
+        - total
+        - pages
+        - hasNext
+        - hasPrev
+
+    Branch:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        displayId:
+          type: string
+        type:
+          type: string
+        latestCommit:
+          type: string
+        isDefault:
+          type: boolean
+        repository:
+          $ref: '#/components/schemas/Repository'
+      required:
+        - id
+        - name
+        - displayId
+        - type
+        - isDefault
+
+    Tag:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        displayId:
+          type: string
+        type:
+          type: string
+        latestCommit:
+          type: string
+        message:
+          type: string
+        repository:
+          $ref: '#/components/schemas/Repository'
+      required:
+        - id
+        - name
+        - displayId
+        - type
+
+    Commit:
+      type: object
+      properties:
+        id:
+          type: string
+        displayId:
+          type: string
+        message:
+          type: string
+        author:
+          $ref: '#/components/schemas/CommitAuthor'
+        committer:
+          $ref: '#/components/schemas/CommitAuthor'
+        authorTimestamp:
+          type: string
+          format: date-time
+        committerTimestamp:
+          type: string
+          format: date-time
+        parents:
+          type: array
+          items:
+            type: string
+        repository:
+          $ref: '#/components/schemas/Repository'
+      required:
+        - id
+        - displayId
+        - message
+        - author
+        - committer
+        - authorTimestamp
+        - committerTimestamp
+
+    CommitAuthor:
+      type: object
+      properties:
+        name:
+          type: string
+        emailAddress:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+        - name
+        - emailAddress
+
+    Comment:
+      type: object
+      properties:
+        id:
+          type: integer
+        text:
+          type: string
+        author:
+          $ref: '#/components/schemas/User'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        parent:
+          $ref: '#/components/schemas/Comment'
+        pullRequest:
+          $ref: '#/components/schemas/PullRequest'
+        issue:
+          $ref: '#/components/schemas/Issue'
+      required:
+        - id
+        - text
+        - author
+        - createdAt
+        - updatedAt
+
+    Webhook:
+      type: object
+      properties:
+        uuid:
+          type: string
+        url:
+          type: string
+        description:
+          type: string
+        active:
+          type: boolean
+        events:
+          type: array
+          items:
+            type: string
+        subject:
+          type: object
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - uuid
+        - url
+        - active
+        - events
+        - createdAt
+        - updatedAt
+
+    Pipeline:
+      type: object
+      properties:
+        uuid:
+          type: string
+        buildNumber:
+          type: integer
+        creator:
+          $ref: '#/components/schemas/User'
+        target:
+          type: object
+        state:
+          type: string
+          enum: [PENDING, IN_PROGRESS, SUCCESSFUL, FAILED, STOPPED, PAUSED]
+        createdAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+        buildSecondsUsed:
+          type: integer
+        repository:
+          $ref: '#/components/schemas/Repository'
+      required:
+        - uuid
+        - buildNumber
+        - creator
+        - state
+        - createdAt
+
+    PipelineStep:
+      type: object
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+        state:
+          type: string
+          enum: [PENDING, IN_PROGRESS, SUCCESSFUL, FAILED, STOPPED, PAUSED]
+        image:
+          type: string
+        script:
+          type: string
+        maxTime:
+          type: integer
+        buildTimeSeconds:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        startedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+      required:
+        - uuid
+        - name
+        - state
+        - createdAt
+
+    Snippet:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        scm:
+          type: string
+        isPrivate:
+          type: boolean
+        owner:
+          $ref: '#/components/schemas/User'
+        creator:
+          $ref: '#/components/schemas/User'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - title
+        - scm
+        - isPrivate
+        - owner
+        - creator
+        - createdAt
+        - updatedAt
+
+    SSHKey:
+      type: object
+      properties:
+        uuid:
+          type: string
+        key:
+          type: string
+        label:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        lastUsed:
+          type: string
+          format: date-time
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+        - uuid
+        - key
+        - label
+        - createdAt
+        - user
+
+    GPGKey:
+      type: object
+      properties:
+        keyId:
+          type: string
+        key:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+        - keyId
+        - key
+        - createdAt
+        - user
+
+    BranchRestriction:
+      type: object
+      properties:
+        id:
+          type: integer
+        kind:
+          type: string
+        branchType:
+          type: string
+        branchMatchKind:
+          type: string
+        branchMatch:
+          type: string
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        groups:
+          type: array
+          items:
+            type: string
+      required:
+        - id
+        - kind
+        - branchType
+
+    CommitStatus:
+      type: object
+      properties:
+        key:
+          type: string
+        state:
+          type: string
+          enum: [SUCCESSFUL, FAILED, INPROGRESS, STOPPED]
+        name:
+          type: string
+        description:
+          type: string
+        url:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - key
+        - state
+        - name
+        - createdAt
+        - updatedAt
+
+    Deployment:
+      type: object
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+        key:
+          type: string
+        url:
+          type: string
+        state:
+          type: string
+          enum: [PENDING, IN_PROGRESS, SUCCESSFUL, FAILED, STOPPED]
+        environment:
+          type: object
+        release:
+          type: object
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - uuid
+        - name
+        - key
+        - state
+        - createdAt
+        - updatedAt
+
+    Download:
+      type: object
+      properties:
+        name:
+          type: string
+        path:
+          type: string
+        size:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - name
+        - path
+        - size
+        - createdAt

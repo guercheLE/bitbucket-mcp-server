@@ -1,0 +1,912 @@
+openapi: 3.0.3
+info:
+  title: Bitbucket MCP Server API
+  description: API do servidor MCP para Bitbucket com suporte a Cloud e Data Center
+  version: 1.0.0
+  contact:
+    name: Bitbucket MCP Server
+    url: https://github.com/guercheLE/bitbucket-mcp-server
+
+servers:
+  - url: stdio://
+    description: MCP Server via STDIO
+  - url: http://localhost:3000
+    description: MCP Server via HTTP
+
+paths:
+  /tools:
+    get:
+      summary: Listar ferramentas disponíveis
+      description: Retorna lista de ferramentas MCP carregadas baseadas no tipo de servidor
+      responses:
+        '200':
+          description: Lista de ferramentas disponíveis
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tools:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MCPTool'
+                required:
+                  - tools
+
+  /tools/{toolName}/call:
+    post:
+      summary: Executar ferramenta MCP
+      description: Executa uma ferramenta MCP específica
+      parameters:
+        - name: toolName
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Nome da ferramenta MCP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                arguments:
+                  type: object
+                  description: Argumentos da ferramenta
+              required:
+                - arguments
+      responses:
+        '200':
+          description: Resultado da execução da ferramenta
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          enum: [text, image, resource]
+                        text:
+                          type: string
+                required:
+                  - content
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/ToolNotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /server/info:
+    get:
+      summary: Informações do servidor
+      description: Retorna informações sobre o servidor MCP
+      responses:
+        '200':
+          description: Informações do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerInfo'
+
+  /server/config:
+    get:
+      summary: Configuração do servidor
+      description: Retorna configuração atual do servidor
+      responses:
+        '200':
+          description: Configuração do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BitbucketConfig'
+
+components:
+  schemas:
+    MCPTool:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nome da ferramenta MCP
+          pattern: '^mcp_bitbucket_[a-z_]+$'
+        description:
+          type: string
+          description: Descrição da ferramenta
+        inputSchema:
+          type: object
+          description: Schema JSON para validação de entrada
+        serverType:
+          type: array
+          items:
+            type: string
+            enum: [cloud, datacenter]
+          description: Tipos de servidor compatíveis
+        category:
+          type: string
+          description: Categoria da ferramenta
+        operation:
+          type: string
+          description: Operação específica
+      required:
+        - name
+        - description
+        - inputSchema
+        - serverType
+        - category
+        - operation
+
+    ServerInfo:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nome do servidor
+        version:
+          type: string
+          description: Versão do servidor
+        serverType:
+          type: string
+          enum: [cloud, datacenter]
+          description: Tipo de servidor detectado
+        baseUrl:
+          type: string
+          format: uri
+          description: URL base do Bitbucket
+        toolsLoaded:
+          type: integer
+          description: Número de ferramentas carregadas
+        uptime:
+          type: number
+          description: Tempo de atividade em segundos
+      required:
+        - name
+        - version
+        - serverType
+        - baseUrl
+        - toolsLoaded
+        - uptime
+
+    BitbucketConfig:
+      type: object
+      properties:
+        baseUrl:
+          type: string
+          format: uri
+          description: URL base do servidor Bitbucket
+        serverType:
+          type: string
+          enum: [cloud, datacenter]
+          description: Tipo de servidor detectado
+        auth:
+          $ref: '#/components/schemas/AuthConfig'
+        timeouts:
+          $ref: '#/components/schemas/TimeoutConfig'
+        rateLimit:
+          $ref: '#/components/schemas/RateLimitConfig'
+      required:
+        - baseUrl
+        - serverType
+        - auth
+        - timeouts
+        - rateLimit
+
+    AuthConfig:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [oauth, app_password, api_token, basic]
+          description: Tipo de autenticação
+        credentials:
+          type: object
+          description: Credenciais de autenticação
+        expiresAt:
+          type: string
+          format: date-time
+          description: Data de expiração do token
+      required:
+        - type
+        - credentials
+
+    TimeoutConfig:
+      type: object
+      properties:
+        read:
+          type: integer
+          description: Timeout para operações de leitura (ms)
+          default: 2000
+        write:
+          type: integer
+          description: Timeout para operações de escrita (ms)
+          default: 5000
+        connect:
+          type: integer
+          description: Timeout para conexão (ms)
+          default: 10000
+      required:
+        - read
+        - write
+        - connect
+
+    RateLimitConfig:
+      type: object
+      properties:
+        requestsPerMinute:
+          type: integer
+          description: Requisições por minuto
+          default: 60
+        burstLimit:
+          type: integer
+          description: Limite de burst
+          default: 10
+        retryAfter:
+          type: integer
+          description: Tempo de espera para retry (ms)
+          default: 1000
+      required:
+        - requestsPerMinute
+        - burstLimit
+        - retryAfter
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Código do erro
+        message:
+          type: string
+          description: Mensagem do erro
+        details:
+          type: object
+          description: Detalhes adicionais do erro
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp do erro
+      required:
+        - code
+        - message
+        - timestamp
+
+    # Bitbucket Entity Schemas
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        displayName:
+          type: string
+        email:
+          type: string
+        avatarUrl:
+          type: string
+        accountStatus:
+          type: string
+          enum: [active, inactive, closed]
+      required:
+        - id
+        - username
+        - displayName
+        - accountStatus
+
+    Repository:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        fullName:
+          type: string
+        description:
+          type: string
+        isPrivate:
+          type: boolean
+        workspace:
+          type: string
+        project:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        links:
+          type: object
+          properties:
+            clone:
+              type: array
+              items:
+                type: object
+                properties:
+                  href:
+                    type: string
+                  name:
+                    type: string
+            self:
+              type: object
+              properties:
+                href:
+                  type: string
+      required:
+        - id
+        - name
+        - fullName
+        - isPrivate
+        - createdAt
+        - updatedAt
+
+    PullRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        state:
+          type: string
+          enum: [open, merged, declined, superseded]
+        sourceBranch:
+          type: string
+        destinationBranch:
+          type: string
+        author:
+          $ref: '#/components/schemas/User'
+        reviewers:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        repository:
+          $ref: '#/components/schemas/Repository'
+      required:
+        - id
+        - title
+        - state
+        - sourceBranch
+        - destinationBranch
+        - author
+        - createdAt
+        - updatedAt
+
+    Project:
+      type: object
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        isPublic:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        links:
+          type: object
+          properties:
+            self:
+              type: object
+              properties:
+                href:
+                  type: string
+      required:
+        - key
+        - name
+        - isPublic
+        - createdAt
+        - updatedAt
+
+    Issue:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+        state:
+          type: string
+          enum: [new, open, resolved, on_hold, invalid, duplicate, wontfix, closed]
+        priority:
+          type: string
+          enum: [trivial, minor, major, critical, blocker]
+        kind:
+          type: string
+          enum: [bug, enhancement, proposal, task]
+        assignee:
+          $ref: '#/components/schemas/User'
+        reporter:
+          $ref: '#/components/schemas/User'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        repository:
+          $ref: '#/components/schemas/Repository'
+      required:
+        - id
+        - title
+        - state
+        - priority
+        - kind
+        - reporter
+        - createdAt
+        - updatedAt
+
+    Branch:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        displayId:
+          type: string
+        type:
+          type: string
+        latestCommit:
+          type: string
+        isDefault:
+          type: boolean
+        repository:
+          $ref: '#/components/schemas/Repository'
+      required:
+        - id
+        - name
+        - displayId
+        - type
+        - isDefault
+
+    Tag:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        displayId:
+          type: string
+        type:
+          type: string
+        latestCommit:
+          type: string
+        message:
+          type: string
+        repository:
+          $ref: '#/components/schemas/Repository'
+      required:
+        - id
+        - name
+        - displayId
+        - type
+
+    Commit:
+      type: object
+      properties:
+        id:
+          type: string
+        displayId:
+          type: string
+        message:
+          type: string
+        author:
+          $ref: '#/components/schemas/CommitAuthor'
+        committer:
+          $ref: '#/components/schemas/CommitAuthor'
+        authorTimestamp:
+          type: string
+          format: date-time
+        committerTimestamp:
+          type: string
+          format: date-time
+        parents:
+          type: array
+          items:
+            type: string
+        repository:
+          $ref: '#/components/schemas/Repository'
+      required:
+        - id
+        - displayId
+        - message
+        - author
+        - committer
+        - authorTimestamp
+        - committerTimestamp
+
+    CommitAuthor:
+      type: object
+      properties:
+        name:
+          type: string
+        emailAddress:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+        - name
+        - emailAddress
+
+    Comment:
+      type: object
+      properties:
+        id:
+          type: integer
+        text:
+          type: string
+        author:
+          $ref: '#/components/schemas/User'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        parent:
+          $ref: '#/components/schemas/Comment'
+        pullRequest:
+          $ref: '#/components/schemas/PullRequest'
+        issue:
+          $ref: '#/components/schemas/Issue'
+      required:
+        - id
+        - text
+        - author
+        - createdAt
+        - updatedAt
+
+    Webhook:
+      type: object
+      properties:
+        uuid:
+          type: string
+        url:
+          type: string
+        description:
+          type: string
+        active:
+          type: boolean
+        events:
+          type: array
+          items:
+            type: string
+        subject:
+          type: object
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - uuid
+        - url
+        - active
+        - events
+        - createdAt
+        - updatedAt
+
+    Pipeline:
+      type: object
+      properties:
+        uuid:
+          type: string
+        buildNumber:
+          type: integer
+        creator:
+          $ref: '#/components/schemas/User'
+        target:
+          type: object
+        state:
+          type: string
+          enum: [PENDING, IN_PROGRESS, SUCCESSFUL, FAILED, STOPPED, PAUSED]
+        createdAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+        buildSecondsUsed:
+          type: integer
+        repository:
+          $ref: '#/components/schemas/Repository'
+      required:
+        - uuid
+        - buildNumber
+        - creator
+        - state
+        - createdAt
+
+    PipelineStep:
+      type: object
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+        state:
+          type: string
+          enum: [PENDING, IN_PROGRESS, SUCCESSFUL, FAILED, STOPPED, PAUSED]
+        image:
+          type: string
+        script:
+          type: string
+        maxTime:
+          type: integer
+        buildTimeSeconds:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        startedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+      required:
+        - uuid
+        - name
+        - state
+        - createdAt
+
+    Snippet:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        scm:
+          type: string
+        isPrivate:
+          type: boolean
+        owner:
+          $ref: '#/components/schemas/User'
+        creator:
+          $ref: '#/components/schemas/User'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - title
+        - scm
+        - isPrivate
+        - owner
+        - creator
+        - createdAt
+        - updatedAt
+
+    SSHKey:
+      type: object
+      properties:
+        uuid:
+          type: string
+        key:
+          type: string
+        label:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        lastUsed:
+          type: string
+          format: date-time
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+        - uuid
+        - key
+        - label
+        - createdAt
+        - user
+
+    GPGKey:
+      type: object
+      properties:
+        keyId:
+          type: string
+        key:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+        - keyId
+        - key
+        - createdAt
+        - user
+
+    BranchRestriction:
+      type: object
+      properties:
+        id:
+          type: integer
+        kind:
+          type: string
+        branchType:
+          type: string
+        branchMatchKind:
+          type: string
+        branchMatch:
+          type: string
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        groups:
+          type: array
+          items:
+            type: string
+      required:
+        - id
+        - kind
+        - branchType
+
+    CommitStatus:
+      type: object
+      properties:
+        key:
+          type: string
+        state:
+          type: string
+          enum: [SUCCESSFUL, FAILED, INPROGRESS, STOPPED]
+        name:
+          type: string
+        description:
+          type: string
+        url:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - key
+        - state
+        - name
+        - createdAt
+        - updatedAt
+
+    Deployment:
+      type: object
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+        key:
+          type: string
+        url:
+          type: string
+        state:
+          type: string
+          enum: [PENDING, IN_PROGRESS, SUCCESSFUL, FAILED, STOPPED]
+        environment:
+          type: object
+        release:
+          type: object
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - uuid
+        - name
+        - key
+        - state
+        - createdAt
+        - updatedAt
+
+    Download:
+      type: object
+      properties:
+        name:
+          type: string
+        path:
+          type: string
+        size:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - name
+        - path
+        - size
+        - createdAt
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        pages:
+          type: integer
+        hasNext:
+          type: boolean
+        hasPrev:
+          type: boolean
+      required:
+        - page
+        - limit
+        - total
+        - pages
+        - hasNext
+        - hasPrev
+
+  responses:
+    BadRequest:
+      description: Requisição inválida
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    ToolNotFound:
+      description: Ferramenta não encontrada
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalError:
+      description: Erro interno do servidor
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+security:
+  - BearerAuth: []
+  - ApiKeyAuth: []

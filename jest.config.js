@@ -1,69 +1,34 @@
-/** @type {import('ts-jest').JestConfigWithTsJest} */
-export default {
+module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  testMatch: ['**/src/**/*.test.ts', '**/src/**/*.spec.ts'],
-  testPathIgnorePatterns: [
-    '/node_modules/',
-    '/dist/',
-    // Ignore problematic test files for now
-    'src/utils/api-client.util.test.ts',
-    'src/utils/config.util.test.ts',
-    'src/utils/constants.util.test.ts',
-    'src/utils/scope-validator.util.test.ts',
-    'src/services/repository.service.test.ts',
-    'src/server.test.ts',
-    'src/client.test.ts',
+  roots: ['<rootDir>/src', '<rootDir>/tests'],
+  testMatch: [
+    '**/__tests__/**/*.ts',
+    '**/?(*.)+(spec|test).ts',
   ],
+  transform: {
+    '^.+\\.ts$': 'ts-jest',
+  },
   collectCoverageFrom: [
     'src/**/*.ts',
+    '!src/**/*.d.ts',
     '!src/**/*.test.ts',
     '!src/**/*.spec.ts',
-    '!src/**/*.d.ts',
-    '!src/cli/**/*.ts',
   ],
-  coveragePathIgnorePatterns: ['/node_modules/', '/dist/', '/coverage/', '/scripts/'],
-  coverageReporters: ['text', 'lcov', 'json-summary', 'html'],
-  transform: {
-    '^.+\\.tsx?$': [
-      'ts-jest',
-      {
-        useESM: true,
-        tsconfig: {
-          module: 'ESNext',
-          target: 'ES2022',
-          moduleResolution: 'node',
-          allowImportingTsExtensions: false,
-          allowSyntheticDefaultImports: true,
-          esModuleInterop: true,
-          forceConsistentCasingInFileNames: true,
-          strict: true,
-          noImplicitAny: true,
-          strictNullChecks: true,
-          strictFunctionTypes: true,
-          noImplicitReturns: true,
-          noFallthroughCasesInSwitch: true,
-          noUncheckedIndexedAccess: true,
-          exactOptionalPropertyTypes: false,
-          declaration: true,
-          declarationMap: true,
-          sourceMap: true,
-          importHelpers: true,
-          skipLibCheck: true,
-          lib: ['ES2022'],
-          types: ['node', 'jest'],
-          preserveSymlinks: false,
-        },
-      },
-    ],
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov', 'html'],
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80,
+    },
   },
-  moduleNameMapper: {
-    '^(\\.{1,2}/.*)\\.js$': '$1',
-  },
-  extensionsToTreatAsEsm: ['.ts'],
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  testTimeout: 30000,
+  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
+  testTimeout: 10000,
   verbose: true,
-  clearMocks: true,
-  restoreMocks: true,
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+  },
 };
