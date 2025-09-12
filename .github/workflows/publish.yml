@@ -1,0 +1,74 @@
+name: Publish to NPM
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to publish to'
+        required: true
+        default: 'test'
+        type: choice
+        options:
+        - test
+        - production
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  publish:
+    name: Publish Package
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'test' }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        registry-url: ${{ github.event.inputs.environment == 'test' && 'https://registry.npmjs.org' || 'https://registry.npmjs.org' }}
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run tests
+      run: npm test
+    
+    - name: Build package
+      run: npm run build
+    
+    - name: Check package
+      run: npm pack --dry-run
+    
+    - name: Publish to NPM (Test)
+      if: github.event.inputs.environment == 'test' || github.event_name == 'workflow_dispatch'
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      run: |
+        npm publish --tag beta
+        echo "✅ Published to NPM with beta tag"
+        echo "🔗 Test installation: npm install bitbucket-mcp-server@beta"
+    
+    - name: Publish to NPM (Production)
+      if: github.event.inputs.environment == 'production' || github.event_name == 'release'
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      run: |
+        npm publish
+        echo "✅ Published to NPM"
+        echo "🔗 Installation: npm install bitbucket-mcp-server"
+    
+    - name: Create GitHub Release
+      if: github.event_name == 'release'
+      run: |
+        echo "🎉 Package published successfully!"
+        echo "📦 Version: ${{ github.event.release.tag_name }}"
+        echo "🔗 NPM: https://www.npmjs.com/package/bitbucket-mcp-server"
+        echo "📚 Documentation: https://github.com/${{ github.repository }}#readme"

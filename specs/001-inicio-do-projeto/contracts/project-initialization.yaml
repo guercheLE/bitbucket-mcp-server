@@ -1,0 +1,944 @@
+openapi: 3.0.3
+info:
+  title: Bitbucket MCP Server - Project Initialization API
+  description: API para inicialização do projeto Bitbucket MCP Server conforme Constituição
+  version: 1.0.0
+  contact:
+    name: Bitbucket MCP Server Team
+    url: https://github.com/guercheLE/bitbucket-mcp-server
+  license:
+    name: LGPL-3.0
+    url: https://www.gnu.org/licenses/lgpl-3.0.html
+
+servers:
+  - url: http://localhost:3000
+    description: Development server
+  - url: https://api.bitbucket-mcp-server.com
+    description: Production server
+
+paths:
+  /api/v1/project/initialize:
+    post:
+      summary: Initialize Bitbucket MCP Server project
+      description: |
+        Inicializa um novo projeto Bitbucket MCP Server com estrutura base,
+        configurações constitucionais e dependências oficiais do MCP SDK.
+        Conforme Article I da Constituição - MCP Protocol First.
+      operationId: initializeProject
+      tags:
+        - Project Initialization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InitializeProjectRequest'
+            examples:
+              basic:
+                summary: Basic project initialization
+                value:
+                  name: "my-bitbucket-mcp-server"
+                  description: "Bitbucket MCP Server for my organization"
+                  author:
+                    name: "John Doe"
+                    email: "john.doe@example.com"
+                  bitbucket:
+                    baseUrl: "https://bitbucket.company.com"
+                    serverType: "datacenter"
+      responses:
+        '201':
+          description: Project initialized successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InitializeProjectResponse'
+              examples:
+                success:
+                  summary: Successful initialization
+                  value:
+                    projectId: "proj_123456789"
+                    status: "initialized"
+                    structure:
+                      src: ["server/", "client/", "tools/", "services/", "types/", "utils/"]
+                      tests: ["contract/", "integration/", "unit/"]
+                    configuration:
+                      server: "configured"
+                      client: "configured"
+                      authentication: "configured"
+                      transport: "configured"
+                    dependencies:
+                      installed: 15
+                      constitutionCompliant: true
+                    scripts:
+                      build: "configured"
+                      test: "configured"
+                      dev: "configured"
+                      start: "configured"
+                      cli: "configured"
+                    validation:
+                      constitutionCompliant: true
+                      testsPassing: false
+                      coverage: 0
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_name:
+                  summary: Invalid project name
+                  value:
+                    error: "VALIDATION_ERROR"
+                    message: "Project name must follow NPM conventions (lowercase, no spaces)"
+                    details:
+                      field: "name"
+                      value: "My Project"
+                      constraint: "regex: ^[a-z0-9-]+$"
+        '409':
+          description: Project already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                exists:
+                  summary: Project already exists
+                  value:
+                    error: "PROJECT_EXISTS"
+                    message: "Project with this name already exists"
+                    details:
+                      projectId: "proj_123456789"
+                      existingPath: "/path/to/existing/project"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error during initialization
+                  value:
+                    error: "INTERNAL_ERROR"
+                    message: "Failed to initialize project structure"
+                    details:
+                      step: "create_directory_structure"
+                      error: "Permission denied"
+
+  /api/v1/project/validate:
+    post:
+      summary: Validate project configuration
+      description: |
+        Valida a configuração do projeto contra os requisitos constitucionais.
+        Conforme Article V da Constituição - Test-First (NON-NEGOTIABLE).
+      operationId: validateProject
+      tags:
+        - Project Validation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidateProjectRequest'
+      responses:
+        '200':
+          description: Validation completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidateProjectResponse'
+              examples:
+                valid:
+                  summary: Valid project configuration
+                  value:
+                    valid: true
+                    constitutionCompliant: true
+                    violations: []
+                    warnings: []
+                    recommendations: []
+                invalid:
+                  summary: Invalid project configuration
+                  value:
+                    valid: false
+                    constitutionCompliant: false
+                    violations:
+                      - article: "V"
+                        requirement: "Test coverage >80%"
+                        current: 45
+                        required: 80
+                      - article: "I"
+                        requirement: "Official MCP SDK"
+                        current: "custom-mcp-sdk"
+                        required: "@modelcontextprotocol/sdk"
+                    warnings:
+                      - message: "Using development dependencies in production"
+                      - message: "Missing SSL configuration"
+                    recommendations:
+                      - "Update test coverage to meet 80% requirement"
+                      - "Replace custom MCP SDK with official @modelcontextprotocol/sdk"
+
+  /api/v1/project/build:
+    post:
+      summary: Build project
+      description: |
+        Compila o projeto TypeScript e gera artefatos em dist/.
+        Conforme Article VI da Constituição - Versioning.
+      operationId: buildProject
+      tags:
+        - Project Build
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BuildProjectRequest'
+      responses:
+        '200':
+          description: Build completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuildProjectResponse'
+              examples:
+                success:
+                  summary: Successful build
+                  value:
+                    buildId: "build_123456789"
+                    status: "success"
+                    duration: 15.5
+                    artifacts:
+                      - path: "dist/server/index.js"
+                        size: "2.1MB"
+                        type: "javascript"
+                      - path: "dist/client/cli/index.js"
+                        size: "1.8MB"
+                        type: "javascript"
+                    warnings: []
+                    errors: []
+        '400':
+          description: Build failed due to compilation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                compilation_error:
+                  summary: TypeScript compilation errors
+                  value:
+                    error: "COMPILATION_ERROR"
+                    message: "TypeScript compilation failed"
+                    details:
+                      errors:
+                        - file: "src/server/index.ts"
+                          line: 42
+                          column: 15
+                          message: "Property 'mcpServer' does not exist on type 'Server'"
+
+  /api/v1/project/test:
+    post:
+      summary: Run project tests
+      description: |
+        Executa todos os testes (unit, integration, contract) e mostra cobertura.
+        Conforme Article V da Constituição - Test-First (NON-NEGOTIABLE).
+      operationId: testProject
+      tags:
+        - Project Testing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestProjectRequest'
+      responses:
+        '200':
+          description: Tests completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestProjectResponse'
+              examples:
+                passing:
+                  summary: All tests passing
+                  value:
+                    testId: "test_123456789"
+                    status: "passed"
+                    duration: 45.2
+                    coverage: 85.5
+                    tests:
+                      total: 150
+                      passed: 150
+                      failed: 0
+                      skipped: 0
+                    suites:
+                      unit: 45
+                      integration: 30
+                      contract: 75
+                    constitutionCompliant: true
+                failing:
+                  summary: Some tests failing
+                  value:
+                    testId: "test_123456789"
+                    status: "failed"
+                    duration: 45.2
+                    coverage: 65.2
+                    tests:
+                      total: 150
+                      passed: 120
+                      failed: 30
+                      skipped: 0
+                    suites:
+                      unit: 35
+                      integration: 25
+                      contract: 60
+                    constitutionCompliant: false
+                    failures:
+                      - suite: "unit"
+                        test: "should initialize MCP server"
+                        error: "Expected server to be defined"
+                      - suite: "contract"
+                        test: "should validate API contract"
+                        error: "Contract validation failed"
+
+components:
+  schemas:
+    InitializeProjectRequest:
+      type: object
+      required:
+        - name
+        - description
+        - author
+      properties:
+        name:
+          type: string
+          pattern: '^[a-z0-9-]+$'
+          minLength: 1
+          maxLength: 214
+          description: Project name following NPM conventions
+          example: "my-bitbucket-mcp-server"
+        description:
+          type: string
+          minLength: 1
+          maxLength: 1000
+          description: Project description
+          example: "Bitbucket MCP Server for my organization"
+        author:
+          $ref: '#/components/schemas/Author'
+        bitbucket:
+          $ref: '#/components/schemas/BitbucketConfig'
+        options:
+          $ref: '#/components/schemas/InitializationOptions'
+
+    InitializeProjectResponse:
+      type: object
+      required:
+        - projectId
+        - status
+        - structure
+        - configuration
+        - dependencies
+        - scripts
+        - validation
+      properties:
+        projectId:
+          type: string
+          description: Unique project identifier
+          example: "proj_123456789"
+        status:
+          type: string
+          enum: [initialized, failed, partial]
+          description: Initialization status
+          example: "initialized"
+        structure:
+          $ref: '#/components/schemas/ProjectStructure'
+        configuration:
+          $ref: '#/components/schemas/ProjectConfiguration'
+        dependencies:
+          $ref: '#/components/schemas/DependencyStatus'
+        scripts:
+          $ref: '#/components/schemas/ScriptStatus'
+        validation:
+          $ref: '#/components/schemas/ValidationStatus'
+
+    ValidateProjectRequest:
+      type: object
+      required:
+        - projectId
+      properties:
+        projectId:
+          type: string
+          description: Project identifier to validate
+          example: "proj_123456789"
+        strict:
+          type: boolean
+          default: true
+          description: Whether to perform strict validation
+        includeWarnings:
+          type: boolean
+          default: true
+          description: Whether to include warnings in response
+
+    ValidateProjectResponse:
+      type: object
+      required:
+        - valid
+        - constitutionCompliant
+        - violations
+        - warnings
+        - recommendations
+      properties:
+        valid:
+          type: boolean
+          description: Whether project configuration is valid
+        constitutionCompliant:
+          type: boolean
+          description: Whether project meets constitutional requirements
+        violations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConstitutionViolation'
+        warnings:
+          type: array
+          items:
+            type: string
+        recommendations:
+          type: array
+          items:
+            type: string
+
+    BuildProjectRequest:
+      type: object
+      required:
+        - projectId
+      properties:
+        projectId:
+          type: string
+          description: Project identifier to build
+          example: "proj_123456789"
+        clean:
+          type: boolean
+          default: false
+          description: Whether to clean build artifacts first
+        watch:
+          type: boolean
+          default: false
+          description: Whether to watch for changes
+
+    BuildProjectResponse:
+      type: object
+      required:
+        - buildId
+        - status
+        - duration
+        - artifacts
+        - warnings
+        - errors
+      properties:
+        buildId:
+          type: string
+          description: Unique build identifier
+          example: "build_123456789"
+        status:
+          type: string
+          enum: [success, failed, partial]
+          description: Build status
+        duration:
+          type: number
+          description: Build duration in seconds
+          example: 15.5
+        artifacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BuildArtifact'
+        warnings:
+          type: array
+          items:
+            type: string
+        errors:
+          type: array
+          items:
+            type: string
+
+    TestProjectRequest:
+      type: object
+      required:
+        - projectId
+      properties:
+        projectId:
+          type: string
+          description: Project identifier to test
+          example: "proj_123456789"
+        suites:
+          type: array
+          items:
+            type: string
+            enum: [unit, integration, contract, all]
+          default: [all]
+          description: Test suites to run
+        coverage:
+          type: boolean
+          default: true
+          description: Whether to generate coverage report
+        watch:
+          type: boolean
+          default: false
+          description: Whether to watch for changes
+
+    TestProjectResponse:
+      type: object
+      required:
+        - testId
+        - status
+        - duration
+        - coverage
+        - tests
+        - suites
+        - constitutionCompliant
+      properties:
+        testId:
+          type: string
+          description: Unique test run identifier
+          example: "test_123456789"
+        status:
+          type: string
+          enum: [passed, failed, partial]
+          description: Test run status
+        duration:
+          type: number
+          description: Test duration in seconds
+          example: 45.2
+        coverage:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Test coverage percentage
+          example: 85.5
+        tests:
+          $ref: '#/components/schemas/TestResults'
+        suites:
+          $ref: '#/components/schemas/TestSuites'
+        constitutionCompliant:
+          type: boolean
+          description: Whether test results meet constitutional requirements
+        failures:
+          type: array
+          items:
+            $ref: '#/components/schemas/TestFailure'
+
+    Author:
+      type: object
+      required:
+        - name
+        - email
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Author name
+          example: "John Doe"
+        email:
+          type: string
+          format: email
+          description: Author email
+          example: "john.doe@example.com"
+        url:
+          type: string
+          format: uri
+          description: Author URL
+          example: "https://johndoe.com"
+
+    BitbucketConfig:
+      type: object
+      required:
+        - baseUrl
+        - serverType
+      properties:
+        baseUrl:
+          type: string
+          format: uri
+          description: Bitbucket server base URL
+          example: "https://bitbucket.company.com"
+        serverType:
+          type: string
+          enum: [datacenter, cloud]
+          description: Bitbucket server type
+          example: "datacenter"
+        apiVersion:
+          type: string
+          description: API version to use
+          example: "1.0"
+        authentication:
+          $ref: '#/components/schemas/AuthenticationConfig'
+
+    InitializationOptions:
+      type: object
+      properties:
+        includeExamples:
+          type: boolean
+          default: true
+          description: Whether to include example code
+        includeDocumentation:
+          type: boolean
+          default: true
+          description: Whether to include documentation
+        includeTests:
+          type: boolean
+          default: true
+          description: Whether to include test structure
+        packageManager:
+          type: string
+          enum: [npm, yarn, pnpm]
+          default: npm
+          description: Package manager to use
+
+    ProjectStructure:
+      type: object
+      required:
+        - src
+        - tests
+      properties:
+        src:
+          type: array
+          items:
+            type: string
+          description: Source directories created
+          example: ["server/", "client/", "tools/", "services/", "types/", "utils/"]
+        tests:
+          type: array
+          items:
+            type: string
+          description: Test directories created
+          example: ["contract/", "integration/", "unit/"]
+
+    ProjectConfiguration:
+      type: object
+      required:
+        - server
+        - client
+        - authentication
+        - transport
+      properties:
+        server:
+          type: string
+          enum: [configured, failed, partial]
+          description: Server configuration status
+        client:
+          type: string
+          enum: [configured, failed, partial]
+          description: Client configuration status
+        authentication:
+          type: string
+          enum: [configured, failed, partial]
+          description: Authentication configuration status
+        transport:
+          type: string
+          enum: [configured, failed, partial]
+          description: Transport configuration status
+
+    DependencyStatus:
+      type: object
+      required:
+        - installed
+        - constitutionCompliant
+      properties:
+        installed:
+          type: integer
+          minimum: 0
+          description: Number of dependencies installed
+          example: 15
+        constitutionCompliant:
+          type: boolean
+          description: Whether all dependencies are constitution compliant
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/DependencyDetail'
+
+    ScriptStatus:
+      type: object
+      required:
+        - build
+        - test
+        - dev
+        - start
+        - cli
+      properties:
+        build:
+          type: string
+          enum: [configured, failed, partial]
+          description: Build script status
+        test:
+          type: string
+          enum: [configured, failed, partial]
+          description: Test script status
+        dev:
+          type: string
+          enum: [configured, failed, partial]
+          description: Development script status
+        start:
+          type: string
+          enum: [configured, failed, partial]
+          description: Start script status
+        cli:
+          type: string
+          enum: [configured, failed, partial]
+          description: CLI script status
+
+    ValidationStatus:
+      type: object
+      required:
+        - constitutionCompliant
+        - testsPassing
+        - coverage
+      properties:
+        constitutionCompliant:
+          type: boolean
+          description: Whether project meets constitutional requirements
+        testsPassing:
+          type: boolean
+          description: Whether all tests are passing
+        coverage:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Current test coverage percentage
+
+    ConstitutionViolation:
+      type: object
+      required:
+        - article
+        - requirement
+        - current
+        - required
+      properties:
+        article:
+          type: string
+          enum: [I, II, III, IV, V, VI, VII]
+          description: Constitutional article violated
+        requirement:
+          type: string
+          description: Specific requirement violated
+        current:
+          description: Current value
+        required:
+          description: Required value
+
+    BuildArtifact:
+      type: object
+      required:
+        - path
+        - size
+        - type
+      properties:
+        path:
+          type: string
+          description: Artifact file path
+          example: "dist/server/index.js"
+        size:
+          type: string
+          description: Artifact size
+          example: "2.1MB"
+        type:
+          type: string
+          enum: [javascript, typescript, json, other]
+          description: Artifact type
+
+    TestResults:
+      type: object
+      required:
+        - total
+        - passed
+        - failed
+        - skipped
+      properties:
+        total:
+          type: integer
+          minimum: 0
+          description: Total number of tests
+          example: 150
+        passed:
+          type: integer
+          minimum: 0
+          description: Number of passed tests
+          example: 150
+        failed:
+          type: integer
+          minimum: 0
+          description: Number of failed tests
+          example: 0
+        skipped:
+          type: integer
+          minimum: 0
+          description: Number of skipped tests
+          example: 0
+
+    TestSuites:
+      type: object
+      required:
+        - unit
+        - integration
+        - contract
+      properties:
+        unit:
+          type: integer
+          minimum: 0
+          description: Number of unit tests
+          example: 45
+        integration:
+          type: integer
+          minimum: 0
+          description: Number of integration tests
+          example: 30
+        contract:
+          type: integer
+          minimum: 0
+          description: Number of contract tests
+          example: 75
+
+    TestFailure:
+      type: object
+      required:
+        - suite
+        - test
+        - error
+      properties:
+        suite:
+          type: string
+          enum: [unit, integration, contract]
+          description: Test suite where failure occurred
+        test:
+          type: string
+          description: Test name that failed
+        error:
+          type: string
+          description: Error message
+
+    DependencyDetail:
+      type: object
+      required:
+        - name
+        - version
+        - type
+        - constitutionCompliant
+      properties:
+        name:
+          type: string
+          description: Dependency name
+        version:
+          type: string
+          description: Dependency version
+        type:
+          type: string
+          enum: [production, development]
+          description: Dependency type
+        constitutionCompliant:
+          type: boolean
+          description: Whether dependency is constitution compliant
+
+    AuthenticationConfig:
+      type: object
+      properties:
+        oauth2:
+          $ref: '#/components/schemas/OAuth2Config'
+        personalToken:
+          $ref: '#/components/schemas/PersonalTokenConfig'
+        appPassword:
+          $ref: '#/components/schemas/AppPasswordConfig'
+        basic:
+          $ref: '#/components/schemas/BasicAuthConfig'
+
+    OAuth2Config:
+      type: object
+      required:
+        - clientId
+        - clientSecret
+        - redirectUri
+      properties:
+        clientId:
+          type: string
+          description: OAuth 2.0 client ID
+        clientSecret:
+          type: string
+          description: OAuth 2.0 client secret
+        redirectUri:
+          type: string
+          format: uri
+          description: OAuth 2.0 redirect URI
+
+    PersonalTokenConfig:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          description: Personal access token
+
+    AppPasswordConfig:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          description: Bitbucket username
+        password:
+          type: string
+          description: App password
+
+    BasicAuthConfig:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          description: Username
+        password:
+          type: string
+          description: Password
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Error code
+          example: "VALIDATION_ERROR"
+        message:
+          type: string
+          description: Error message
+          example: "Invalid request parameters"
+        details:
+          type: object
+          description: Additional error details
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+security:
+  - BearerAuth: []
+  - ApiKeyAuth: []
+
+tags:
+  - name: Project Initialization
+    description: Operations for initializing Bitbucket MCP Server projects
+  - name: Project Validation
+    description: Operations for validating project configuration
+  - name: Project Build
+    description: Operations for building projects
+  - name: Project Testing
+    description: Operations for running project tests

@@ -1,0 +1,175 @@
+# Bitbucket MCP Server - LLM Context
+
+## Project Overview
+
+The Bitbucket MCP Server is a comprehensive Model Context Protocol (MCP) server that provides seamless access to both Bitbucket Cloud and Data Center APIs. Built with TypeScript and Node.js, it follows a constitution-based development approach ensuring high quality, maintainability, and comprehensive functionality.
+
+## Architecture
+
+### MCP-First Design
+- Every feature is implemented as an MCP tool
+- All functionality accessible through standardized MCP protocol
+- Self-contained, independently testable tools
+- Clear separation between Cloud and Data Center implementations
+- Comprehensive tool registry for dynamic capability discovery
+
+### Dual-Platform Support
+- Automatic server type detection (Cloud vs Data Center)
+- Selective tool loading based on detected platform
+- Shared core functionality with platform-specific extensions
+- Backward compatibility maintained across platform updates
+
+### Integrated Client Console
+- Interactive console with REPL capabilities
+- Text in/out protocol: stdin/args → stdout, errors → stderr
+- JSON + human-readable format support
+- Built-in command history and auto-completion
+- Both interactive and batch execution modes
+- Primary interface for all MCP server operations
+
+## Core Capabilities
+
+### Authentication & Authorization
+- Multi-method authentication (Basic, OAuth, Token)
+- Secure credential management
+- Session management and token refresh
+- Rate limiting with burst protection
+- Automatic retry with exponential backoff
+
+### Repository Management
+- Create, read, update, delete repositories
+- Branch and tag management
+- Fork operations
+- Repository settings and permissions
+- Webhook management
+
+### Pull Request Operations
+- Create, update, merge, decline pull requests
+- Comment management
+- Review workflows
+- Diff and change tracking
+- Activity monitoring
+
+### Project Management
+- Project creation and configuration
+- Permission management
+- Avatar and settings management
+- Hook configuration
+
+### Search & Analytics
+- Repository search
+- Code search
+- Commit search
+- Pull request search
+- User search
+- Search analytics and statistics
+
+### Dashboard & Monitoring
+- Dashboard creation and management
+- Widget configuration
+- Performance monitoring
+- Health checks and metrics
+- Request/response tracing
+
+## Technology Stack
+
+### Core Technologies
+- **Runtime**: Node.js 18+ (LTS)
+- **Language**: TypeScript with strict mode
+- **Protocol**: Model Context Protocol (MCP) v0.4+
+- **HTTP Client**: Axios with interceptors
+- **Validation**: Zod for schema validation
+- **Logging**: Winston with structured output
+- **Console**: Inquirer.js for interactive prompts, Chalk for colored output
+- **Testing**: Jest with comprehensive coverage
+
+### Development Standards
+- ESLint + Prettier configuration
+- Strict TypeScript compilation
+- npm with lockfile
+- TypeScript compiler with path aliases
+- Git with conventional commits
+- LGPL (GNU Lesser General Public License)
+
+## Development Principles
+
+### Test-First Development
+- TDD mandatory: Tests written → User approved → Tests fail → Then implement
+- Red-Green-Refactor cycle strictly enforced
+- Comprehensive unit and integration tests
+- Test coverage minimum 90% for all new code
+
+### Observability & Performance
+- Structured logging with Winston
+- Multi-tier log streaming (debug, info, warn, error)
+- Performance monitoring for API calls and rate limiting
+- Health checks and metrics collection
+- Request/response tracing for debugging
+
+### Security & Authentication
+- Multi-method authentication support
+- Secure credential management with environment variables
+- Rate limiting with burst protection
+- Automatic retry with exponential backoff
+- Input validation with Zod schemas
+
+### Documentation Standards
+- All documentation in English
+- Mandatory documents: README.md, docs/API.md, docs/ARCHITECTURE.md, docs/CONTRIBUTING.md, docs/DEPLOYMENT.md, docs/EXAMPLES.md
+- API documentation with TypeScript interfaces
+- Console help text for all commands
+- Architecture documentation with diagrams
+- Interactive help system within console
+- Command reference with examples and usage patterns
+- MCP tool documentation with input/output schemas and usage examples
+
+## Project Structure
+
+```
+src/
+├── client/           # Console client implementation
+│   ├── cli/         # CLI interface
+│   └── commands/    # Command implementations
+├── server/          # MCP server implementation
+│   ├── http/        # HTTP server components
+│   └── mcp/         # MCP protocol handling
+├── services/        # Business logic services
+├── tools/           # MCP tool implementations
+│   ├── cloud/       # Cloud-specific tools
+│   ├── datacenter/  # Data Center-specific tools
+│   └── shared/      # Shared tool implementations
+├── types/           # TypeScript type definitions
+└── utils/           # Utility functions
+
+tests/
+├── contract/        # Contract tests
+├── integration/     # Integration tests
+└── unit/           # Unit tests
+
+docs/               # Documentation
+├── API.md          # API documentation
+├── ARCHITECTURE.md # Architecture documentation
+├── CONTRIBUTING.md # Contribution guidelines
+├── DEPLOYMENT.md   # Deployment instructions
+└── EXAMPLES.md     # Usage examples
+```
+
+## Quality Gates
+
+All development must pass these quality gates:
+- [ ] All tests pass (unit + integration)
+- [ ] Test coverage ≥ 90%
+- [ ] TypeScript compilation without errors
+- [ ] ESLint/Prettier compliance
+- [ ] MCP protocol compliance verified
+- [ ] Console help text updated
+- [ ] Documentation updated in English
+- [ ] MCP server functionality verified
+- [ ] Console integration tested
+- [ ] Tool accessibility through both interfaces confirmed
+
+## Governance
+
+This project follows a constitution-based development approach. All PRs and code reviews must verify compliance with constitutional principles. Complexity must be justified with clear documentation. The constitution serves as the primary guidance for all development decisions.
+
+**Version**: 2.0.0 | **Ratified**: 2025-01-27 | **Last Amended**: 2025-01-27
