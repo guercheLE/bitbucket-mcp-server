@@ -60,6 +60,7 @@ describe('Authentication', () => {
       
       expect(result).toEqual({
         authenticated: true,
+        type: 'oauth2',
         user: {
           name: 'Test User',
           email: 'test@example.com',
@@ -173,6 +174,7 @@ describe('Authentication', () => {
       
       expect(result).toEqual({
         authenticated: true,
+        type: 'personal-token',
         user: {
           name: 'Test User',
           email: 'test@example.com',
@@ -239,6 +241,7 @@ describe('Authentication', () => {
       
       expect(result).toEqual({
         authenticated: true,
+        type: 'app-password',
         user: {
           name: 'Test User',
           email: 'test@example.com',
@@ -306,6 +309,7 @@ describe('Authentication', () => {
       
       expect(result).toEqual({
         authenticated: true,
+        type: 'basic',
         user: {
           name: 'Test User',
           email: 'test@example.com',

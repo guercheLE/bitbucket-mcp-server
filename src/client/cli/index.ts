@@ -19,15 +19,22 @@ async function healthCommand(url: string, options: any): Promise<void> {
     // Validate URL
     const validatedUrl = UrlSchema.parse(url);
     
-    // TODO: Implement actual health check logic
-    // For now, just validate the URL and return success
-    console.log(`Health check for ${validatedUrl} completed successfully`);
+    // Import server detection service
+    const { serverDetectionService } = await import('../../services/server-detection.js');
+    
+    // Perform actual health check
+    const startTime = Date.now();
+    const serverInfo = await serverDetectionService.detectServerType(validatedUrl);
+    const responseTime = Date.now() - startTime;
     
     if (options.verbose) {
       console.log('Request details:');
       console.log(`  URL: ${validatedUrl}`);
       console.log(`  Method: GET`);
-      console.log(`  Response time: 100ms`);
+      console.log(`  Response time: ${responseTime}ms`);
+      console.log(`  Server type: ${serverInfo.serverType}`);
+      console.log(`  Version: ${serverInfo.version}`);
+      console.log(`  Supported: ${serverInfo.isSupported}`);
     }
     
     if (options.format === 'json') {
@@ -35,9 +42,19 @@ async function healthCommand(url: string, options: any): Promise<void> {
         status: 'success',
         url: validatedUrl,
         timestamp: new Date().toISOString(),
-        responseTime: 100,
+        responseTime,
+        serverInfo: {
+          serverType: serverInfo.serverType,
+          version: serverInfo.version,
+          isSupported: serverInfo.isSupported,
+          healthStatus: serverInfo.healthStatus,
+        }
       };
       console.log(JSON.stringify(result, null, 2));
+    } else {
+      console.log(`Health check for ${validatedUrl} completed successfully`);
+      console.log(`Server type: ${serverInfo.serverType} ${serverInfo.version}`);
+      console.log(`Response time: ${responseTime}ms`);
     }
     
   } catch (error) {
@@ -55,18 +72,39 @@ async function healthCommand(url: string, options: any): Promise<void> {
  */
 async function configInit(options: any): Promise<void> {
   try {
+    const fs = await import('fs/promises');
+    const path = await import('path');
+    
     const config = {
       server: {
-        url: options.serverUrl,
+        url: options.serverUrl || 'https://bitbucket.example.com',
       },
       auth: {
         type: options.authType || 'oauth',
+        clientId: process.env.BITBUCKET_CLIENT_ID || '',
+        clientSecret: process.env.BITBUCKET_CLIENT_SECRET || '',
+        accessToken: process.env.BITBUCKET_ACCESS_TOKEN || '',
+      },
+      cache: {
+        type: 'memory',
+        ttl: 300, // 5 minutes
+        maxSize: 100 * 1024 * 1024, // 100MB
+      },
+      logging: {
+        level: 'info',
+        format: 'json',
       },
     };
     
-    // TODO: Implement actual config file creation
-    console.log('Configuration created successfully');
-    console.log('Config:', JSON.stringify(config, null, 2));
+    const configPath = path.resolve(options.config || 'bitbucket-mcp.json');
+    await fs.writeFile(configPath, JSON.stringify(config, null, 2));
+    
+    console.log(`Configuration created successfully at ${configPath}`);
+    
+    if (options.verbose) {
+      console.log('Config content:');
+      console.log(JSON.stringify(config, null, 2));
+    }
     
   } catch (error) {
     console.error('Failed to create configuration:', error);
@@ -74,10 +112,66 @@ async function configInit(options: any): Promise<void> {
   }
 }
 
-async function configValidate(_options: any): Promise<void> {
+async function configValidate(options: any): Promise<void> {
   try {
-    // TODO: Implement actual config validation
+    const fs = await import('fs/promises');
+    const path = await import('path');
+    
+    const configPath = path.resolve(options.config || 'bitbucket-mcp.json');
+    
+    // Check if config file exists
+    try {
+      await fs.access(configPath);
+    } catch {
+      throw new Error(`Configuration file not found: ${configPath}`);
+    }
+    
+    // Read and parse config
+    const configContent = await fs.readFile(configPath, 'utf-8');
+    const config = JSON.parse(configContent);
+    
+    // Validate required fields
+    const errors: string[] = [];
+    
+    if (!config.server?.url) {
+      errors.push('Server URL is required');
+    } else {
+      try {
+        UrlSchema.parse(config.server.url);
+      } catch {
+        errors.push('Server URL must be a valid URL');
+      }
+    }
+    
+    if (!config.auth?.type) {
+      errors.push('Authentication type is required');
+    } else if (!['oauth', 'token', 'basic'].includes(config.auth.type)) {
+      errors.push('Authentication type must be oauth, token, or basic');
+    }
+    
+    if (config.auth?.type === 'oauth') {
+      if (!config.auth.clientId) {
+        errors.push('Client ID is required for OAuth authentication');
+      }
+      if (!config.auth.clientSecret) {
+        errors.push('Client Secret is required for OAuth authentication');
+      }
+    }
+    
+    if (config.auth?.type === 'token' && !config.auth.accessToken) {
+      errors.push('Access token is required for token authentication');
+    }
+    
+    if (errors.length > 0) {
+      throw new Error(`Configuration validation failed:\n${errors.map(e => `  - ${e}`).join('\n')}`);
+    }
+    
     console.log('Configuration is valid');
+    
+    if (options.verbose) {
+      console.log('Validated configuration:');
+      console.log(JSON.stringify(config, null, 2));
+    }
     
   } catch (error) {
     console.error('Invalid configuration:', error);
@@ -90,10 +184,33 @@ async function configValidate(_options: any): Promise<void> {
  */
 async function authOAuth(options: any): Promise<void> {
   try {
-    // TODO: Implement OAuth flow
+    const { serverDetectionService } = await import('../../services/server-detection.js');
+    const { AuthenticationService } = await import('../../services/authentication.js');
+    
+    const serverUrl = process.env.BITBUCKET_URL || 'https://bitbucket.example.com';
+    const serverInfo = await serverDetectionService.detectServerType(serverUrl);
+    
+    const authService = new AuthenticationService(serverInfo);
+    
     console.log('OAuth authentication initiated');
-    console.log(`Client ID: ${options.clientId}`);
-    console.log(`Redirect URI: ${options.redirectUri}`);
+    console.log(`Server: ${serverUrl} (${serverInfo.serverType})`);
+    console.log(`Client ID: ${options.clientId || 'Not provided'}`);
+    console.log(`Redirect URI: ${options.redirectUri || 'Not provided'}`);
+    
+    if (options.clientId && options.redirectUri) {
+      // Generate authorization URL
+      const authUrl = authService.generateAuthorizationUrl({
+        clientId: options.clientId,
+        redirectUri: options.redirectUri,
+        scope: 'read write',
+      });
+      
+      console.log('\nPlease visit the following URL to authorize:');
+      console.log(authUrl);
+      console.log('\nAfter authorization, you will receive a code that can be used to exchange for an access token.');
+    } else {
+      console.log('\nTo complete OAuth setup, provide --client-id and --redirect-uri options');
+    }
     
   } catch (error) {
     console.error('OAuth authentication failed:', error);
@@ -101,10 +218,34 @@ async function authOAuth(options: any): Promise<void> {
   }
 }
 
-async function authToken(_options: any): Promise<void> {
+async function authToken(options: any): Promise<void> {
   try {
-    // TODO: Implement token validation
-    console.log('Token authentication configured');
+    const { serverDetectionService } = await import('../../services/server-detection.js');
+    const { AuthenticationService } = await import('../../services/authentication.js');
+    
+    const serverUrl = process.env.BITBUCKET_URL || 'https://bitbucket.example.com';
+    const serverInfo = await serverDetectionService.detectServerType(serverUrl);
+    
+    const authService = new AuthenticationService(serverInfo);
+    
+    if (!options.token) {
+      throw new Error('Token is required. Use --token option to provide the access token.');
+    }
+    
+    // Validate token by making a test request
+    try {
+      const userInfo = await authService.getCurrentUser(options.token);
+      console.log('Token authentication successful');
+      console.log(`Authenticated as: ${userInfo.displayName || userInfo.name}`);
+      console.log(`User ID: ${userInfo.id || userInfo.name}`);
+      
+      if (options.verbose) {
+        console.log('User details:');
+        console.log(JSON.stringify(userInfo, null, 2));
+      }
+    } catch (tokenError) {
+      throw new Error(`Token validation failed: ${tokenError instanceof Error ? tokenError.message : 'Unknown error'}`);
+    }
     
   } catch (error) {
     console.error('Token authentication failed:', error);

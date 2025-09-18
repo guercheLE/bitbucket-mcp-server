@@ -1,19 +1,19 @@
 /**
- * Winston Logger Implementation
- * Structured logging with sanitization and correlation
+ * Winston Logger Configuration
+ * Centralized logging with sanitization and multiple transports
  */
 
 import winston from 'winston';
-import { LogLevel, LoggingConfig } from '../types/index.js';
 import { environment } from '../config/environment.js';
+import { LogLevel } from '../types/index.js';
 
 // ============================================================================
-// Log Format Configuration
+// Logger Configuration
 // ============================================================================
 
 const logFormat = winston.format.combine(
   winston.format.timestamp({
-    format: 'YYYY-MM-DD HH:mm:ss.SSS',
+    format: 'YYYY-MM-DD HH:mm:ss.SSS'
   }),
   winston.format.errors({ stack: true }),
   winston.format.json(),
@@ -23,7 +23,7 @@ const logFormat = winston.format.combine(
       timestamp,
       level,
       message,
-      ...sanitizedMeta,
+      ...sanitizedMeta
     });
   })
 );
@@ -31,7 +31,7 @@ const logFormat = winston.format.combine(
 const consoleFormat = winston.format.combine(
   winston.format.colorize(),
   winston.format.timestamp({
-    format: 'HH:mm:ss.SSS',
+    format: 'HH:mm:ss.SSS'
   }),
   winston.format.printf(({ timestamp, level, message, ...meta }) => {
     const sanitizedMeta = environment.sanitizeForLogging(meta);
@@ -43,303 +43,263 @@ const consoleFormat = winston.format.combine(
 );
 
 // ============================================================================
-// Logger Configuration
+// Transport Configuration
 // ============================================================================
 
-class LoggerManager {
-  private logger: winston.Logger;
-  private config: LoggingConfig;
+const transports: winston.transport[] = [];
 
-  constructor() {
-    this.config = this.getLoggingConfig();
-    this.logger = this.createLogger();
-  }
+// Console transport
+transports.push(
+  new winston.transports.Console({
+    level: environment.getConfig().logging.level,
+    format: environment.getConfig().logging.format === 'json' ? logFormat : consoleFormat,
+    silent: environment.isTest()
+  })
+);
 
-  private getLoggingConfig(): LoggingConfig {
-    const envConfig = environment.getConfig();
-    
-    return {
-      level: envConfig.logging.level as LogLevel,
-      format: envConfig.logging.format as 'json' | 'text',
-      destinations: [
-        {
-          type: 'console',
-          config: {
-            colorize: true,
-          },
-        },
-        ...(envConfig.logging.file ? [{
-          type: 'file' as const,
-          config: {
-            filename: envConfig.logging.file,
-            maxSize: '10m',
-            maxFiles: 5,
-          },
-        }] : []),
-      ],
-    };
-  }
-
-  private createLogger(): winston.Logger {
-    const transports: winston.transport[] = [];
-
-    // Console transport
-    const consoleTransport = new winston.transports.Console({
-      level: this.config.level,
-      format: this.config.format === 'json' ? logFormat : consoleFormat,
-      silent: environment.isTest(),
-    });
-    transports.push(consoleTransport);
-
-    // File transport (if configured)
-    const fileDestination = this.config.destinations.find(d => d.type === 'file');
-    if (fileDestination) {
-      const fileConfig = fileDestination.config as any;
-      const fileTransport = new winston.transports.File({
-        filename: fileConfig.filename || 'logs/app.log',
-        level: this.config.level,
-        format: logFormat,
-        maxsize: this.parseSize(fileConfig.maxSize || '10m'),
-        maxFiles: fileConfig.maxFiles || 5,
-        tailable: true,
-      });
-      transports.push(fileTransport);
-    }
-
-    return winston.createLogger({
-      level: this.config.level,
+// File transport (if configured)
+if (environment.getConfig().logging.file) {
+  transports.push(
+    new winston.transports.File({
+      filename: environment.getConfig().logging.file,
+      level: environment.getConfig().logging.level,
       format: logFormat,
-      transports,
-      exitOnError: false,
-      silent: environment.isTest(),
-    });
-  }
-
-  private parseSize(size: string): number {
-    const units: Record<string, number> = {
-      'b': 1,
-      'k': 1024,
-      'm': 1024 * 1024,
-      'g': 1024 * 1024 * 1024,
-    };
-
-    const match = size.toLowerCase().match(/^(\d+(?:\.\d+)?)([bkmg]?)$/);
-    if (!match) {
-      return 10 * 1024 * 1024; // Default 10MB
-    }
-
-    const value = parseFloat(match[1] || '0');
-    const unit = match[2] || 'b';
-    return Math.floor(value * (units[unit] || 1));
-  }
-
-  // ============================================================================
-  // Public Logging Methods
-  // ============================================================================
-
-  public error(message: string, meta?: any): void {
-    this.logger.error(message, this.addCorrelationId(meta));
-  }
-
-  public warn(message: string, meta?: any): void {
-    this.logger.warn(message, this.addCorrelationId(meta));
-  }
-
-  public info(message: string, meta?: any): void {
-    this.logger.info(message, this.addCorrelationId(meta));
-  }
-
-  public debug(message: string, meta?: any): void {
-    this.logger.debug(message, this.addCorrelationId(meta));
-  }
-
-  // ============================================================================
-  // Structured Logging Methods
-  // ============================================================================
-
-  public logRequest(method: string, url: string, meta?: any): void {
-    this.info('HTTP Request', {
-      method,
-      url,
-      ...meta,
-    });
-  }
-
-  public logResponse(method: string, url: string, statusCode: number, duration: number, meta?: any): void {
-    this.info('HTTP Response', {
-      method,
-      url,
-      statusCode,
-      duration,
-      ...meta,
-    });
-  }
-
-  public logError(error: Error, context?: any): void {
-    this.error('Application Error', {
-      error: {
-        name: error.name,
-        message: error.message,
-        stack: error.stack,
-      },
-      context,
-    });
-  }
-
-  public logPerformance(operation: string, duration: number, meta?: any): void {
-    this.info('Performance Metric', {
-      operation,
-      duration,
-      ...meta,
-    });
-  }
-
-  public logSecurity(event: string, meta?: any): void {
-    this.warn('Security Event', {
-      event,
-      ...meta,
-    });
-  }
-
-  public logBusiness(event: string, meta?: any): void {
-    this.info('Business Event', {
-      event,
-      ...meta,
-    });
-  }
-
-  // ============================================================================
-  // Utility Methods
-  // ============================================================================
-
-  private addCorrelationId(meta?: any): any {
-    if (!meta) {
-      meta = {};
-    }
-
-    // Add correlation ID if not present
-    if (!meta.correlationId) {
-      meta.correlationId = this.generateCorrelationId();
-    }
-
-    // Add process information
-    meta.process = {
-      pid: process.pid,
-      uptime: process.uptime(),
-    };
-
-    // Add environment information
-    meta.environment = {
-      nodeEnv: environment.getRawEnvironment().NODE_ENV,
-      version: process.env['npm_package_version'] || '1.0.0',
-    };
-
-    return meta;
-  }
-
-  private generateCorrelationId(): string {
-    return `corr_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  }
-
-  public createChildLogger(prefix: string): winston.Logger {
-    return this.logger.child({ prefix });
-  }
-
-  public setLevel(level: LogLevel): void {
-    this.logger.level = level;
-  }
-
-  public getLevel(): string {
-    return this.logger.level;
-  }
-
-  public isLevelEnabled(level: LogLevel): boolean {
-    return this.logger.isLevelEnabled(level);
-  }
-
-  // ============================================================================
-  // Log Rotation and Management
-  // ============================================================================
-
-  public async rotateLogs(): Promise<void> {
-    try {
-      // Close current file transports
-      const fileTransports = this.logger.transports.filter(
-        transport => transport instanceof winston.transports.File
-      );
-
-      for (const transport of fileTransports) {
-        await new Promise<void>((resolve, reject) => {
-          (transport as any).close((error: any) => {
-            if (error) {
-              reject(error);
-            } else {
-              resolve();
-            }
-          });
-        });
-      }
-
-      // Recreate logger with new transports
-      this.logger = this.createLogger();
-      
-      this.info('Log rotation completed');
-    } catch (error) {
-      this.error('Log rotation failed', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
-      throw error;
-    }
-  }
-
-  public getLogStats(): any {
-    const stats: any = {
-      level: this.logger.level,
-      transports: this.logger.transports.length,
-      silent: this.logger.silent,
-    };
-
-    // Add file transport stats
-    const fileTransports = this.logger.transports.filter(
-      transport => transport instanceof winston.transports.File
-    );
-
-    if (fileTransports.length > 0) {
-      stats.fileTransports = fileTransports.map((transport: any) => ({
-        filename: transport.filename,
-        level: transport.level,
-      }));
-    }
-
-    return stats;
-  }
+      maxsize: 10 * 1024 * 1024, // 10MB
+      maxFiles: 5,
+      tailable: true
+    })
+  );
 }
 
 // ============================================================================
-// Export Singleton Instance
+// Logger Instance
 // ============================================================================
 
-export const logger = new LoggerManager();
+export const logger = winston.createLogger({
+  level: environment.getConfig().logging.level,
+  format: logFormat,
+  transports,
+  exitOnError: false,
+  silent: environment.isTest()
+});
 
-// Export convenience methods
-export const logError = (message: string, meta?: any) => logger.error(message, meta);
-export const logWarn = (message: string, meta?: any) => logger.warn(message, meta);
-export const logInfo = (message: string, meta?: any) => logger.info(message, meta);
-export const logDebug = (message: string, meta?: any) => logger.debug(message, meta);
+// ============================================================================
+// Request/Response Logging Middleware
+// ============================================================================
 
-// Export structured logging methods
-export const logRequest = (method: string, url: string, meta?: any) => 
-  logger.logRequest(method, url, meta);
-export const logResponse = (method: string, url: string, statusCode: number, duration: number, meta?: any) => 
-  logger.logResponse(method, url, statusCode, duration, meta);
-export const logApplicationError = (error: Error, context?: any) => 
-  logger.logError(error, context);
-export const logPerformance = (operation: string, duration: number, meta?: any) => 
-  logger.logPerformance(operation, duration, meta);
-export const logSecurity = (event: string, meta?: any) => 
-  logger.logSecurity(event, meta);
-export const logBusiness = (event: string, meta?: any) => 
-  logger.logBusiness(event, meta);
+export interface RequestLogData {
+  method: string;
+  url: string;
+  headers?: Record<string, string>;
+  body?: any;
+  query?: Record<string, any>;
+  params?: Record<string, any>;
+  userAgent?: string;
+  ip?: string;
+  requestId?: string;
+}
 
-// Export types
-export type { LogLevel, LoggingConfig };
+export interface ResponseLogData {
+  statusCode: number;
+  headers?: Record<string, string>;
+  body?: any;
+  responseTime?: number;
+  requestId?: string;
+}
+
+export interface ErrorLogData {
+  error: Error;
+  requestId?: string;
+  context?: Record<string, any>;
+  stack?: string;
+}
+
+/**
+ * Logs incoming requests with sanitization
+ */
+export function logRequest(data: RequestLogData): void {
+  const sanitizedData = environment.sanitizeForLogging(data);
+  
+  logger.info('Incoming request', {
+    type: 'request',
+    ...sanitizedData,
+    timestamp: new Date().toISOString()
+  });
+}
+
+/**
+ * Logs outgoing responses with sanitization
+ */
+export function logResponse(data: ResponseLogData): void {
+  const sanitizedData = environment.sanitizeForLogging(data);
+  
+  logger.info('Outgoing response', {
+    type: 'response',
+    ...sanitizedData,
+    timestamp: new Date().toISOString()
+  });
+}
+
+/**
+ * Logs errors with sanitization and context
+ */
+export function logError(data: ErrorLogData): void {
+  const sanitizedData = environment.sanitizeForLogging(data);
+  
+  logger.error('Error occurred', {
+    type: 'error',
+    error: {
+      name: data.error.name,
+      message: data.error.message,
+      stack: data.error.stack
+    },
+    ...sanitizedData,
+    timestamp: new Date().toISOString()
+  });
+}
+
+/**
+ * Logs performance metrics
+ */
+export function logPerformance(operation: string, duration: number, metadata?: Record<string, any>): void {
+  const sanitizedMetadata = environment.sanitizeForLogging(metadata || {});
+  
+  logger.info('Performance metric', {
+    type: 'performance',
+    operation,
+    duration,
+    ...sanitizedMetadata,
+    timestamp: new Date().toISOString()
+  });
+}
+
+/**
+ * Logs authentication events
+ */
+export function logAuth(event: string, method: string, success: boolean, metadata?: Record<string, any>): void {
+  const sanitizedMetadata = environment.sanitizeForLogging(metadata || {});
+  
+  logger.info('Authentication event', {
+    type: 'auth',
+    event,
+    method,
+    success,
+    ...sanitizedMetadata,
+    timestamp: new Date().toISOString()
+  });
+}
+
+/**
+ * Logs cache operations
+ */
+export function logCache(operation: 'hit' | 'miss' | 'set' | 'delete' | 'clear', key: string, metadata?: Record<string, any>): void {
+  const sanitizedMetadata = environment.sanitizeForLogging(metadata || {});
+  
+  logger.debug('Cache operation', {
+    type: 'cache',
+    operation,
+    key,
+    ...sanitizedMetadata,
+    timestamp: new Date().toISOString()
+  });
+}
+
+/**
+ * Logs transport events
+ */
+export function logTransport(event: string, transport: string, metadata?: Record<string, any>): void {
+  const sanitizedMetadata = environment.sanitizeForLogging(metadata || {});
+  
+  logger.info('Transport event', {
+    type: 'transport',
+    event,
+    transport,
+    ...sanitizedMetadata,
+    timestamp: new Date().toISOString()
+  });
+}
+
+/**
+ * Logs health check results
+ */
+export function logHealthCheck(service: string, status: 'healthy' | 'unhealthy', metadata?: Record<string, any>): void {
+  const sanitizedMetadata = environment.sanitizeForLogging(metadata || {});
+  
+  logger.info('Health check', {
+    type: 'health',
+    service,
+    status,
+    ...sanitizedMetadata,
+    timestamp: new Date().toISOString()
+  });
+}
+
+// ============================================================================
+// Logger Utilities
+// ============================================================================
+
+/**
+ * Creates a child logger with additional context
+ */
+export function createChildLogger(context: Record<string, any>): winston.Logger {
+  const sanitizedContext = environment.sanitizeForLogging(context);
+  
+  return logger.child(sanitizedContext);
+}
+
+/**
+ * Sets the log level dynamically
+ */
+export function setLogLevel(level: LogLevel): void {
+  logger.level = level;
+  logger.transports.forEach(transport => {
+    if ('level' in transport) {
+      transport.level = level;
+    }
+  });
+}
+
+/**
+ * Gets current log level
+ */
+export function getLogLevel(): string {
+  return logger.level;
+}
+
+/**
+ * Checks if a log level is enabled
+ */
+export function isLogLevelEnabled(level: LogLevel): boolean {
+  return logger.isLevelEnabled(level);
+}
+
+// ============================================================================
+// Development Helpers
+// ============================================================================
+
+if (environment.isDevelopment()) {
+  // Add development-specific logging
+  logger.add(new winston.transports.Console({
+    level: 'debug',
+    format: winston.format.combine(
+      winston.format.colorize(),
+      winston.format.simple()
+    )
+  }));
+}
+
+// ============================================================================
+// Graceful Shutdown
+// ============================================================================
+
+process.on('SIGINT', () => {
+  logger.info('Received SIGINT, closing logger...');
+  logger.end();
+});
+
+process.on('SIGTERM', () => {
+  logger.info('Received SIGTERM, closing logger...');
+  logger.end();
+});
+
+export default logger;

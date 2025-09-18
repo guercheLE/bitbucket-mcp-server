@@ -527,7 +527,12 @@ export class CacheManager {
   private config: CacheConfig;
 
   constructor(config?: CacheConfig) {
-    this.config = config || environment.getConfig().cache as CacheConfig;
+    this.config = config || {
+      type: environment.getConfig().cache.type as 'memory' | 'redis',
+      ttl: environment.getConfig().cache.ttl,
+      maxSize: environment.getConfig().cache.maxSize,
+      redis: environment.getConfig().cache.redis,
+    };
     this.cache = this.createCache();
     
     logger.info('Cache manager initialized', {

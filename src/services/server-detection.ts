@@ -1,223 +1,343 @@
-/**
- * Server Detection Service
- * Automatically detects Bitbucket server type and capabilities
- */
-
 import axios, { AxiosResponse } from 'axios';
 import { z } from 'zod';
 
-// Types
-export interface ServerCapabilities {
-  supportsOAuth: boolean;
-  supportsPersonalTokens: boolean;
-  supportsAppPasswords: boolean;
-  supportsBasicAuth: boolean;
-}
+/**
+ * Server Detection Service
+ * T027: Server type detection service in src/services/server-detection.ts
+ * 
+ * Detects Bitbucket server type (Data Center vs Cloud) and version
+ * Based on research.md specifications
+ */
 
-export interface ServerInfo {
-  type: 'datacenter' | 'cloud';
-  version: string;
-  buildNumber?: string | undefined;
-  capabilities: ServerCapabilities;
-}
+// Server info schema
+export const ServerInfoSchema = z.object({
+  serverType: z.enum(['datacenter', 'cloud']),
+  version: z.string(),
+  buildNumber: z.string().optional(),
+  baseUrl: z.string().url(),
+  isSupported: z.boolean(),
+  fallbackUsed: z.boolean().default(false),
+  cached: z.boolean().default(false),
+  lastHealthCheck: z.string().datetime().optional(),
+  healthStatus: z.enum(['healthy', 'unhealthy']).optional(),
+  error: z.string().optional()
+});
 
-// Schemas
-const DataCenterResponseSchema = z.object({
-  version: z.string().optional(),
+export type ServerInfo = z.infer<typeof ServerInfoSchema>;
+
+// Application properties response schema
+const ApplicationPropertiesSchema = z.object({
+  version: z.string(),
   buildNumber: z.string().optional(),
   buildDate: z.string().optional(),
   displayName: z.string().optional(),
+  serverTitle: z.string().optional()
 });
 
-// Cloud response schema (currently unused but available for future use)
-// const CloudResponseSchema = z.object({
-//   type: z.literal('cloud'),
-//   version: z.literal('cloud'),
-//   displayName: z.string().optional(),
-// });
+type ApplicationProperties = z.infer<typeof ApplicationPropertiesSchema>;
 
-// Cache for server detection results
-const serverCache = new Map<string, { info: ServerInfo; timestamp: number }>();
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+// Cache entry schema
+const CacheEntrySchema = z.object({
+  serverInfo: ServerInfoSchema,
+  timestamp: z.number(),
+  ttl: z.number()
+});
 
-/**
- * Detect server type and capabilities
- */
-export async function detectServerType(url: string): Promise<ServerInfo> {
-  // Validate URL
-  validateUrl(url);
-  
-  // Check cache first
-  const cached = serverCache.get(url);
-  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-    return cached.info;
-  }
-  
-  try {
-    // Try Data Center detection first
-    const info = await detectDataCenter(url);
-    
-    // Cache the result
-    serverCache.set(url, {
-      info,
-      timestamp: Date.now(),
-    });
-    
-    return info;
-  } catch (error) {
-    // Clear cache on error
-    serverCache.delete(url);
-    throw error;
-  }
-}
+type CacheEntry = z.infer<typeof CacheEntrySchema>;
 
 /**
- * Detect Data Center server
+ * Server Detection Service Class
  */
-async function detectDataCenter(url: string): Promise<ServerInfo> {
-  try {
-    // Try the main application properties endpoint
-    const response = await makeRequest(`${url}/rest/api/1.0/application-properties`);
-    const data = DataCenterResponseSchema.parse(response.data);
-    
-    return {
-      type: 'datacenter',
-      version: data.version || 'unknown',
-      buildNumber: data.buildNumber,
-      capabilities: getDataCenterCapabilities(data.version || 'unknown'),
-    };
-  } catch (error) {
-    // Try fallback for older versions (7.16)
-    if (axios.isAxiosError(error) && error.response?.status === 404) {
-      return await detectDataCenterFallback(url);
-    }
-    throw new Error(`Failed to detect Data Center server: ${error}`);
-  }
-}
+export class ServerDetectionService {
+  private cache: Map<string, CacheEntry> = new Map();
+  private readonly CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+  private readonly HEALTH_CHECK_INTERVAL = 30 * 1000; // 30 seconds
+  private healthCheckTimers: Map<string, NodeJS.Timeout> = new Map();
 
-/**
- * Fallback detection for older Data Center versions
- */
-async function detectDataCenterFallback(url: string): Promise<ServerInfo> {
-  try {
-    // Try alternative endpoint for older versions
-    const response = await makeRequest(`${url}/rest/api/1.0/application-properties/version`);
-    const data = DataCenterResponseSchema.parse(response.data);
-    
-    return {
-      type: 'datacenter',
-      version: data.version || '7.16.0', // Default to 7.16 if version not found
-      buildNumber: data.buildNumber,
-      capabilities: getDataCenterCapabilities(data.version || '7.16.0'),
-    };
-  } catch (error) {
-    throw new Error(`Failed to detect server type: ${error}`);
-  }
-}
-
-/**
- * Get capabilities based on Data Center version
- */
-function getDataCenterCapabilities(version: string): ServerCapabilities {
-  const versionNumber = parseVersion(version);
-  
-  return {
-    supportsOAuth: versionNumber >= 8.0,
-    supportsPersonalTokens: true, // Available in all Data Center versions
-    supportsAppPasswords: true, // Available in all Data Center versions
-    supportsBasicAuth: true, // Available in all Data Center versions
-  };
-}
-
-/**
- * Get capabilities for Cloud
- */
-// Cloud capabilities function (currently unused but available for future use)
-// function getCloudCapabilities(): ServerCapabilities {
-//   return {
-//     supportsOAuth: true,
-//     supportsPersonalTokens: true,
-//     supportsAppPasswords: false, // Not available in Cloud
-//     supportsBasicAuth: false, // Not available in Cloud
-//   };
-// }
-
-/**
- * Parse version string to number for comparison
- */
-function parseVersion(version: string): number {
-  const parts = version.split('.');
-  if (parts.length < 2) return 0;
-  
-  const major = parseInt(parts[0] || '0', 10) || 0;
-  const minor = parseInt(parts[1] || '0', 10) || 0;
-  
-  return major + minor / 10;
-}
-
-/**
- * Make HTTP request with timeout and retry logic
- */
-async function makeRequest(url: string, retries = 3): Promise<AxiosResponse> {
-  for (let attempt = 1; attempt <= retries; attempt++) {
+  /**
+   * Detects server type and version
+   */
+  async detectServerType(baseUrl: string): Promise<ServerInfo> {
     try {
-      const response = await axios.get(url, {
-        timeout: 10000,
-        headers: {
-          'Accept': 'application/json',
-          'User-Agent': 'bitbucket-mcp-server/1.0.0',
-        },
-      });
-      
-      return response;
-    } catch (error) {
-      if (attempt === retries) {
-        throw error;
+      // Check cache first
+      const cached = this.getCachedServerInfo(baseUrl);
+      if (cached) {
+        return { ...cached, cached: true };
       }
+
+      // Try to detect server type
+      const serverInfo = await this.performDetection(baseUrl);
       
-      // Wait before retry
-      await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+      // Cache the result
+      this.cacheServerInfo(baseUrl, serverInfo);
+      
+      // Start health check timer
+      this.startHealthCheck(baseUrl);
+      
+      return serverInfo;
+    } catch (error) {
+      // Fallback to Data Center 7.16
+      const fallbackInfo: ServerInfo = {
+        serverType: 'datacenter',
+        version: '7.16.0',
+        buildNumber: '716000',
+        baseUrl,
+        isSupported: true,
+        fallbackUsed: true,
+        cached: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+
+      this.cacheServerInfo(baseUrl, fallbackInfo);
+      return fallbackInfo;
     }
   }
-  
-  throw new Error('Max retries exceeded');
-}
 
-/**
- * Validate URL format and requirements
- */
-function validateUrl(url: string): void {
-  try {
-    const urlObj = new URL(url);
+  /**
+   * Performs actual server detection
+   */
+  private async performDetection(baseUrl: string): Promise<ServerInfo> {
+    try {
+      // Try Data Center endpoint first
+      const dataCenterInfo = await this.detectDataCenter(baseUrl);
+      if (dataCenterInfo) {
+        return dataCenterInfo;
+      }
+
+      // Try Cloud endpoint
+      const cloudInfo = await this.detectCloud(baseUrl);
+      if (cloudInfo) {
+        return cloudInfo;
+      }
+
+      throw new Error('Unable to detect server type');
+    } catch (error) {
+      throw new Error(`Server detection failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  /**
+   * Detects Data Center server
+   */
+  private async detectDataCenter(baseUrl: string): Promise<ServerInfo | null> {
+    try {
+      const response: AxiosResponse<ApplicationProperties> = await axios.get(
+        `${baseUrl}/rest/api/1.0/application-properties`,
+        {
+          timeout: 5000,
+          headers: {
+            'Accept': 'application/json'
+          }
+        }
+      );
+
+      const properties = ApplicationPropertiesSchema.parse(response.data);
+      
+      // Determine if it's Data Center based on response
+      const isDataCenter = properties.displayName?.includes('Data Center') || 
+                          properties.serverTitle?.includes('Data Center') ||
+                          !baseUrl.includes('bitbucket.org');
+
+      if (isDataCenter) {
+        return {
+          serverType: 'datacenter',
+          version: properties.version,
+          buildNumber: properties.buildNumber,
+          baseUrl,
+          isSupported: this.isDataCenterVersionSupported(properties.version),
+          fallbackUsed: false,
+          cached: false,
+          healthStatus: 'healthy'
+        };
+      }
+
+      return null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  /**
+   * Detects Cloud server
+   */
+  private async detectCloud(baseUrl: string): Promise<ServerInfo | null> {
+    try {
+      // Cloud uses different endpoint structure
+      const response: AxiosResponse<ApplicationProperties> = await axios.get(
+        `${baseUrl}/2.0/application-properties`,
+        {
+          timeout: 5000,
+          headers: {
+            'Accept': 'application/json'
+          }
+        }
+      );
+
+      const properties = ApplicationPropertiesSchema.parse(response.data);
+      
+      // Determine if it's Cloud based on response
+      const isCloud = properties.displayName?.includes('Cloud') || 
+                     properties.serverTitle?.includes('Cloud') ||
+                     baseUrl.includes('bitbucket.org');
+
+      if (isCloud) {
+        return {
+          serverType: 'cloud',
+          version: properties.version,
+          buildNumber: properties.buildNumber,
+          baseUrl,
+          isSupported: this.isCloudVersionSupported(properties.version),
+          fallbackUsed: false,
+          cached: false,
+          healthStatus: 'healthy'
+        };
+      }
+
+      return null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  /**
+   * Checks if Data Center version is supported
+   */
+  private isDataCenterVersionSupported(version: string): boolean {
+    const versionParts = version.split('.').map(Number);
+    const major = versionParts[0] || 0;
+    const minor = versionParts[1] || 0;
     
-    if (urlObj.protocol !== 'https:') {
-      throw new Error('HTTPS is required');
-    }
+    // Support Data Center 7.16+
+    return major > 7 || (major === 7 && minor >= 16);
+  }
+
+  /**
+   * Checks if Cloud version is supported
+   */
+  private isCloudVersionSupported(version: string): boolean {
+    const versionParts = version.split('.').map(Number);
+    const major = versionParts[0] || 0;
     
-    if (!urlObj.hostname) {
-      throw new Error('Invalid hostname');
+    // Support Cloud API 2.0+
+    return major >= 2;
+  }
+
+  /**
+   * Gets cached server info
+   */
+  private getCachedServerInfo(baseUrl: string): ServerInfo | null {
+    const entry = this.cache.get(baseUrl);
+    if (!entry) return null;
+
+    const now = Date.now();
+    if (now - entry.timestamp > entry.ttl) {
+      this.cache.delete(baseUrl);
+      return null;
     }
-  } catch (error) {
-    if (error instanceof TypeError) {
-      throw new Error('Invalid URL format');
+
+    return entry.serverInfo;
+  }
+
+  /**
+   * Caches server info
+   */
+  private cacheServerInfo(baseUrl: string, serverInfo: ServerInfo): void {
+    const entry: CacheEntry = {
+      serverInfo,
+      timestamp: Date.now(),
+      ttl: this.CACHE_TTL
+    };
+
+    this.cache.set(baseUrl, entry);
+  }
+
+  /**
+   * Starts health check timer
+   */
+  private startHealthCheck(baseUrl: string): void {
+    // Clear existing timer
+    const existingTimer = this.healthCheckTimers.get(baseUrl);
+    if (existingTimer) {
+      clearInterval(existingTimer);
     }
-    throw error;
+
+    // Start new timer
+    const timer = setInterval(async () => {
+      await this.performHealthCheck(baseUrl);
+    }, this.HEALTH_CHECK_INTERVAL);
+
+    this.healthCheckTimers.set(baseUrl, timer);
+  }
+
+  /**
+   * Performs health check
+   */
+  private async performHealthCheck(baseUrl: string): Promise<void> {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/rest/api/1.0/application-properties`,
+        {
+          timeout: 5000,
+          headers: {
+            'Accept': 'application/json'
+          }
+        }
+      );
+
+      if (response.status === 200) {
+        // Update cache with healthy status
+        const cached = this.cache.get(baseUrl);
+        if (cached) {
+          cached.serverInfo.healthStatus = 'healthy';
+          cached.serverInfo.lastHealthCheck = new Date().toISOString();
+        }
+      }
+    } catch (error) {
+      // Update cache with unhealthy status
+      const cached = this.cache.get(baseUrl);
+      if (cached) {
+        cached.serverInfo.healthStatus = 'unhealthy';
+        cached.serverInfo.lastHealthCheck = new Date().toISOString();
+        cached.serverInfo.error = error instanceof Error ? error.message : 'Health check failed';
+      }
+    }
+  }
+
+  /**
+   * Clears cache for a specific server
+   */
+  clearCache(baseUrl: string): void {
+    this.cache.delete(baseUrl);
+    
+    // Clear health check timer
+    const timer = this.healthCheckTimers.get(baseUrl);
+    if (timer) {
+      clearInterval(timer);
+      this.healthCheckTimers.delete(baseUrl);
+    }
+  }
+
+  /**
+   * Clears all cache
+   */
+  clearAllCache(): void {
+    this.cache.clear();
+    
+    // Clear all health check timers
+    this.healthCheckTimers.forEach(timer => clearInterval(timer));
+    this.healthCheckTimers.clear();
+  }
+
+  /**
+   * Gets cache statistics
+   */
+  getCacheStats(): { size: number; entries: string[] } {
+    return {
+      size: this.cache.size,
+      entries: Array.from(this.cache.keys())
+    };
   }
 }
 
-/**
- * Clear server detection cache
- */
-export function clearServerCache(): void {
-  serverCache.clear();
-}
-
-/**
- * Get cache statistics
- */
-export function getCacheStats(): { size: number; entries: string[] } {
-  return {
-    size: serverCache.size,
-    entries: Array.from(serverCache.keys()),
-  };
-}
+// Export singleton instance
+export const serverDetectionService = new ServerDetectionService();

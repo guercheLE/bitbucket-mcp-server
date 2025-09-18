@@ -12,6 +12,7 @@ Este documento descreve todas as ferramentas e endpoints disponíveis no Bitbuck
 - [Ferramentas de Projeto](#ferramentas-de-projeto)
 - [Ferramentas de Busca](#ferramentas-de-busca)
 - [Ferramentas de Dashboard](#ferramentas-de-dashboard)
+- [Ferramentas de Sistema](#ferramentas-de-sistema)
 - [Códigos de Erro](#códigos-de-erro)
 - [Exemplos de Uso](#exemplos-de-uso)
 
@@ -23,10 +24,13 @@ O Bitbucket MCP Server implementa mais de 250 endpoints da API do Bitbucket, org
 
 - **Detecção Automática**: Detecta automaticamente o tipo de servidor (Data Center vs Cloud)
 - **Validação Rigorosa**: Todos os parâmetros são validados com schemas Zod
-- **Cache Inteligente**: Cache automático com TTL configurável
-- **Rate Limiting**: Proteção contra abuso com rate limiting
-- **Circuit Breakers**: Resiliência com circuit breakers
-- **Logs Estruturados**: Logs detalhados para debugging
+- **Cache Inteligente**: Cache automático com TTL configurável (5 minutos)
+- **Rate Limiting**: Proteção contra abuso com rate limiting e circuit breakers
+- **Multi-Transport**: Suporte a stdio, HTTP, SSE e streaming
+- **Health Monitoring**: Monitoramento completo de saúde do sistema
+- **Error Handling**: Tratamento robusto de erros com retry automático
+- **Logs Estruturados**: Logs detalhados com sanitização de dados sensíveis
+- **OAuth 2.0**: Suporte completo a OAuth 2.0, Personal Access Tokens, App Passwords e Basic Auth
 
 ## 🔐 Autenticação
 
@@ -1079,6 +1083,203 @@ Remove um widget de um dashboard no Bitbucket Data Center.
 Lista widgets disponíveis no Bitbucket Data Center.
 
 **Retorna:** Lista de widgets disponíveis.
+
+## 🔧 Ferramentas de Sistema
+
+### Monitoramento e Saúde
+
+#### `health_check`
+Verifica a saúde e conectividade de um servidor Bitbucket.
+
+**Parâmetros:**
+- `url`: URL do servidor Bitbucket
+
+**Retorna:** Status de saúde do servidor com informações detalhadas.
+
+**Exemplo:**
+```json
+{
+  "url": "https://bitbucket.company.com",
+  "status": "healthy",
+  "serverType": "datacenter",
+  "version": "8.16.0",
+  "isSupported": true,
+  "fallbackUsed": false,
+  "lastHealthCheck": "2024-01-27T10:30:00Z"
+}
+```
+
+#### `server_info`
+Obtém informações detalhadas sobre um servidor Bitbucket.
+
+**Parâmetros:**
+- `url`: URL do servidor Bitbucket
+
+**Retorna:** Informações completas do servidor incluindo tipo, versão e capacidades.
+
+**Exemplo:**
+```json
+{
+  "serverType": "datacenter",
+  "version": "8.16.0",
+  "buildNumber": "816000",
+  "baseUrl": "https://bitbucket.company.com",
+  "isSupported": true,
+  "fallbackUsed": false,
+  "healthStatus": "healthy",
+  "lastHealthCheck": "2024-01-27T10:30:00Z"
+}
+```
+
+#### `system_health`
+Obtém o status de saúde completo do sistema.
+
+**Parâmetros:** Nenhum
+
+**Retorna:** Status de saúde abrangente de todos os componentes do sistema.
+
+**Exemplo:**
+```json
+{
+  "overall": "healthy",
+  "timestamp": "2024-01-27T10:30:00Z",
+  "uptime": 3600000,
+  "version": "1.0.0",
+  "environment": "production",
+  "checks": [
+    {
+      "name": "system",
+      "status": "healthy",
+      "message": "Memory usage: 45.2%",
+      "responseTime": 12
+    },
+    {
+      "name": "cache",
+      "status": "healthy",
+      "message": "Cache hit rate: 87.5%",
+      "responseTime": 5
+    }
+  ],
+  "summary": {
+    "total": 6,
+    "healthy": 6,
+    "unhealthy": 0,
+    "degraded": 0
+  }
+}
+```
+
+### Estatísticas e Métricas
+
+#### `cache_stats`
+Obtém estatísticas detalhadas do sistema de cache.
+
+**Parâmetros:** Nenhum
+
+**Retorna:** Estatísticas de performance do cache.
+
+**Exemplo:**
+```json
+{
+  "hits": 1250,
+  "misses": 180,
+  "sets": 200,
+  "deletes": 15,
+  "size": 1048576,
+  "maxSize": 104857600,
+  "hitRate": 87.41,
+  "memoryUsage": 52428800,
+  "entries": 150
+}
+```
+
+#### `rate_limit_status`
+Obtém status dos rate limiters e circuit breakers.
+
+**Parâmetros:** Nenhum
+
+**Retorna:** Status completo de rate limiting e circuit breakers.
+
+**Exemplo:**
+```json
+{
+  "rateLimiter": {
+    "config": {
+      "keyPrefix": "bitbucket-mcp:rate-limit:",
+      "points": 100,
+      "duration": 900
+    },
+    "limiters": ["global", "ip", "user", "api:heavy"]
+  },
+  "circuitBreaker": {
+    "config": {
+      "timeout": 10000,
+      "errorThresholdPercentage": 50,
+      "resetTimeout": 60000
+    },
+    "breakers": {
+      "bitbucket-api": {
+        "state": "closed",
+        "stats": {
+          "successes": 95,
+          "failures": 2,
+          "timeouts": 0
+        }
+      }
+    }
+  }
+}
+```
+
+### Configuração e Diagnóstico
+
+#### Logs Estruturados
+O sistema gera logs estruturados com sanitização automática de dados sensíveis:
+
+```json
+{
+  "timestamp": "2024-01-27T10:30:00.123Z",
+  "level": "info",
+  "message": "Request processed successfully",
+  "type": "request",
+  "method": "GET",
+  "url": "/api/repositories",
+  "statusCode": 200,
+  "responseTime": 150,
+  "requestId": "req_1706355000123_abc123def"
+}
+```
+
+#### Rate Limiting
+O sistema implementa rate limiting em múltiplas camadas:
+
+- **Global**: 100 requisições por 15 minutos
+- **Por IP**: 50 requisições por 15 minutos  
+- **Por Usuário**: 100 requisições por 15 minutos
+- **API Pesada**: 25 requisições por 15 minutos
+
+#### Circuit Breakers
+Circuit breakers protegem contra falhas em cascata:
+
+- **Bitbucket API**: Timeout 10s, threshold 50%, reset 60s
+- **Database**: Timeout 5s, threshold 30%, reset 30s
+- **Cache**: Timeout 1s, threshold 40%, reset 15s
+
+#### Cache Inteligente
+Sistema de cache com TTL de 5 minutos e eviction LRU:
+
+- **Memory Cache**: Cache em memória com limite de 100MB
+- **Redis Cache**: Cache distribuído (opcional)
+- **Partitioning**: Cache particionado por contexto
+- **Pattern Invalidation**: Invalidação por padrões
+
+#### Error Handling
+Tratamento robusto de erros com retry automático:
+
+- **Classificação Automática**: Erros classificados por tipo e severidade
+- **Retry Inteligente**: Retry com backoff exponencial e jitter
+- **Fallback**: Funções de fallback para circuit breakers
+- **Contexto Rico**: Erros incluem contexto completo para debugging
 
 ## ❌ Códigos de Erro
 

@@ -307,3 +307,35 @@ export function createBasicAuth(config: { username: string; password: string }):
 export function createAuthenticationManager(authMethods: Authentication[]): AuthenticationManager {
   return new AuthenticationManager(authMethods);
 }
+
+// Simple AuthenticationService for CLI usage
+export class AuthenticationService {
+  constructor(private serverInfo: any) {}
+
+  generateAuthorizationUrl(config: {
+    clientId: string;
+    redirectUri: string;
+    scope: string;
+  }): string {
+    const baseUrl = this.serverInfo.baseUrl;
+    const params = new URLSearchParams({
+      client_id: config.clientId,
+      redirect_uri: config.redirectUri,
+      response_type: 'code',
+      scope: config.scope,
+    });
+    
+    return `${baseUrl}/oauth/authorize?${params.toString()}`;
+  }
+
+  async getCurrentUser(token: string): Promise<any> {
+    const response = await axios.get(`${this.serverInfo.baseUrl}/rest/api/1.0/users/current`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json',
+      },
+    });
+    
+    return response.data;
+  }
+}
