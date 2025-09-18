@@ -1,0 +1,807 @@
+openapi: 3.0.3
+info:
+  title: Bitbucket Pull Request CRUD Operations
+  description: MCP tools for managing pull requests in Bitbucket Data Center and Cloud
+  version: 1.0.0
+  contact:
+    name: Bitbucket MCP Server
+    url: https://github.com/guercheLE/bitbucket-mcp-server
+
+servers:
+  - url: https://bitbucket.company.com/rest/api/1.0
+    description: Bitbucket Data Center API
+  - url: https://api.bitbucket.org/2.0
+    description: Bitbucket Cloud API
+
+paths:
+  /projects/{projectKey}/repos/{repositorySlug}/pull-requests:
+    get:
+      summary: List pull requests
+      description: List all pull requests in a repository with optional filtering
+      operationId: listPullRequests
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Project key
+        - name: repositorySlug
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Repository slug
+        - name: state
+          in: query
+          schema:
+            type: string
+            enum: [OPEN, MERGED, DECLINED, SUPERSEDED, DRAFT]
+          description: Filter by pull request state
+        - name: order
+          in: query
+          schema:
+            type: string
+            enum: [NEWEST, OLDEST]
+          description: Sort order
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 25
+          description: Maximum number of results
+        - name: start
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Start index for pagination
+      responses:
+        '200':
+          description: List of pull requests
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  size:
+                    type: integer
+                  limit:
+                    type: integer
+                  isLastPage:
+                    type: boolean
+                  values:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PullRequest'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    post:
+      summary: Create pull request
+      description: Create a new pull request
+      operationId: createPullRequest
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Project key
+        - name: repositorySlug
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Repository slug
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePullRequestRequest'
+      responses:
+        '201':
+          description: Pull request created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PullRequest'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}:
+    get:
+      summary: Get pull request
+      description: Get a specific pull request by ID
+      operationId: getPullRequest
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Project key
+        - name: repositorySlug
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Repository slug
+        - name: pullRequestId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Pull request ID
+      responses:
+        '200':
+          description: Pull request details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PullRequest'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      summary: Update pull request
+      description: Update an existing pull request
+      operationId: updatePullRequest
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Project key
+        - name: repositorySlug
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Repository slug
+        - name: pullRequestId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Pull request ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePullRequestRequest'
+      responses:
+        '200':
+          description: Pull request updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PullRequest'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: Delete pull request
+      description: Delete a pull request
+      operationId: deletePullRequest
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Project key
+        - name: repositorySlug
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Repository slug
+        - name: pullRequestId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Pull request ID
+      responses:
+        '204':
+          description: Pull request deleted
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/merge:
+    post:
+      summary: Merge pull request
+      description: Merge a pull request
+      operationId: mergePullRequest
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Project key
+        - name: repositorySlug
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Repository slug
+        - name: pullRequestId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Pull request ID
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MergePullRequestRequest'
+      responses:
+        '200':
+          description: Pull request merged
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PullRequest'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Merge conflicts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictError'
+
+  /projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/decline:
+    post:
+      summary: Decline pull request
+      description: Decline a pull request
+      operationId: declinePullRequest
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Project key
+        - name: repositorySlug
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Repository slug
+        - name: pullRequestId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Pull request ID
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeclinePullRequestRequest'
+      responses:
+        '200':
+          description: Pull request declined
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PullRequest'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/reopen:
+    post:
+      summary: Reopen pull request
+      description: Reopen a closed pull request
+      operationId: reopenPullRequest
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Project key
+        - name: repositorySlug
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Repository slug
+        - name: pullRequestId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Pull request ID
+      responses:
+        '200':
+          description: Pull request reopened
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PullRequest'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  schemas:
+    PullRequest:
+      type: object
+      required:
+        - id
+        - version
+        - title
+        - state
+        - fromRef
+        - toRef
+        - author
+        - createdDate
+        - updatedDate
+      properties:
+        id:
+          type: integer
+          description: Pull request ID
+        version:
+          type: integer
+          description: Version for optimistic locking
+        title:
+          type: string
+          maxLength: 255
+          description: Pull request title
+        description:
+          type: string
+          maxLength: 32768
+          description: Pull request description
+        state:
+          type: string
+          enum: [OPEN, MERGED, DECLINED, SUPERSEDED, DRAFT]
+          description: Pull request state
+        fromRef:
+          $ref: '#/components/schemas/Ref'
+        toRef:
+          $ref: '#/components/schemas/Ref'
+        author:
+          $ref: '#/components/schemas/User'
+        reviewers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reviewer'
+        participants:
+          type: array
+          items:
+            $ref: '#/components/schemas/Participant'
+        createdDate:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updatedDate:
+          type: string
+          format: date-time
+          description: Last update timestamp
+        open:
+          type: boolean
+          description: Whether the pull request is open
+        closed:
+          type: boolean
+          description: Whether the pull request is closed
+        locked:
+          type: boolean
+          description: Whether the pull request is locked
+        closeSourceBranch:
+          type: boolean
+          description: Whether to close source branch after merge
+        mergeCommit:
+          $ref: '#/components/schemas/Commit'
+        links:
+          $ref: '#/components/schemas/Links'
+
+    CreatePullRequestRequest:
+      type: object
+      required:
+        - title
+        - fromRef
+        - toRef
+      properties:
+        title:
+          type: string
+          maxLength: 255
+          description: Pull request title
+        description:
+          type: string
+          maxLength: 32768
+          description: Pull request description
+        fromRef:
+          $ref: '#/components/schemas/Ref'
+        toRef:
+          $ref: '#/components/schemas/Ref'
+        reviewers:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        closeSourceBranch:
+          type: boolean
+          default: false
+          description: Whether to close source branch after merge
+
+    UpdatePullRequestRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: Version for optimistic locking
+        title:
+          type: string
+          maxLength: 255
+          description: Pull request title
+        description:
+          type: string
+          maxLength: 32768
+          description: Pull request description
+        reviewers:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        closeSourceBranch:
+          type: boolean
+          description: Whether to close source branch after merge
+
+    MergePullRequestRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: Version for optimistic locking
+        mergeCommitMessage:
+          type: string
+          description: Custom merge commit message
+        closeSourceBranch:
+          type: boolean
+          default: true
+          description: Whether to close source branch after merge
+
+    DeclinePullRequestRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          description: Version for optimistic locking
+        reason:
+          type: string
+          description: Reason for declining
+
+    Ref:
+      type: object
+      required:
+        - id
+        - displayId
+        - latestCommit
+        - repository
+      properties:
+        id:
+          type: string
+          description: Reference ID (e.g., refs/heads/main)
+        displayId:
+          type: string
+          description: Display ID (e.g., main)
+        latestCommit:
+          type: string
+          description: Latest commit hash
+        repository:
+          $ref: '#/components/schemas/Repository'
+
+    Repository:
+      type: object
+      required:
+        - slug
+        - name
+        - project
+      properties:
+        slug:
+          type: string
+          description: Repository slug
+        name:
+          type: string
+          description: Repository name
+        project:
+          $ref: '#/components/schemas/Project'
+        scmId:
+          type: string
+          enum: [git, hg]
+          description: SCM type
+        public:
+          type: boolean
+          description: Whether the repository is public
+        forkable:
+          type: boolean
+          description: Whether the repository can be forked
+        links:
+          $ref: '#/components/schemas/Links'
+
+    Project:
+      type: object
+      required:
+        - key
+        - name
+      properties:
+        key:
+          type: string
+          description: Project key
+        name:
+          type: string
+          description: Project name
+        description:
+          type: string
+          description: Project description
+        public:
+          type: boolean
+          description: Whether the project is public
+        type:
+          type: string
+          description: Project type
+        links:
+          $ref: '#/components/schemas/Links'
+
+    User:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Username
+        emailAddress:
+          type: string
+          format: email
+          description: Email address
+        id:
+          type: integer
+          description: User ID (Data Center)
+        slug:
+          type: string
+          description: User slug (Cloud)
+        displayName:
+          type: string
+          description: Display name
+        active:
+          type: boolean
+          description: Whether the user is active
+        type:
+          type: string
+          description: User type
+        links:
+          $ref: '#/components/schemas/Links'
+
+    Reviewer:
+      type: object
+      required:
+        - user
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        approved:
+          type: boolean
+          description: Whether the reviewer approved
+        status:
+          type: string
+          enum: [APPROVED, NEEDS_WORK, UNAPPROVED]
+          description: Review status
+        lastReviewedCommit:
+          type: string
+          description: Last reviewed commit hash
+        role:
+          type: string
+          enum: [REVIEWER, AUTHOR, PARTICIPANT]
+          description: Review role
+        participatedOn:
+          type: string
+          format: date-time
+          description: Participation timestamp
+
+    Participant:
+      type: object
+      required:
+        - user
+        - role
+        - participatedOn
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        role:
+          type: string
+          enum: [AUTHOR, REVIEWER, PARTICIPANT]
+          description: Participant role
+        approved:
+          type: boolean
+          description: Whether the participant approved
+        status:
+          type: string
+          enum: [APPROVED, NEEDS_WORK, UNAPPROVED]
+          description: Participant status
+        participatedOn:
+          type: string
+          format: date-time
+          description: Participation timestamp
+
+    Commit:
+      type: object
+      required:
+        - id
+        - displayId
+        - author
+        - authorTimestamp
+        - message
+      properties:
+        id:
+          type: string
+          description: Commit hash
+        displayId:
+          type: string
+          description: Display ID
+        author:
+          $ref: '#/components/schemas/User'
+        authorTimestamp:
+          type: string
+          format: date-time
+          description: Author timestamp
+        committer:
+          $ref: '#/components/schemas/User'
+        committerTimestamp:
+          type: string
+          format: date-time
+          description: Committer timestamp
+        message:
+          type: string
+          description: Commit message
+        parents:
+          type: array
+          items:
+            $ref: '#/components/schemas/Commit'
+
+    Links:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          $ref: '#/components/schemas/Link'
+
+    Link:
+      type: object
+      required:
+        - href
+      properties:
+        href:
+          type: string
+          format: uri
+          description: Link URL
+        name:
+          type: string
+          description: Link name
+
+    ConflictError:
+      type: object
+      required:
+        - errors
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              context:
+                type: string
+                description: Error context
+              message:
+                type: string
+                description: Error message
+              exceptionName:
+                type: string
+                description: Exception name
+
+    Error:
+      type: object
+      required:
+        - errors
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              context:
+                type: string
+                description: Error context
+              message:
+                type: string
+                description: Error message
+              exceptionName:
+                type: string
+                description: Exception name
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

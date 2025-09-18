@@ -1,0 +1,527 @@
+openapi: 3.0.3
+info:
+  title: Bitbucket Pull Request Analysis
+  description: MCP tools for analyzing pull requests, activities, diffs, and changes in Bitbucket Data Center and Cloud
+  version: 1.0.0
+  contact:
+    name: Bitbucket MCP Server
+    url: https://github.com/guercheLE/bitbucket-mcp-server
+
+servers:
+  - url: https://bitbucket.company.com/rest/api/1.0
+    description: Bitbucket Data Center API
+  - url: https://api.bitbucket.org/2.0
+    description: Bitbucket Cloud API
+
+paths:
+  /projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/activities:
+    get:
+      summary: List pull request activities
+      description: List all activities for a pull request
+      operationId: listPullRequestActivities
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Project key
+        - name: repositorySlug
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Repository slug
+        - name: pullRequestId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Pull request ID
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 25
+          description: Maximum number of results
+        - name: start
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Start index for pagination
+      responses:
+        '200':
+          description: List of activities
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  size:
+                    type: integer
+                  limit:
+                    type: integer
+                  isLastPage:
+                    type: boolean
+                  values:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Activity'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/diff:
+    get:
+      summary: Get pull request diff
+      description: Get the diff between source and destination branches
+      operationId: getPullRequestDiff
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Project key
+        - name: repositorySlug
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Repository slug
+        - name: pullRequestId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Pull request ID
+        - name: contextLines
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 100
+            default: 3
+          description: Number of context lines around changes
+        - name: whitespace
+          in: query
+          schema:
+            type: string
+            enum: [ignore-all, ignore-change-amount, ignore-eol-at-eof, show-all]
+            default: show-all
+          description: How to handle whitespace
+        - name: withComments
+          in: query
+          schema:
+            type: boolean
+            default: false
+          description: Include comments in diff
+      responses:
+        '200':
+          description: Pull request diff
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Unified diff format
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Diff'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/changes:
+    get:
+      summary: Get pull request changes
+      description: Get the list of changed files and statistics
+      operationId: getPullRequestChanges
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Project key
+        - name: repositorySlug
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Repository slug
+        - name: pullRequestId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Pull request ID
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 25
+          description: Maximum number of results
+        - name: start
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Start index for pagination
+      responses:
+        '200':
+          description: List of changes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  size:
+                    type: integer
+                  limit:
+                    type: integer
+                  isLastPage:
+                    type: boolean
+                  values:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Change'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  schemas:
+    Activity:
+      type: object
+      required:
+        - id
+        - action
+        - user
+        - createdDate
+      properties:
+        id:
+          type: integer
+          description: Activity ID
+        action:
+          type: string
+          enum: [COMMENTED, OPENED, MERGED, DECLINED, REOPENED, RESCOPED, UPDATED, APPROVED, UNAPPROVED, REVIEWED, COMMENTED_ON_COMMIT]
+          description: Activity action
+        commentAction:
+          type: string
+          enum: [ADDED, UPDATED, DELETED]
+          description: Comment action (if applicable)
+        user:
+          $ref: '#/components/schemas/User'
+        createdDate:
+          type: string
+          format: date-time
+          description: Activity timestamp
+        comment:
+          $ref: '#/components/schemas/Comment'
+        fromHash:
+          type: string
+          description: From commit hash (if applicable)
+        toHash:
+          type: string
+          description: To commit hash (if applicable)
+        added:
+          type: boolean
+          description: Whether something was added
+        removed:
+          type: boolean
+          description: Whether something was removed
+
+    Comment:
+      type: object
+      required:
+        - id
+        - version
+        - text
+        - author
+        - createdDate
+      properties:
+        id:
+          type: integer
+          description: Comment ID
+        version:
+          type: integer
+          description: Version for optimistic locking
+        text:
+          type: string
+          maxLength: 32768
+          description: Comment text
+        author:
+          $ref: '#/components/schemas/User'
+        createdDate:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updatedDate:
+          type: string
+          format: date-time
+          description: Last update timestamp
+        parent:
+          $ref: '#/components/schemas/Comment'
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Comment'
+        anchor:
+          $ref: '#/components/schemas/CommentAnchor'
+        deleted:
+          type: boolean
+          description: Whether the comment was deleted
+        severity:
+          type: string
+          enum: [NORMAL, BLOCKER, WARNING]
+          description: Comment severity
+        links:
+          $ref: '#/components/schemas/Links'
+
+    CommentAnchor:
+      type: object
+      required:
+        - line
+        - lineType
+        - fileType
+        - path
+      properties:
+        line:
+          type: integer
+          minimum: 1
+          description: Line number
+        lineType:
+          type: string
+          enum: [ADDED, REMOVED, CONTEXT]
+          description: Type of line
+        fileType:
+          type: string
+          enum: [FROM, TO]
+          description: File type
+        path:
+          type: string
+          description: File path
+        srcPath:
+          type: string
+          description: Source file path (if different)
+
+    Diff:
+      type: object
+      required:
+        - fromHash
+        - toHash
+        - contextLines
+        - whitespace
+        - diff
+      properties:
+        fromHash:
+          type: string
+          description: Source commit hash
+        toHash:
+          type: string
+          description: Destination commit hash
+        contextLines:
+          type: integer
+          description: Number of context lines
+        whitespace:
+          type: string
+          enum: [ignore-all, ignore-change-amount, ignore-eol-at-eof, show-all]
+          description: Whitespace handling
+        diff:
+          type: string
+          description: Unified diff content
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiffComment'
+        truncated:
+          type: boolean
+          description: Whether the diff was truncated
+
+    DiffComment:
+      type: object
+      required:
+        - id
+        - text
+        - author
+        - createdDate
+        - anchor
+      properties:
+        id:
+          type: integer
+          description: Comment ID
+        text:
+          type: string
+          description: Comment text
+        author:
+          $ref: '#/components/schemas/User'
+        createdDate:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        anchor:
+          $ref: '#/components/schemas/CommentAnchor'
+        severity:
+          type: string
+          enum: [NORMAL, BLOCKER, WARNING]
+          description: Comment severity
+
+    Change:
+      type: object
+      required:
+        - contentId
+        - fromContentId
+        - path
+        - type
+      properties:
+        contentId:
+          type: string
+          description: Content ID
+        fromContentId:
+          type: string
+          description: From content ID
+        path:
+          type: string
+          description: File path
+        type:
+          type: string
+          enum: [ADD, MODIFY, DELETE, RENAME, COPY]
+          description: Change type
+        nodeType:
+          type: string
+          enum: [FILE, DIRECTORY]
+          description: Node type
+        srcExecutable:
+          type: boolean
+          description: Whether source is executable
+        executable:
+          type: boolean
+          description: Whether destination is executable
+        percentUnchanged:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Percentage unchanged
+        links:
+          $ref: '#/components/schemas/Links'
+
+    User:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Username
+        emailAddress:
+          type: string
+          format: email
+          description: Email address
+        id:
+          type: integer
+          description: User ID (Data Center)
+        slug:
+          type: string
+          description: User slug (Cloud)
+        displayName:
+          type: string
+          description: Display name
+        active:
+          type: boolean
+          description: Whether the user is active
+        type:
+          type: string
+          description: User type
+        links:
+          $ref: '#/components/schemas/Links'
+
+    Links:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          $ref: '#/components/schemas/Link'
+
+    Link:
+      type: object
+      required:
+        - href
+      properties:
+        href:
+          type: string
+          format: uri
+          description: Link URL
+        name:
+          type: string
+          description: Link name
+
+    Error:
+      type: object
+      required:
+        - errors
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              context:
+                type: string
+                description: Error context
+              message:
+                type: string
+                description: Error message
+              exceptionName:
+                type: string
+                description: Exception name
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
