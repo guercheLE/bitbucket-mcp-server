@@ -1,0 +1,348 @@
+openapi: 3.0.3
+info:
+  title: Current User API
+  description: Get current authenticated user information
+  version: 1.0.0
+  contact:
+    name: Bitbucket MCP Server
+    url: https://github.com/guercheLE/bitbucket-mcp-server
+
+servers:
+  - url: https://bitbucket.company.com/rest/api/1.0
+    description: Bitbucket Data Center
+  - url: https://api.bitbucket.org/2.0
+    description: Bitbucket Cloud
+
+paths:
+  /users/current:
+    get:
+      summary: Get current user information
+      description: Retrieve information about the currently authenticated user
+      operationId: getCurrentUser
+      tags:
+        - Authentication
+        - Users
+      security:
+        - OAuth2: [read]
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Current user information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+              examples:
+                datacenter_user:
+                  summary: Data Center user
+                  value:
+                    id: 12345
+                    name: "john.doe"
+                    emailAddress: "john.doe@company.com"
+                    displayName: "John Doe"
+                    active: true
+                    slug: "john-doe"
+                    type: "NORMAL"
+                    directoryName: "company"
+                    deletable: false
+                    lastAuthenticationTimestamp: 1640995200000
+                    mutableDetails: true
+                    mutableGroups: true
+                    links:
+                      self:
+                        - href: "https://bitbucket.company.com/users/john.doe"
+                cloud_user:
+                  summary: Cloud user
+                  value:
+                    uuid: "{12345678-1234-1234-1234-123456789abc}"
+                    username: "john.doe"
+                    display_name: "John Doe"
+                    account_id: "12345678-1234-1234-1234-123456789abc"
+                    account_status: "active"
+                    nickname: "john.doe"
+                    type: "user"
+                    created_on: "2023-01-01T00:00:00.000000+00:00"
+                    has_2fa_enabled: false
+                    is_staff: false
+                    location: "San Francisco, CA"
+                    website: "https://johndoe.com"
+                    links:
+                      self:
+                        href: "https://api.bitbucket.org/2.0/users/john.doe"
+                      html:
+                        href: "https://bitbucket.org/john.doe"
+                      avatar:
+                        href: "https://bitbucket.org/account/john.doe/avatar/32/"
+        '401':
+          description: Unauthorized - invalid or expired token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_token:
+                  summary: Invalid access token
+                  value:
+                    error: "unauthorized"
+                    error_description: "The access token is invalid or expired"
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /user:
+    get:
+      summary: Get current user information (Cloud API)
+      description: Retrieve information about the currently authenticated user (Bitbucket Cloud)
+      operationId: getCurrentUserCloud
+      tags:
+        - Authentication
+        - Users
+      security:
+        - OAuth2: [read]
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Current user information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CloudUserResponse'
+        '401':
+          description: Unauthorized - invalid or expired token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    UserResponse:
+      type: object
+      required:
+        - id
+        - name
+        - displayName
+        - active
+        - slug
+        - type
+      properties:
+        id:
+          type: integer
+          description: User ID
+        name:
+          type: string
+          description: Username
+        emailAddress:
+          type: string
+          format: email
+          description: User email address
+        displayName:
+          type: string
+          description: User display name
+        active:
+          type: boolean
+          description: Whether the user is active
+        slug:
+          type: string
+          description: User slug
+        type:
+          type: string
+          enum: [NORMAL, SERVICE]
+          description: User type
+        directoryName:
+          type: string
+          description: Directory name
+        deletable:
+          type: boolean
+          description: Whether the user can be deleted
+        lastAuthenticationTimestamp:
+          type: integer
+          format: int64
+          description: Last authentication timestamp
+        mutableDetails:
+          type: boolean
+          description: Whether user details can be modified
+        mutableGroups:
+          type: boolean
+          description: Whether user groups can be modified
+        links:
+          type: object
+          properties:
+            self:
+              type: array
+              items:
+                type: object
+                properties:
+                  href:
+                    type: string
+                    format: uri
+      example:
+        id: 12345
+        name: "john.doe"
+        emailAddress: "john.doe@company.com"
+        displayName: "John Doe"
+        active: true
+        slug: "john-doe"
+        type: "NORMAL"
+        directoryName: "company"
+        deletable: false
+        lastAuthenticationTimestamp: 1640995200000
+        mutableDetails: true
+        mutableGroups: true
+        links:
+          self:
+            - href: "https://bitbucket.company.com/users/john.doe"
+
+    CloudUserResponse:
+      type: object
+      required:
+        - uuid
+        - username
+        - display_name
+        - account_id
+        - account_status
+        - type
+        - created_on
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: User UUID
+        username:
+          type: string
+          description: Username
+        display_name:
+          type: string
+          description: User display name
+        account_id:
+          type: string
+          description: Account ID
+        account_status:
+          type: string
+          enum: [active, inactive]
+          description: Account status
+        nickname:
+          type: string
+          description: User nickname
+        type:
+          type: string
+          enum: [user, team]
+          description: User type
+        created_on:
+          type: string
+          format: date-time
+          description: Account creation date
+        has_2fa_enabled:
+          type: boolean
+          description: Whether 2FA is enabled
+        is_staff:
+          type: boolean
+          description: Whether user is staff
+        location:
+          type: string
+          description: User location
+        website:
+          type: string
+          format: uri
+          description: User website
+        links:
+          type: object
+          properties:
+            self:
+              type: object
+              properties:
+                href:
+                  type: string
+                  format: uri
+            html:
+              type: object
+              properties:
+                href:
+                  type: string
+                  format: uri
+            avatar:
+              type: object
+              properties:
+                href:
+                  type: string
+                  format: uri
+      example:
+        uuid: "{12345678-1234-1234-1234-123456789abc}"
+        username: "john.doe"
+        display_name: "John Doe"
+        account_id: "12345678-1234-1234-1234-123456789abc"
+        account_status: "active"
+        nickname: "john.doe"
+        type: "user"
+        created_on: "2023-01-01T00:00:00.000000+00:00"
+        has_2fa_enabled: false
+        is_staff: false
+        location: "San Francisco, CA"
+        website: "https://johndoe.com"
+        links:
+          self:
+            href: "https://api.bitbucket.org/2.0/users/john.doe"
+          html:
+            href: "https://bitbucket.org/john.doe"
+          avatar:
+            href: "https://bitbucket.org/account/john.doe/avatar/32/"
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: Error code
+        error_description:
+          type: string
+          description: Human-readable error description
+        error_uri:
+          type: string
+          format: uri
+          description: URI with additional error information
+      example:
+        error: "unauthorized"
+        error_description: "The access token is invalid or expired"
+
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://bitbucket.company.com/oauth/authorize
+          tokenUrl: https://bitbucket.company.com/oauth/access_token
+          scopes:
+            read: Read access to user information
+            write: Write access to user information
+            admin: Administrative access
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - OAuth2: [read]
+  - BearerAuth: []

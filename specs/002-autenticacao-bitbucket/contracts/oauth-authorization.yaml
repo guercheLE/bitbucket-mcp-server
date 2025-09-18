@@ -1,0 +1,182 @@
+openapi: 3.0.3
+info:
+  title: OAuth Authorization API
+  description: OAuth 2.0 authorization endpoint for Bitbucket authentication
+  version: 1.0.0
+  contact:
+    name: Bitbucket MCP Server
+    url: https://github.com/guercheLE/bitbucket-mcp-server
+
+servers:
+  - url: https://bitbucket.company.com/oauth
+    description: Bitbucket Data Center
+  - url: https://bitbucket.org/oauth
+    description: Bitbucket Cloud
+
+paths:
+  /authorize:
+    get:
+      summary: OAuth 2.0 authorization endpoint
+      description: Initiate OAuth 2.0 authorization flow with PKCE support
+      operationId: authorizeOAuth
+      tags:
+        - Authentication
+        - OAuth
+      parameters:
+        - name: response_type
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [code]
+          description: OAuth 2.0 response type
+        - name: client_id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: OAuth client identifier
+        - name: redirect_uri
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uri
+          description: Redirect URI after authorization
+        - name: scope
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Requested permissions scope
+        - name: state
+          in: query
+          required: false
+          schema:
+            type: string
+          description: State parameter for CSRF protection
+        - name: code_challenge
+          in: query
+          required: false
+          schema:
+            type: string
+          description: PKCE code challenge
+        - name: code_challenge_method
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [S256]
+          description: PKCE code challenge method
+      responses:
+        '302':
+          description: Redirect to authorization page or callback
+          headers:
+            Location:
+              description: Redirect URL
+              schema:
+                type: string
+                format: uri
+          content:
+            text/html:
+              schema:
+                type: string
+              examples:
+                authorization_page:
+                  summary: Authorization page redirect
+                  value: |
+                    <html>
+                      <head>
+                        <title>Redirecting to Bitbucket...</title>
+                      </head>
+                      <body>
+                        <p>Redirecting to Bitbucket for authorization...</p>
+                        <script>
+                          window.location.href = 'https://bitbucket.company.com/oauth/authorize?response_type=code&client_id=your_client_id&redirect_uri=https://app.example.com/callback&scope=read+write&state=random_state&code_challenge=dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk&code_challenge_method=S256';
+                        </script>
+                      </body>
+                    </html>
+                callback_redirect:
+                  summary: Callback redirect with authorization code
+                  value: |
+                    <html>
+                      <head>
+                        <title>Authorization successful</title>
+                      </head>
+                      <body>
+                        <p>Authorization successful! Redirecting back to application...</p>
+                        <script>
+                          window.location.href = 'https://app.example.com/callback?code=abc123def456&state=random_state';
+                        </script>
+                      </body>
+                    </html>
+        '400':
+          description: Bad request - invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_client:
+                  summary: Invalid client ID
+                  value:
+                    error: "invalid_client"
+                    error_description: "The client ID is invalid"
+                invalid_redirect_uri:
+                  summary: Invalid redirect URI
+                  value:
+                    error: "invalid_redirect_uri"
+                    error_description: "The redirect URI is not registered for this client"
+                invalid_scope:
+                  summary: Invalid scope
+                  value:
+                    error: "invalid_scope"
+                    error_description: "The requested scope is invalid"
+        '401':
+          description: Unauthorized - user not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: Error code
+        error_description:
+          type: string
+          description: Human-readable error description
+        error_uri:
+          type: string
+          format: uri
+          description: URI with additional error information
+      example:
+        error: "invalid_client"
+        error_description: "The client ID is invalid"
+
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://bitbucket.company.com/oauth/authorize
+          tokenUrl: https://bitbucket.company.com/oauth/access_token
+          scopes:
+            read: Read access to repositories
+            write: Write access to repositories
+            admin: Administrative access
+
+security:
+  - OAuth2: [read, write]

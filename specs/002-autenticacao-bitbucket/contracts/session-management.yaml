@@ -1,0 +1,529 @@
+openapi: 3.0.3
+info:
+  title: Session Management API
+  description: Session management endpoints for Bitbucket authentication
+  version: 1.0.0
+  contact:
+    name: Bitbucket MCP Server
+    url: https://github.com/guercheLE/bitbucket-mcp-server
+
+servers:
+  - url: https://bitbucket.company.com/rest/api/1.0
+    description: Bitbucket Data Center
+  - url: https://api.bitbucket.org/2.0
+    description: Bitbucket Cloud
+
+paths:
+  /session:
+    post:
+      summary: Create user session
+      description: Create a new user session for authenticated user
+      operationId: createSession
+      tags:
+        - Authentication
+        - Sessions
+      security:
+        - OAuth2: [read, write]
+        - BearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionRequest'
+            examples:
+              default_session:
+                summary: Default session creation
+                value:
+                  userId: 12345
+                  sessionId: "session_abc123"
+                  userAgent: "Bitbucket-MCP-Server/1.0.0"
+                  ipAddress: "192.168.1.100"
+      responses:
+        '201':
+          description: Session created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionResponse'
+              examples:
+                created_session:
+                  summary: Created session
+                  value:
+                    sessionId: "session_abc123"
+                    userId: 12345
+                    username: "john.doe"
+                    serverType: "datacenter"
+                    serverUrl: "https://bitbucket.company.com"
+                    authenticationMethod: "oauth"
+                    accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    tokenType: "Bearer"
+                    expiresAt: "2023-01-01T01:00:00Z"
+                    scope: ["read", "write"]
+                    permissions: ["REPO_READ", "REPO_WRITE", "PROJECT_READ"]
+                    isActive: true
+                    createdAt: "2023-01-01T00:00:00Z"
+                    lastAccessedAt: "2023-01-01T00:00:00Z"
+        '400':
+          description: Bad request - invalid session data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - invalid authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      summary: Get current session
+      description: Retrieve information about the current session
+      operationId: getCurrentSession
+      tags:
+        - Authentication
+        - Sessions
+      security:
+        - OAuth2: [read]
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Session information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionResponse'
+        '401':
+          description: Unauthorized - no active session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Revoke session
+      description: Revoke the current session and invalidate tokens
+      operationId: revokeSession
+      tags:
+        - Authentication
+        - Sessions
+      security:
+        - OAuth2: [read, write]
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Session revoked successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionRevokeResponse'
+              examples:
+                revoked_session:
+                  summary: Session revoked
+                  value:
+                    sessionId: "session_abc123"
+                    revoked: true
+                    revokedAt: "2023-01-01T00:30:00Z"
+                    message: "Session revoked successfully"
+        '401':
+          description: Unauthorized - invalid session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /sessions:
+    get:
+      summary: List active sessions
+      description: List all active sessions for the current user
+      operationId: listActiveSessions
+      tags:
+        - Authentication
+        - Sessions
+      security:
+        - OAuth2: [read]
+        - BearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 25
+          description: Maximum number of sessions to return
+        - name: start
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Starting index for pagination
+      responses:
+        '200':
+          description: Active sessions retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionListResponse'
+              examples:
+                active_sessions:
+                  summary: List of active sessions
+                  value:
+                    size: 2
+                    limit: 25
+                    isLastPage: true
+                    start: 0
+                    values:
+                      - sessionId: "session_abc123"
+                        userId: 12345
+                        username: "john.doe"
+                        serverType: "datacenter"
+                        authenticationMethod: "oauth"
+                        isActive: true
+                        createdAt: "2023-01-01T00:00:00Z"
+                        lastAccessedAt: "2023-01-01T00:15:00Z"
+                      - sessionId: "session_def456"
+                        userId: 12345
+                        username: "john.doe"
+                        serverType: "cloud"
+                        authenticationMethod: "pat"
+                        isActive: true
+                        createdAt: "2023-01-01T00:10:00Z"
+                        lastAccessedAt: "2023-01-01T00:20:00Z"
+        '401':
+          description: Unauthorized - invalid authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    SessionRequest:
+      type: object
+      properties:
+        userId:
+          type: integer
+          description: User ID
+        sessionId:
+          type: string
+          description: Session identifier
+        userAgent:
+          type: string
+          description: User agent string
+        ipAddress:
+          type: string
+          format: ipv4
+          description: Client IP address
+        metadata:
+          type: object
+          description: Additional session metadata
+      example:
+        userId: 12345
+        sessionId: "session_abc123"
+        userAgent: "Bitbucket-MCP-Server/1.0.0"
+        ipAddress: "192.168.1.100"
+
+    SessionResponse:
+      type: object
+      required:
+        - sessionId
+        - userId
+        - username
+        - serverType
+        - serverUrl
+        - authenticationMethod
+        - accessToken
+        - tokenType
+        - expiresAt
+        - isActive
+        - createdAt
+        - lastAccessedAt
+      properties:
+        sessionId:
+          type: string
+          description: Session identifier
+        userId:
+          type: integer
+          description: User ID
+        username:
+          type: string
+          description: Username
+        email:
+          type: string
+          format: email
+          description: User email address
+        displayName:
+          type: string
+          description: User display name
+        serverType:
+          type: string
+          enum: [datacenter, cloud]
+          description: Bitbucket server type
+        serverUrl:
+          type: string
+          format: uri
+          description: Bitbucket server URL
+        authenticationMethod:
+          type: string
+          enum: [oauth, pat, app_password, basic]
+          description: Authentication method used
+        accessToken:
+          type: string
+          description: Access token
+        refreshToken:
+          type: string
+          description: Refresh token (if available)
+        tokenType:
+          type: string
+          enum: [Bearer]
+          description: Token type
+        expiresAt:
+          type: string
+          format: date-time
+          description: Token expiration time
+        scope:
+          type: array
+          items:
+            type: string
+          description: Granted scope
+        permissions:
+          type: array
+          items:
+            type: string
+          description: User permissions
+        isActive:
+          type: boolean
+          description: Whether the session is active
+        createdAt:
+          type: string
+          format: date-time
+          description: Session creation time
+        lastAccessedAt:
+          type: string
+          format: date-time
+          description: Last access time
+        metadata:
+          type: object
+          properties:
+            userAgent:
+              type: string
+            ipAddress:
+              type: string
+              format: ipv4
+            sessionId:
+              type: string
+      example:
+        sessionId: "session_abc123"
+        userId: 12345
+        username: "john.doe"
+        email: "john.doe@company.com"
+        displayName: "John Doe"
+        serverType: "datacenter"
+        serverUrl: "https://bitbucket.company.com"
+        authenticationMethod: "oauth"
+        accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        tokenType: "Bearer"
+        expiresAt: "2023-01-01T01:00:00Z"
+        scope: ["read", "write"]
+        permissions: ["REPO_READ", "REPO_WRITE", "PROJECT_READ"]
+        isActive: true
+        createdAt: "2023-01-01T00:00:00Z"
+        lastAccessedAt: "2023-01-01T00:00:00Z"
+        metadata:
+          userAgent: "Bitbucket-MCP-Server/1.0.0"
+          ipAddress: "192.168.1.100"
+
+    SessionListResponse:
+      type: object
+      required:
+        - size
+        - limit
+        - isLastPage
+        - start
+        - values
+      properties:
+        size:
+          type: integer
+          description: Number of sessions returned
+        limit:
+          type: integer
+          description: Maximum number of sessions requested
+        isLastPage:
+          type: boolean
+          description: Whether this is the last page
+        start:
+          type: integer
+          description: Starting index
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/SessionSummary'
+      example:
+        size: 2
+        limit: 25
+        isLastPage: true
+        start: 0
+        values:
+          - sessionId: "session_abc123"
+            userId: 12345
+            username: "john.doe"
+            serverType: "datacenter"
+            authenticationMethod: "oauth"
+            isActive: true
+            createdAt: "2023-01-01T00:00:00Z"
+            lastAccessedAt: "2023-01-01T00:15:00Z"
+          - sessionId: "session_def456"
+            userId: 12345
+            username: "john.doe"
+            serverType: "cloud"
+            authenticationMethod: "pat"
+            isActive: true
+            createdAt: "2023-01-01T00:10:00Z"
+            lastAccessedAt: "2023-01-01T00:20:00Z"
+
+    SessionSummary:
+      type: object
+      required:
+        - sessionId
+        - userId
+        - username
+        - serverType
+        - authenticationMethod
+        - isActive
+        - createdAt
+        - lastAccessedAt
+      properties:
+        sessionId:
+          type: string
+          description: Session identifier
+        userId:
+          type: integer
+          description: User ID
+        username:
+          type: string
+          description: Username
+        serverType:
+          type: string
+          enum: [datacenter, cloud]
+          description: Bitbucket server type
+        authenticationMethod:
+          type: string
+          enum: [oauth, pat, app_password, basic]
+          description: Authentication method used
+        isActive:
+          type: boolean
+          description: Whether the session is active
+        createdAt:
+          type: string
+          format: date-time
+          description: Session creation time
+        lastAccessedAt:
+          type: string
+          format: date-time
+          description: Last access time
+
+    SessionRevokeResponse:
+      type: object
+      required:
+        - sessionId
+        - revoked
+        - revokedAt
+      properties:
+        sessionId:
+          type: string
+          description: Session identifier
+        revoked:
+          type: boolean
+          description: Whether the session was revoked
+        revokedAt:
+          type: string
+          format: date-time
+          description: Revocation time
+        message:
+          type: string
+          description: Revocation message
+      example:
+        sessionId: "session_abc123"
+        revoked: true
+        revokedAt: "2023-01-01T00:30:00Z"
+        message: "Session revoked successfully"
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: Error code
+        error_description:
+          type: string
+          description: Human-readable error description
+        error_uri:
+          type: string
+          format: uri
+          description: URI with additional error information
+      example:
+        error: "unauthorized"
+        error_description: "The session is invalid or expired"
+
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://bitbucket.company.com/oauth/authorize
+          tokenUrl: https://bitbucket.company.com/oauth/access_token
+          scopes:
+            read: Read access to session information
+            write: Write access to session management
+            admin: Administrative access
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - OAuth2: [read, write]
+  - BearerAuth: []
