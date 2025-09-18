@@ -1,0 +1,724 @@
+openapi: 3.0.3
+info:
+  title: Bitbucket Data Center Project Management API
+  description: MCP tools for managing projects in Bitbucket Data Center
+  version: 1.0.0
+  contact:
+    name: Bitbucket MCP Server
+    url: https://github.com/guercheLE/bitbucket-mcp-server
+
+servers:
+  - url: https://bitbucket.company.com/rest/api/1.0
+    description: Bitbucket Data Center Server
+
+paths:
+  /projects:
+    get:
+      summary: List projects
+      description: List all projects with optional filtering
+      operationId: listProjects
+      parameters:
+        - name: start
+          in: query
+          description: Start index for pagination
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: limit
+          in: query
+          description: Maximum number of results
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 25
+        - name: name
+          in: query
+          description: Filter by project name
+          schema:
+            type: string
+        - name: permission
+          in: query
+          description: Filter by permission level
+          schema:
+            type: string
+            enum: [PROJECT_READ, PROJECT_WRITE, PROJECT_ADMIN]
+      responses:
+        '200':
+          description: List of projects
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  size:
+                    type: integer
+                  limit:
+                    type: integer
+                  isLastPage:
+                    type: boolean
+                  values:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Project'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Create project
+      description: Create a new project
+      operationId: createProject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProjectRequest'
+      responses:
+        '201':
+          description: Project created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Project key already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /projects/{projectKey}:
+    get:
+      summary: Get project
+      description: Get project details by key
+      operationId: getProject
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+      responses:
+        '200':
+          description: Project details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      summary: Update project
+      description: Update project information
+      operationId: updateProject
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProjectRequest'
+      responses:
+        '200':
+          description: Project updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: Delete project
+      description: Delete project (requires confirmation)
+      operationId: deleteProject
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+        - name: confirm
+          in: query
+          required: true
+          description: Confirmation flag
+          schema:
+            type: boolean
+      responses:
+        '204':
+          description: Project deleted successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Project has active repositories
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /projects/{projectKey}/permissions:
+    get:
+      summary: Get project permissions
+      description: List all permissions for a project
+      operationId: getProjectPermissions
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+      responses:
+        '200':
+          description: List of permissions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  size:
+                    type: integer
+                  limit:
+                    type: integer
+                  isLastPage:
+                    type: boolean
+                  values:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Permission'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Add project permission
+      description: Grant permission to user or group
+      operationId: addProjectPermission
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddPermissionRequest'
+      responses:
+        '201':
+          description: Permission granted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Permission'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Permission already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: Remove project permission
+      description: Revoke permission from user or group
+      operationId: removeProjectPermission
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+        - name: user
+          in: query
+          description: Username
+          schema:
+            type: string
+        - name: group
+          in: query
+          description: Group name
+          schema:
+            type: string
+        - name: permission
+          in: query
+          required: true
+          description: Permission level
+          schema:
+            type: string
+            enum: [PROJECT_READ, PROJECT_WRITE, PROJECT_ADMIN]
+      responses:
+        '204':
+          description: Permission revoked successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /projects/{projectKey}/settings:
+    get:
+      summary: Get project settings
+      description: Get project configuration settings
+      operationId: getProjectSettings
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+      responses:
+        '200':
+          description: Project settings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectSettings'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      summary: Update project settings
+      description: Update project configuration settings
+      operationId: updateProjectSettings
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProjectSettingsRequest'
+      responses:
+        '200':
+          description: Settings updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectSettings'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /projects/{projectKey}/hooks:
+    get:
+      summary: List project hooks
+      description: List all hooks for a project
+      operationId: listProjectHooks
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+      responses:
+        '200':
+          description: List of hooks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  size:
+                    type: integer
+                  limit:
+                    type: integer
+                  isLastPage:
+                    type: boolean
+                  values:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Hook'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Create project hook
+      description: Create a new hook for a project
+      operationId: createProjectHook
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateHookRequest'
+      responses:
+        '201':
+          description: Hook created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hook'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    Project:
+      type: object
+      required:
+        - key
+        - name
+        - links
+        - createdDate
+        - updatedDate
+      properties:
+        key:
+          type: string
+          pattern: '^[A-Z0-9]+$'
+          description: Project key
+        name:
+          type: string
+          maxLength: 255
+          description: Project name
+        description:
+          type: string
+          maxLength: 1000
+          description: Project description
+        avatar:
+          type: string
+          format: uri
+          description: Project avatar URL
+        isPublic:
+          type: boolean
+          default: false
+          description: Project visibility
+        links:
+          type: object
+          properties:
+            self:
+              type: array
+              items:
+                type: object
+                properties:
+                  href:
+                    type: string
+                    format: uri
+        createdDate:
+          type: string
+          format: date-time
+        updatedDate:
+          type: string
+          format: date-time
+
+    CreateProjectRequest:
+      type: object
+      required:
+        - key
+        - name
+      properties:
+        key:
+          type: string
+          pattern: '^[A-Z0-9]+$'
+          minLength: 1
+          maxLength: 10
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 1000
+        avatar:
+          type: string
+          format: uri
+        isPublic:
+          type: boolean
+          default: false
+
+    UpdateProjectRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 1000
+        avatar:
+          type: string
+          format: uri
+        isPublic:
+          type: boolean
+
+    Permission:
+      type: object
+      required:
+        - permission
+        - grantedBy
+        - grantedDate
+      properties:
+        user:
+          type: string
+          description: Username
+        group:
+          type: string
+          description: Group name
+        permission:
+          type: string
+          enum: [PROJECT_READ, PROJECT_WRITE, PROJECT_ADMIN, REPO_READ, REPO_WRITE, REPO_ADMIN]
+        grantedBy:
+          type: string
+        grantedDate:
+          type: string
+          format: date-time
+
+    AddPermissionRequest:
+      type: object
+      required:
+        - permission
+      properties:
+        user:
+          type: string
+        group:
+          type: string
+        permission:
+          type: string
+          enum: [PROJECT_READ, PROJECT_WRITE, PROJECT_ADMIN]
+      oneOf:
+        - required: [user]
+        - required: [group]
+
+    ProjectSettings:
+      type: object
+      properties:
+        defaultBranch:
+          type: string
+        defaultMergeStrategy:
+          type: string
+          enum: [merge-commit, squash, fast-forward]
+        defaultCommitMessage:
+          type: string
+
+    UpdateProjectSettingsRequest:
+      type: object
+      properties:
+        defaultBranch:
+          type: string
+        defaultMergeStrategy:
+          type: string
+          enum: [merge-commit, squash, fast-forward]
+        defaultCommitMessage:
+          type: string
+
+    Hook:
+      type: object
+      required:
+        - id
+        - url
+        - events
+        - active
+        - createdDate
+        - updatedDate
+      properties:
+        id:
+          type: string
+          format: uuid
+        url:
+          type: string
+          format: uri
+        description:
+          type: string
+          maxLength: 500
+        events:
+          type: array
+          items:
+            type: string
+            enum: [repo:push, pullrequest:created, pullrequest:updated, pullrequest:approved, pullrequest:merged, pullrequest:declined]
+        active:
+          type: boolean
+        createdDate:
+          type: string
+          format: date-time
+        updatedDate:
+          type: string
+          format: date-time
+
+    CreateHookRequest:
+      type: object
+      required:
+        - url
+        - events
+      properties:
+        url:
+          type: string
+          format: uri
+        description:
+          type: string
+          maxLength: 500
+        events:
+          type: array
+          items:
+            type: string
+            enum: [repo:push, pullrequest:created, pullrequest:updated, pullrequest:approved, pullrequest:merged, pullrequest:declined]
+        active:
+          type: boolean
+          default: true
+
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

@@ -1,8 +1,8 @@
 
 # Implementation Plan: Inicio do Projeto
 
-**Branch**: `001-inicio-do-projeto` | **Date**: 2025-01-27 | **Spec**: [spec.md](./spec.md)
-**Input**: Feature specification from `/specs/001-inicio-do-projeto/spec.md`
+**Branch**: `001-projeto-base-mcp-bitbucket` | **Date**: 2025-01-27 | **Spec**: [spec.md](./spec.md)
+**Input**: Feature specification from `/specs/001-projeto-base-mcp-bitbucket/spec.md`
 
 ## Execution Flow (/plan command scope)
 ```

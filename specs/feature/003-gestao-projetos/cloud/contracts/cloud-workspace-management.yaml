@@ -1,0 +1,808 @@
+openapi: 3.0.3
+info:
+  title: Bitbucket Cloud Workspace Management API
+  description: MCP tools for managing workspaces in Bitbucket Cloud
+  version: 1.0.0
+  contact:
+    name: Bitbucket MCP Server
+    url: https://github.com/guercheLE/bitbucket-mcp-server
+
+servers:
+  - url: https://api.bitbucket.org/2.0
+    description: Bitbucket Cloud API
+
+paths:
+  /workspaces:
+    get:
+      summary: List workspaces
+      description: List all workspaces accessible to the authenticated user
+      operationId: listWorkspaces
+      parameters:
+        - name: start
+          in: query
+          description: Start index for pagination
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: limit
+          in: query
+          description: Maximum number of results
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 25
+      responses:
+        '200':
+          description: List of workspaces
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  size:
+                    type: integer
+                  limit:
+                    type: integer
+                  isLastPage:
+                    type: boolean
+                  values:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Workspace'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /workspaces/{workspace}:
+    get:
+      summary: Get workspace
+      description: Get workspace details by slug
+      operationId: getWorkspace
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: Workspace slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+      responses:
+        '200':
+          description: Workspace details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Workspace'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      summary: Update workspace
+      description: Update workspace information
+      operationId: updateWorkspace
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: Workspace slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateWorkspaceRequest'
+      responses:
+        '200':
+          description: Workspace updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Workspace'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: Delete workspace
+      description: Delete workspace (requires confirmation)
+      operationId: deleteWorkspace
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: Workspace slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+        - name: confirm
+          in: query
+          required: true
+          description: Confirmation flag
+          schema:
+            type: boolean
+      responses:
+        '204':
+          description: Workspace deleted successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Workspace has active repositories
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /workspaces/{workspace}/members:
+    get:
+      summary: List workspace members
+      description: List all members of a workspace
+      operationId: listWorkspaceMembers
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: Workspace slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+        - name: start
+          in: query
+          description: Start index for pagination
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: limit
+          in: query
+          description: Maximum number of results
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 25
+      responses:
+        '200':
+          description: List of members
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  size:
+                    type: integer
+                  limit:
+                    type: integer
+                  isLastPage:
+                    type: boolean
+                  values:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WorkspaceMember'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Add workspace member
+      description: Add a member to a workspace
+      operationId: addWorkspaceMember
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: Workspace slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddWorkspaceMemberRequest'
+      responses:
+        '201':
+          description: Member added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceMember'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: User is already a member
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /workspaces/{workspace}/members/{member}:
+    delete:
+      summary: Remove workspace member
+      description: Remove a member from a workspace
+      operationId: removeWorkspaceMember
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: Workspace slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+        - name: member
+          in: path
+          required: true
+          description: Member username
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Member removed successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /workspaces/{workspace}/permissions:
+    get:
+      summary: Get workspace permissions
+      description: List all permissions for a workspace
+      operationId: getWorkspacePermissions
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: Workspace slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+      responses:
+        '200':
+          description: List of permissions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  size:
+                    type: integer
+                  limit:
+                    type: integer
+                  isLastPage:
+                    type: boolean
+                  values:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Permission'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /workspaces/{workspace}/hooks:
+    get:
+      summary: List workspace hooks
+      description: List all hooks for a workspace
+      operationId: listWorkspaceHooks
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: Workspace slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+      responses:
+        '200':
+          description: List of hooks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  size:
+                    type: integer
+                  limit:
+                    type: integer
+                  isLastPage:
+                    type: boolean
+                  values:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Hook'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Create workspace hook
+      description: Create a new hook for a workspace
+      operationId: createWorkspaceHook
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: Workspace slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateHookRequest'
+      responses:
+        '201':
+          description: Hook created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hook'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /workspaces/{workspace}/hooks/{uid}:
+    get:
+      summary: Get workspace hook
+      description: Get workspace hook details
+      operationId: getWorkspaceHook
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: Workspace slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+        - name: uid
+          in: path
+          required: true
+          description: Hook UUID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Hook details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hook'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      summary: Update workspace hook
+      description: Update workspace hook configuration
+      operationId: updateWorkspaceHook
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: Workspace slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+        - name: uid
+          in: path
+          required: true
+          description: Hook UUID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateHookRequest'
+      responses:
+        '200':
+          description: Hook updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hook'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: Delete workspace hook
+      description: Delete workspace hook
+      operationId: deleteWorkspaceHook
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: Workspace slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+        - name: uid
+          in: path
+          required: true
+          description: Hook UUID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Hook deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /workspaces/{workspace}/hooks/{uid}/test:
+    post:
+      summary: Test workspace hook
+      description: Test workspace hook configuration
+      operationId: testWorkspaceHook
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: Workspace slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+        - name: uid
+          in: path
+          required: true
+          description: Hook UUID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Hook test successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    Workspace:
+      type: object
+      required:
+        - uuid
+        - name
+        - slug
+        - isPrivate
+        - createdOn
+        - updatedOn
+        - links
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: Workspace UUID
+        name:
+          type: string
+          maxLength: 255
+          description: Workspace name
+        slug:
+          type: string
+          pattern: '^[a-zA-Z0-9-]+$'
+          description: Workspace slug
+        description:
+          type: string
+          maxLength: 1000
+          description: Workspace description
+        isPrivate:
+          type: boolean
+          default: true
+          description: Workspace visibility
+        createdOn:
+          type: string
+          format: date-time
+        updatedOn:
+          type: string
+          format: date-time
+        links:
+          type: object
+          properties:
+            self:
+              type: object
+              properties:
+                href:
+                  type: string
+                  format: uri
+            html:
+              type: object
+              properties:
+                href:
+                  type: string
+                  format: uri
+
+    UpdateWorkspaceRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 1000
+        isPrivate:
+          type: boolean
+
+    WorkspaceMember:
+      type: object
+      required:
+        - user
+        - permission
+        - addedOn
+      properties:
+        user:
+          type: object
+          properties:
+            uuid:
+              type: string
+              format: uuid
+            displayName:
+              type: string
+            accountId:
+              type: string
+        permission:
+          type: string
+          enum: [read, write, admin]
+        addedOn:
+          type: string
+          format: date-time
+
+    AddWorkspaceMemberRequest:
+      type: object
+      required:
+        - user
+        - permission
+      properties:
+        user:
+          type: string
+          description: Username or email
+        permission:
+          type: string
+          enum: [read, write, admin]
+
+    Permission:
+      type: object
+      required:
+        - permission
+        - grantedBy
+        - grantedDate
+      properties:
+        user:
+          type: string
+          description: Username
+        group:
+          type: string
+          description: Group name
+        permission:
+          type: string
+          enum: [read, write, admin]
+        grantedBy:
+          type: string
+        grantedDate:
+          type: string
+          format: date-time
+
+    Hook:
+      type: object
+      required:
+        - uuid
+        - url
+        - events
+        - active
+        - createdOn
+        - updatedOn
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        url:
+          type: string
+          format: uri
+        description:
+          type: string
+          maxLength: 500
+        events:
+          type: array
+          items:
+            type: string
+            enum: [repo:push, pullrequest:created, pullrequest:updated, pullrequest:approved, pullrequest:merged, pullrequest:declined]
+        active:
+          type: boolean
+        createdOn:
+          type: string
+          format: date-time
+        updatedOn:
+          type: string
+          format: date-time
+
+    CreateHookRequest:
+      type: object
+      required:
+        - url
+        - events
+      properties:
+        url:
+          type: string
+          format: uri
+        description:
+          type: string
+          maxLength: 500
+        events:
+          type: array
+          items:
+            type: string
+            enum: [repo:push, pullrequest:created, pullrequest:updated, pullrequest:approved, pullrequest:merged, pullrequest:declined]
+        active:
+          type: boolean
+          default: true
+
+    UpdateHookRequest:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+        description:
+          type: string
+          maxLength: 500
+        events:
+          type: array
+          items:
+            type: string
+            enum: [repo:push, pullrequest:created, pullrequest:updated, pullrequest:approved, pullrequest:merged, pullrequest:declined]
+        active:
+          type: boolean
+
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

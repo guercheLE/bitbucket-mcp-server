@@ -1,6 +1,6 @@
 # Feature Specification: Inicio do Projeto
 
-**Feature Branch**: `001-inicio-do-projeto`  
+**Feature Branch**: `001-projeto-base-mcp-bitbucket`  
 **Created**: 2025-01-27  
 **Status**: Draft  
 **Input**: User description: "Inicio do projeto"

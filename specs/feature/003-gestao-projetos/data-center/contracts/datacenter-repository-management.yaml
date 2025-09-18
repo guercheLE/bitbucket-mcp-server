@@ -1,0 +1,1234 @@
+openapi: 3.0.3
+info:
+  title: Bitbucket Data Center Repository Management API
+  description: MCP tools for managing repositories in Bitbucket Data Center
+  version: 1.0.0
+  contact:
+    name: Bitbucket MCP Server
+    url: https://github.com/guercheLE/bitbucket-mcp-server
+
+servers:
+  - url: https://bitbucket.company.com/rest/api/1.0
+    description: Bitbucket Data Center Server
+
+paths:
+  /projects/{projectKey}/repos:
+    get:
+      summary: List repositories
+      description: List all repositories in a project
+      operationId: listRepositories
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+        - name: start
+          in: query
+          description: Start index for pagination
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: limit
+          in: query
+          description: Maximum number of results
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 25
+        - name: name
+          in: query
+          description: Filter by repository name
+          schema:
+            type: string
+        - name: permission
+          in: query
+          description: Filter by permission level
+          schema:
+            type: string
+            enum: [REPO_READ, REPO_WRITE, REPO_ADMIN]
+      responses:
+        '200':
+          description: List of repositories
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  size:
+                    type: integer
+                  limit:
+                    type: integer
+                  isLastPage:
+                    type: boolean
+                  values:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Repository'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Create repository
+      description: Create a new repository in a project
+      operationId: createRepository
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRepositoryRequest'
+      responses:
+        '201':
+          description: Repository created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Repository'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Repository slug already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /projects/{projectKey}/repos/{repositorySlug}:
+    get:
+      summary: Get repository
+      description: Get repository details
+      operationId: getRepository
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+        - name: repositorySlug
+          in: path
+          required: true
+          description: Repository slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+      responses:
+        '200':
+          description: Repository details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Repository'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      summary: Update repository
+      description: Update repository information
+      operationId: updateRepository
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+        - name: repositorySlug
+          in: path
+          required: true
+          description: Repository slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRepositoryRequest'
+      responses:
+        '200':
+          description: Repository updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Repository'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: Delete repository
+      description: Delete repository (requires confirmation)
+      operationId: deleteRepository
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+        - name: repositorySlug
+          in: path
+          required: true
+          description: Repository slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+        - name: confirm
+          in: query
+          required: true
+          description: Confirmation flag
+          schema:
+            type: boolean
+      responses:
+        '204':
+          description: Repository deleted successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Repository has active branches
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /projects/{projectKey}/repos/{repositorySlug}/branches:
+    get:
+      summary: List branches
+      description: List all branches in a repository
+      operationId: listBranches
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+        - name: repositorySlug
+          in: path
+          required: true
+          description: Repository slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+        - name: start
+          in: query
+          description: Start index for pagination
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: limit
+          in: query
+          description: Maximum number of results
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 25
+      responses:
+        '200':
+          description: List of branches
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  size:
+                    type: integer
+                  limit:
+                    type: integer
+                  isLastPage:
+                    type: boolean
+                  values:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Branch'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Create branch
+      description: Create a new branch in a repository
+      operationId: createBranch
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+        - name: repositorySlug
+          in: path
+          required: true
+          description: Repository slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBranchRequest'
+      responses:
+        '201':
+          description: Branch created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Branch'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Branch already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /projects/{projectKey}/repos/{repositorySlug}/tags:
+    get:
+      summary: List tags
+      description: List all tags in a repository
+      operationId: listTags
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+        - name: repositorySlug
+          in: path
+          required: true
+          description: Repository slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+        - name: start
+          in: query
+          description: Start index for pagination
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: limit
+          in: query
+          description: Maximum number of results
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 25
+      responses:
+        '200':
+          description: List of tags
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  size:
+                    type: integer
+                  limit:
+                    type: integer
+                  isLastPage:
+                    type: boolean
+                  values:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tag'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Create tag
+      description: Create a new tag in a repository
+      operationId: createTag
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+        - name: repositorySlug
+          in: path
+          required: true
+          description: Repository slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTagRequest'
+      responses:
+        '201':
+          description: Tag created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Tag already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /projects/{projectKey}/repos/{repositorySlug}/forks:
+    get:
+      summary: List forks
+      description: List all forks of a repository
+      operationId: listForks
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+        - name: repositorySlug
+          in: path
+          required: true
+          description: Repository slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+      responses:
+        '200':
+          description: List of forks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  size:
+                    type: integer
+                  limit:
+                    type: integer
+                  isLastPage:
+                    type: boolean
+                  values:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Repository'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Create fork
+      description: Create a fork of a repository
+      operationId: createFork
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+        - name: repositorySlug
+          in: path
+          required: true
+          description: Repository slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateForkRequest'
+      responses:
+        '201':
+          description: Fork created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Repository'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /projects/{projectKey}/repos/{repositorySlug}/permissions:
+    get:
+      summary: Get repository permissions
+      description: List all permissions for a repository
+      operationId: getRepositoryPermissions
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+        - name: repositorySlug
+          in: path
+          required: true
+          description: Repository slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+      responses:
+        '200':
+          description: List of permissions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  size:
+                    type: integer
+                  limit:
+                    type: integer
+                  isLastPage:
+                    type: boolean
+                  values:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Permission'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Add repository permission
+      description: Grant permission to user or group
+      operationId: addRepositoryPermission
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+        - name: repositorySlug
+          in: path
+          required: true
+          description: Repository slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddRepositoryPermissionRequest'
+      responses:
+        '201':
+          description: Permission granted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Permission'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Permission already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: Remove repository permission
+      description: Revoke permission from user or group
+      operationId: removeRepositoryPermission
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+        - name: repositorySlug
+          in: path
+          required: true
+          description: Repository slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+        - name: user
+          in: query
+          description: Username
+          schema:
+            type: string
+        - name: group
+          in: query
+          description: Group name
+          schema:
+            type: string
+        - name: permission
+          in: query
+          required: true
+          description: Permission level
+          schema:
+            type: string
+            enum: [REPO_READ, REPO_WRITE, REPO_ADMIN]
+      responses:
+        '204':
+          description: Permission revoked successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /projects/{projectKey}/repos/{repositorySlug}/settings:
+    get:
+      summary: Get repository settings
+      description: Get repository configuration settings
+      operationId: getRepositorySettings
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+        - name: repositorySlug
+          in: path
+          required: true
+          description: Repository slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+      responses:
+        '200':
+          description: Repository settings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepositorySettings'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      summary: Update repository settings
+      description: Update repository configuration settings
+      operationId: updateRepositorySettings
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+        - name: repositorySlug
+          in: path
+          required: true
+          description: Repository slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRepositorySettingsRequest'
+      responses:
+        '200':
+          description: Settings updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepositorySettings'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /projects/{projectKey}/repos/{repositorySlug}/hooks:
+    get:
+      summary: List repository hooks
+      description: List all hooks for a repository
+      operationId: listRepositoryHooks
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+        - name: repositorySlug
+          in: path
+          required: true
+          description: Repository slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+      responses:
+        '200':
+          description: List of hooks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  size:
+                    type: integer
+                  limit:
+                    type: integer
+                  isLastPage:
+                    type: boolean
+                  values:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Hook'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Create repository hook
+      description: Create a new hook for a repository
+      operationId: createRepositoryHook
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: Project key
+          schema:
+            type: string
+            pattern: '^[A-Z0-9]+$'
+        - name: repositorySlug
+          in: path
+          required: true
+          description: Repository slug
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9-]+$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateHookRequest'
+      responses:
+        '201':
+          description: Hook created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hook'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    Repository:
+      type: object
+      required:
+        - slug
+        - name
+        - scmId
+        - forkable
+        - isPublic
+        - project
+        - links
+        - createdDate
+        - updatedDate
+      properties:
+        slug:
+          type: string
+          pattern: '^[a-zA-Z0-9-]+$'
+          description: Repository slug
+        name:
+          type: string
+          maxLength: 255
+          description: Repository name
+        description:
+          type: string
+          maxLength: 1000
+          description: Repository description
+        scmId:
+          type: string
+          enum: [git]
+          default: git
+          description: Source control management system
+        forkable:
+          type: boolean
+          default: true
+          description: Whether repository can be forked
+        isPublic:
+          type: boolean
+          default: false
+          description: Repository visibility
+        project:
+          type: object
+          properties:
+            key:
+              type: string
+              pattern: '^[A-Z0-9]+$'
+        links:
+          type: object
+          properties:
+            self:
+              type: array
+              items:
+                type: object
+                properties:
+                  href:
+                    type: string
+                    format: uri
+            clone:
+              type: array
+              items:
+                type: object
+                properties:
+                  href:
+                    type: string
+                    format: uri
+                  name:
+                    type: string
+        createdDate:
+          type: string
+          format: date-time
+        updatedDate:
+          type: string
+          format: date-time
+
+    CreateRepositoryRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 1000
+        scmId:
+          type: string
+          enum: [git]
+          default: git
+        forkable:
+          type: boolean
+          default: true
+        isPublic:
+          type: boolean
+          default: false
+
+    UpdateRepositoryRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 1000
+        forkable:
+          type: boolean
+        isPublic:
+          type: boolean
+
+    Branch:
+      type: object
+      required:
+        - id
+        - displayId
+        - latestCommit
+      properties:
+        id:
+          type: string
+          description: Branch reference
+        displayId:
+          type: string
+          description: Branch name
+        latestCommit:
+          type: string
+          description: Latest commit hash
+
+    CreateBranchRequest:
+      type: object
+      required:
+        - name
+        - startPoint
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        startPoint:
+          type: string
+          description: Starting point (commit or branch)
+        message:
+          type: string
+          maxLength: 500
+
+    Tag:
+      type: object
+      required:
+        - id
+        - displayId
+        - latestCommit
+      properties:
+        id:
+          type: string
+          description: Tag reference
+        displayId:
+          type: string
+          description: Tag name
+        latestCommit:
+          type: string
+          description: Tagged commit hash
+
+    CreateTagRequest:
+      type: object
+      required:
+        - name
+        - startPoint
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        startPoint:
+          type: string
+          description: Starting point (commit or branch)
+        message:
+          type: string
+          maxLength: 500
+
+    CreateForkRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        project:
+          type: object
+          required:
+            - key
+          properties:
+            key:
+              type: string
+              pattern: '^[A-Z0-9]+$'
+        public:
+          type: boolean
+          default: false
+
+    Permission:
+      type: object
+      required:
+        - permission
+        - grantedBy
+        - grantedDate
+      properties:
+        user:
+          type: string
+          description: Username
+        group:
+          type: string
+          description: Group name
+        permission:
+          type: string
+          enum: [PROJECT_READ, PROJECT_WRITE, PROJECT_ADMIN, REPO_READ, REPO_WRITE, REPO_ADMIN]
+        grantedBy:
+          type: string
+        grantedDate:
+          type: string
+          format: date-time
+
+    AddRepositoryPermissionRequest:
+      type: object
+      required:
+        - permission
+      properties:
+        user:
+          type: string
+        group:
+          type: string
+        permission:
+          type: string
+          enum: [REPO_READ, REPO_WRITE, REPO_ADMIN]
+      oneOf:
+        - required: [user]
+        - required: [group]
+
+    RepositorySettings:
+      type: object
+      properties:
+        defaultBranch:
+          type: string
+        defaultMergeStrategy:
+          type: string
+          enum: [merge-commit, squash, fast-forward]
+        defaultCommitMessage:
+          type: string
+
+    UpdateRepositorySettingsRequest:
+      type: object
+      properties:
+        defaultBranch:
+          type: string
+        defaultMergeStrategy:
+          type: string
+          enum: [merge-commit, squash, fast-forward]
+        defaultCommitMessage:
+          type: string
+
+    Hook:
+      type: object
+      required:
+        - id
+        - url
+        - events
+        - active
+        - createdDate
+        - updatedDate
+      properties:
+        id:
+          type: string
+          format: uuid
+        url:
+          type: string
+          format: uri
+        description:
+          type: string
+          maxLength: 500
+        events:
+          type: array
+          items:
+            type: string
+            enum: [repo:push, pullrequest:created, pullrequest:updated, pullrequest:approved, pullrequest:merged, pullrequest:declined]
+        active:
+          type: boolean
+        createdDate:
+          type: string
+          format: date-time
+        updatedDate:
+          type: string
+          format: date-time
+
+    CreateHookRequest:
+      type: object
+      required:
+        - url
+        - events
+      properties:
+        url:
+          type: string
+          format: uri
+        description:
+          type: string
+          maxLength: 500
+        events:
+          type: array
+          items:
+            type: string
+            enum: [repo:push, pullrequest:created, pullrequest:updated, pullrequest:approved, pullrequest:merged, pullrequest:declined]
+        active:
+          type: boolean
+          default: true
+
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

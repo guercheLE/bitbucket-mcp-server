@@ -109,12 +109,12 @@ src/
 
 ## Key Files
 
-- `specs/001-inicio-do-projeto/spec.md`: Complete feature specification
-- `specs/001-inicio-do-projeto/plan.md`: Implementation plan with Constitution compliance
-- `specs/001-inicio-do-projeto/research.md`: Technical research and decisions
-- `specs/001-inicio-do-projeto/data-model.md`: Complete data model definitions
-- `specs/001-inicio-do-projeto/contracts/`: OpenAPI schemas for project initialization
-- `specs/001-inicio-do-projeto/quickstart.md`: 12-step setup and validation guide
+- `specs/001-projeto-base-mcp-bitbucket/spec.md`: Complete feature specification
+- `specs/001-projeto-base-mcp-bitbucket/plan.md`: Implementation plan with Constitution compliance
+- `specs/001-projeto-base-mcp-bitbucket/research.md`: Technical research and decisions
+- `specs/001-projeto-base-mcp-bitbucket/data-model.md`: Complete data model definitions
+- `specs/001-projeto-base-mcp-bitbucket/contracts/`: OpenAPI schemas for project initialization
+- `specs/001-projeto-base-mcp-bitbucket/quickstart.md`: 12-step setup and validation guide
 
 ## Development Commands
 
