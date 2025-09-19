@@ -130,9 +130,22 @@ const MAX_RETRY_ATTEMPTS = 3;
 src/
 ├── config/          # Configurações
 ├── services/        # Serviços de negócio
+│   ├── auth/        # Serviços de autenticação
+│   ├── issues-validation-service.ts  # Validação de Issues
+│   ├── comments-service.ts           # Serviço de comentários
+│   └── transitions-service.ts        # Serviço de transições
 ├── server/          # Servidor MCP
 ├── tools/           # Ferramentas MCP
+│   ├── cloud/       # Ferramentas Cloud
+│   │   ├── auth/    # Autenticação Cloud
+│   │   └── issues/  # Issues Cloud
+│   ├── datacenter/  # Ferramentas Data Center
+│   └── shared/      # Ferramentas compartilhadas
 ├── types/           # Definições de tipos
+│   ├── issues.ts    # Tipos de Issues
+│   ├── comments.ts  # Tipos de comentários
+│   ├── issue-relationships.ts  # Tipos de relacionamentos
+│   └── attachments.ts  # Tipos de anexos
 └── utils/           # Utilitários
 ```
 
@@ -190,6 +203,300 @@ class AuthenticationService {
 
 ### Visão Geral
 O sistema de pull requests implementa 18 ferramentas MCP organizadas em 4 categorias principais. Este guia fornece diretrizes específicas para contribuir com funcionalidades relacionadas a pull requests.
+
+## 🎯 Desenvolvimento de Funcionalidades de Issues (Cloud)
+
+### Visão Geral
+O sistema de issues implementa 15 ferramentas MCP organizadas em 5 categorias principais, com suporte exclusivo para Bitbucket Cloud. Este guia fornece diretrizes específicas para contribuir com funcionalidades relacionadas a issues.
+
+### Estrutura de Arquivos
+
+#### Serviços (`src/services/`)
+- **`issues-service.ts`**: Gestão completa de issues, comentários, transições, relacionamentos e anexos
+- **`issues-validation-service.ts`**: Validação de regras de negócio e transições de estado
+
+#### Ferramentas MCP (`src/tools/cloud/issues/`)
+- **`mcp-tools.ts`**: Todas as 15 ferramentas MCP organizadas por categoria
+- **`IssuesMcpHandlers`**: Handlers que fazem a ponte entre MCP e IssuesService
+
+#### Testes (`tests/`)
+- **`unit/services/issues/`**: Testes unitários dos serviços de issues
+- **`unit/tools/issues/`**: Testes unitários das ferramentas MCP de issues
+- **`integration/issues/`**: Testes de integração com APIs reais
+
+### Padrões de Desenvolvimento
+
+#### 1. **Test-Driven Development (TDD)**
+```typescript
+// 1. Escreva o teste primeiro (DEVE FALHAR)
+describe('IssuesService', () => {
+  it('should create an issue successfully', async () => {
+    const result = await service.createIssue({
+      workspace: 'test-workspace',
+      repoSlug: 'test-repo',
+      title: 'Test Issue',
+      content: 'Test issue description',
+      kind: 'bug',
+      priority: 'high'
+    });
+    
+    expect(result.id).toBeDefined();
+    expect(result.title).toBe('Test Issue');
+    expect(result.kind).toBe('bug');
+  });
+});
+
+// 2. Implemente a funcionalidade
+class IssuesService {
+  async createIssue(request: CreateIssueRequest): Promise<Issue> {
+    // Validação de regras de negócio
+    const validation = await this.validationService.validateCreateIssue(request);
+    if (!validation.isValid) {
+      throw new ValidationError(validation.errors);
+    }
+    
+    // Implementação...
+  }
+}
+
+// 3. Refatore se necessário
+```
+
+#### 2. **Validação com Zod e Regras de Negócio**
+```typescript
+import { z } from 'zod';
+
+// Schema de validação
+const CreateIssueSchema = z.object({
+  workspace: z.string().min(1),
+  repoSlug: z.string().min(1),
+  title: z.string().min(1).max(255),
+  content: z.string().optional(),
+  kind: z.enum(['bug', 'enhancement', 'proposal', 'task']).optional(),
+  priority: z.enum(['trivial', 'minor', 'major', 'critical', 'blocker']).optional(),
+  assignee: z.string().optional(),
+  component: z.string().optional(),
+  milestone: z.string().optional(),
+  version: z.string().optional()
+});
+
+// Validação de regras de negócio
+class IssuesValidationService {
+  validateCreateIssue(request: CreateIssueRequest): ValidationResult {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+
+    if (!request.title || request.title.trim() === '') {
+      errors.push('Issue title cannot be empty.');
+    }
+    
+    if (request.title && request.title.length > 255) {
+      warnings.push('Issue title is very long, consider shortening it.');
+    }
+
+    return { isValid: errors.length === 0, errors, warnings };
+  }
+}
+```
+
+#### 3. **Suporte Exclusivo Cloud**
+```typescript
+class IssuesService {
+  private buildApiUrl(workspace: string, repoSlug: string, issueId?: string): string {
+    const baseUrl = 'https://api.bitbucket.org/2.0';
+    if (issueId) {
+      return `${baseUrl}/repositories/${workspace}/${repoSlug}/issues/${issueId}`;
+    } else {
+      return `${baseUrl}/repositories/${workspace}/${repoSlug}/issues`;
+    }
+  }
+}
+```
+
+#### 4. **Cache Inteligente**
+```typescript
+class IssuesService {
+  async getIssue(request: GetIssueRequest): Promise<Issue> {
+    const cacheKey = `issue:${request.workspace}:${request.repoSlug}:${request.issueId}`;
+    
+    // Verificar cache primeiro
+    const cached = await this.cache.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+    
+    // Buscar da API
+    const result = await this.fetchFromAPI(request);
+    
+    // Armazenar no cache (TTL 5 minutos)
+    await this.cache.set(cacheKey, result, 300);
+    
+    return result;
+  }
+}
+```
+
+#### 5. **Error Handling Robusto**
+```typescript
+class IssuesService {
+  async createIssue(request: CreateIssueRequest): Promise<Issue> {
+    try {
+      return await this.executeWithRetry(async () => {
+        const response = await axios.post(this.buildApiUrl(request.workspace, request.repoSlug), {
+          title: request.title,
+          content: request.content,
+          kind: request.kind,
+          priority: request.priority,
+          assignee: request.assignee ? { username: request.assignee } : undefined,
+          component: request.component,
+          milestone: request.milestone,
+          version: request.version
+        }, {
+          headers: {
+            'Authorization': `Bearer ${request.auth.access_token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        return response.data;
+      });
+    } catch (error) {
+      if (error.response?.status === 409) {
+        throw new ConflictError('Issue already exists');
+      } else if (error.response?.status === 401) {
+        throw new AuthenticationError('Invalid credentials');
+      } else if (error.response?.status === 403) {
+        throw new PermissionError('Insufficient permissions');
+      } else {
+        throw new IssuesError('Failed to create issue', error);
+      }
+    }
+  }
+}
+```
+
+### Checklist de Desenvolvimento para Issues
+
+#### Antes de Começar
+- [ ] Issue criada e aprovada
+- [ ] Especificações claras definidas
+- [ ] Testes de contrato escritos (TDD)
+- [ ] Ambiente de desenvolvimento configurado
+- [ ] Acesso ao Bitbucket Cloud configurado
+
+#### Durante o Desenvolvimento
+- [ ] Testes unitários implementados (>80% cobertura)
+- [ ] Testes de integração com APIs reais do Cloud
+- [ ] Validação com schemas Zod
+- [ ] Validação de regras de negócio implementada
+- [ ] Suporte exclusivo para Cloud
+- [ ] Cache implementado com TTL apropriado
+- [ ] Error handling robusto
+- [ ] Logs estruturados com sanitização
+- [ ] Rate limiting configurado
+
+#### Antes do Pull Request
+- [ ] Todos os testes passando
+- [ ] Linting sem erros
+- [ ] Build sem erros
+- [ ] Documentação atualizada
+- [ ] Exemplos de uso adicionados
+- [ ] Performance testada (<2s para 95% das requisições)
+- [ ] Validação de regras de negócio testada
+
+### Exemplos de Implementação para Issues
+
+#### Criando uma Nova Ferramenta MCP de Issues
+```typescript
+// 1. Defina o schema de entrada
+const createIssueTool = {
+  name: 'mcp_bitbucket_cloud_issues_create',
+  description: 'Cria uma nova issue no Bitbucket Cloud',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      workspace: { type: 'string' },
+      repo_slug: { type: 'string' },
+      title: { type: 'string' },
+      content: { type: 'string' },
+      kind: { type: 'string', enum: ['bug', 'enhancement', 'proposal', 'task'] },
+      priority: { type: 'string', enum: ['trivial', 'minor', 'major', 'critical', 'blocker'] },
+      assignee: { type: 'string' },
+      component: { type: 'string' },
+      milestone: { type: 'string' },
+      version: { type: 'string' }
+    },
+    required: ['workspace', 'repo_slug', 'title']
+  }
+};
+
+// 2. Implemente o handler
+export async function createIssue(args: CreateIssueArgs): Promise<MCPResponse> {
+  try {
+    const service = new IssuesService();
+    const result = await service.createIssue({
+      workspace: args.workspace,
+      repoSlug: args.repo_slug,
+      title: args.title,
+      content: args.content,
+      kind: args.kind,
+      priority: args.priority,
+      assignee: args.assignee,
+      component: args.component,
+      milestone: args.milestone,
+      version: args.version
+    });
+    
+    return {
+      content: [{
+        type: 'text',
+        text: JSON.stringify(result, null, 2)
+      }]
+    };
+  } catch (error) {
+    throw new MCPError('Failed to create issue', error);
+  }
+}
+
+// 3. Registre a ferramenta
+toolRegistry.registerTool({
+  name: createIssueTool.name,
+  description: createIssueTool.description,
+  inputSchema: createIssueTool.inputSchema,
+  handler: createIssue,
+  rateLimitType: 'api:heavy',
+  cacheKey: () => '' // No caching for create operations
+});
+```
+
+### Troubleshooting para Issues
+
+#### Problemas Comuns
+
+1. **Erro de Autenticação OAuth 2.0**
+   - Verifique se o token OAuth está válido
+   - Confirme se o usuário tem permissões adequadas no workspace
+   - Teste com diferentes escopos de OAuth
+
+2. **Erro de Validação de Regras de Negócio**
+   - Verifique se as regras de validação estão corretas
+   - Confirme se os dados de entrada atendem aos critérios
+   - Teste com diferentes cenários de validação
+
+3. **Diferenças entre Workspaces**
+   - Use detecção automática de configurações do workspace
+   - Implemente fallbacks quando necessário
+   - Teste com diferentes workspaces
+
+4. **Problemas de Performance**
+   - Implemente cache inteligente
+   - Use paginação para listas grandes
+   - Otimize queries e filtros
+
+5. **Problemas de Transições de Estado**
+   - Verifique se as transições são válidas para o estado atual
+   - Confirme se o usuário tem permissões para a transição
+   - Teste com diferentes fluxos de trabalho
 
 ### Estrutura de Arquivos
 

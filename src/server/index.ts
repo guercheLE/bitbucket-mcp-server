@@ -23,6 +23,7 @@ import { errorHandlerService } from '../services/error-handling.js';
 import { cache } from '../services/cache.js';
 import { serverDetectionService } from '../services/server-detection.js';
 import { toolRegistry } from '../mcp/tool-registry.js';
+import { initializeI18n, i18nMiddleware } from '../config/i18n.js';
 
 // Health check tool schema
 const HealthCheckSchema = z.object({
@@ -42,7 +43,7 @@ export function createMCPServer(): Server {
   const server = new Server(
     {
       name: 'bitbucket-mcp-server',
-      version: '1.0.0',
+      version: '1.1.0',
     },
     {
       capabilities: {
@@ -359,11 +360,15 @@ async function handleToolRegistryStats(): Promise<CallToolResult> {
 export async function main(): Promise<void> {
   try {
     logger.info('Starting Bitbucket MCP Server', {
-      version: '1.0.0',
+      version: '1.1.0',
       environment: environment.getConfig().node.env,
       host: environment.getConfig().server.host,
       port: environment.getConfig().server.port
     });
+
+    // Initialize internationalization
+    await initializeI18n();
+    logger.info('Internationalization initialized with 20 languages support');
 
     // Create MCP server
     const server = createMCPServer();

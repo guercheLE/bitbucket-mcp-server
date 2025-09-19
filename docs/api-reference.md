@@ -9,6 +9,7 @@ Este documento descreve todas as ferramentas e endpoints disponíveis no Bitbuck
 - [Ferramentas de Autenticação](#ferramentas-de-autenticação)
 - [Ferramentas de Repositório](#ferramentas-de-repositório)
 - [Ferramentas de Pull Request](#ferramentas-de-pull-request)
+- [Ferramentas de Issues (Cloud)](#ferramentas-de-issues-cloud)
 - [Ferramentas de Projeto](#ferramentas-de-projeto)
 - [Ferramentas de Busca](#ferramentas-de-busca)
 - [Ferramentas de Dashboard](#ferramentas-de-dashboard)
@@ -84,6 +85,220 @@ Obtém um token OAuth no Bitbucket Data Center.
 - `refreshToken`: Token de refresh (opcional)
 
 **Retorna:** Token OAuth com informações de acesso.
+
+## 🐛 Ferramentas de Issues (Cloud)
+
+> **Nota:** As ferramentas de Issues estão disponíveis apenas para Bitbucket Cloud.
+
+### Gestão de Issues
+
+#### `mcp_bitbucket_issues_create`
+Cria uma nova issue no Bitbucket Cloud.
+
+**Parâmetros:**
+- `title`: Título da issue (obrigatório)
+- `content`: Conteúdo da issue (opcional)
+- `kind`: Tipo da issue (`bug`, `enhancement`, `proposal`, `task`)
+- `priority`: Prioridade (`trivial`, `minor`, `major`, `critical`, `blocker`)
+- `assignee`: UUID do responsável (opcional)
+- `component`: Nome do componente (opcional)
+- `milestone`: Nome do milestone (opcional)
+- `version`: Nome da versão (opcional)
+
+**Retorna:** Issue criada com todas as informações.
+
+#### `mcp_bitbucket_issues_get`
+Obtém uma issue específica no Bitbucket Cloud.
+
+**Parâmetros:**
+- `issueId`: ID da issue (obrigatório)
+
+**Retorna:** Informações detalhadas da issue.
+
+#### `mcp_bitbucket_issues_update`
+Atualiza uma issue existente no Bitbucket Cloud.
+
+**Parâmetros:**
+- `issueId`: ID da issue (obrigatório)
+- `title`: Novo título (opcional)
+- `content`: Novo conteúdo (opcional)
+- `kind`: Novo tipo (opcional)
+- `priority`: Nova prioridade (opcional)
+- `assignee`: Novo responsável (opcional)
+- `component`: Novo componente (opcional)
+- `milestone`: Novo milestone (opcional)
+- `version`: Nova versão (opcional)
+
+**Retorna:** Issue atualizada com novas informações.
+
+#### `mcp_bitbucket_issues_delete`
+Remove uma issue do Bitbucket Cloud.
+
+**Parâmetros:**
+- `issueId`: ID da issue (obrigatório)
+
+**Retorna:** Confirmação de remoção da issue.
+
+#### `mcp_bitbucket_issues_list`
+Lista issues no Bitbucket Cloud.
+
+**Parâmetros:**
+- `state`: Estado da issue (opcional)
+- `kind`: Tipo da issue (opcional)
+- `priority`: Prioridade (opcional)
+- `assignee`: UUID do responsável (opcional)
+- `reporter`: UUID do reporter (opcional)
+- `component`: Nome do componente (opcional)
+- `milestone`: Nome do milestone (opcional)
+- `version`: Nome da versão (opcional)
+- `page`: Página (opcional, padrão: 1)
+- `pagelen`: Tamanho da página (opcional, padrão: 50)
+
+**Retorna:** Lista de issues com informações básicas.
+
+#### `mcp_bitbucket_issues_search`
+Busca issues no Bitbucket Cloud.
+
+**Parâmetros:**
+- `q`: Query de busca (obrigatório)
+- `sort`: Campo de ordenação (opcional)
+- `state`: Estado da issue (opcional)
+- `kind`: Tipo da issue (opcional)
+- `priority`: Prioridade (opcional)
+- `assignee`: UUID do responsável (opcional)
+- `reporter`: UUID do reporter (opcional)
+- `component`: Nome do componente (opcional)
+- `milestone`: Nome do milestone (opcional)
+- `version`: Nome da versão (opcional)
+- `created_on`: Data de criação (formato ISO, opcional)
+- `updated_on`: Data de atualização (formato ISO, opcional)
+- `page`: Página (opcional, padrão: 1)
+- `pagelen`: Tamanho da página (opcional, padrão: 50)
+
+**Retorna:** Resultados da busca com issues correspondentes.
+
+### Gestão de Comentários
+
+#### `mcp_bitbucket_issues_get_comments`
+Obtém comentários de uma issue no Bitbucket Cloud.
+
+**Parâmetros:**
+- `issueId`: ID da issue (obrigatório)
+- `page`: Página (opcional, padrão: 1)
+- `pagelen`: Tamanho da página (opcional, padrão: 50)
+
+**Retorna:** Lista de comentários da issue.
+
+#### `mcp_bitbucket_issues_create_comment`
+Cria um comentário em uma issue no Bitbucket Cloud.
+
+**Parâmetros:**
+- `issueId`: ID da issue (obrigatório)
+- `content`: Conteúdo do comentário (obrigatório)
+
+**Retorna:** Comentário criado com informações.
+
+#### `mcp_bitbucket_issues_update_comment`
+Atualiza um comentário de uma issue no Bitbucket Cloud.
+
+**Parâmetros:**
+- `issueId`: ID da issue (obrigatório)
+- `commentId`: ID do comentário (obrigatório)
+- `content`: Novo conteúdo do comentário (obrigatório)
+
+**Retorna:** Comentário atualizado com informações.
+
+#### `mcp_bitbucket_issues_delete_comment`
+Remove um comentário de uma issue no Bitbucket Cloud.
+
+**Parâmetros:**
+- `issueId`: ID da issue (obrigatório)
+- `commentId`: ID do comentário (obrigatório)
+
+**Retorna:** Confirmação da remoção do comentário.
+
+### Gestão de Transições
+
+#### `mcp_bitbucket_issues_get_transitions`
+Obtém transições disponíveis para uma issue no Bitbucket Cloud.
+
+**Parâmetros:**
+- `issueId`: ID da issue (obrigatório)
+
+**Retorna:** Lista de transições disponíveis.
+
+#### `mcp_bitbucket_issues_transition`
+Transiciona uma issue para um novo estado no Bitbucket Cloud.
+
+**Parâmetros:**
+- `issueId`: ID da issue (obrigatório)
+- `transition`: ID da transição (obrigatório)
+- `fields`: Campos adicionais para a transição (opcional)
+
+**Retorna:** Confirmação da transição.
+
+### Gestão de Relacionamentos
+
+#### `mcp_bitbucket_issues_get_relationships`
+Obtém relacionamentos de uma issue no Bitbucket Cloud.
+
+**Parâmetros:**
+- `issueId`: ID da issue (obrigatório)
+- `page`: Página (opcional, padrão: 1)
+- `pagelen`: Tamanho da página (opcional, padrão: 50)
+
+**Retorna:** Lista de relacionamentos da issue.
+
+#### `mcp_bitbucket_issues_create_relationship`
+Cria um relacionamento entre issues no Bitbucket Cloud.
+
+**Parâmetros:**
+- `issueId`: ID da issue (obrigatório)
+- `type`: Tipo do relacionamento (`relates`, `duplicates`, `duplicated_by`, `blocks`, `blocked_by`, `clones`, `cloned_by`)
+- `relatedIssueId`: ID da issue relacionada (obrigatório)
+
+**Retorna:** Relacionamento criado com informações.
+
+#### `mcp_bitbucket_issues_delete_relationship`
+Remove um relacionamento entre issues no Bitbucket Cloud.
+
+**Parâmetros:**
+- `issueId`: ID da issue (obrigatório)
+- `relationshipId`: ID do relacionamento (obrigatório)
+
+**Retorna:** Confirmação da remoção do relacionamento.
+
+### Gestão de Anexos
+
+#### `mcp_bitbucket_issues_get_attachments`
+Obtém anexos de uma issue no Bitbucket Cloud.
+
+**Parâmetros:**
+- `issueId`: ID da issue (obrigatório)
+- `page`: Página (opcional, padrão: 1)
+- `pagelen`: Tamanho da página (opcional, padrão: 50)
+
+**Retorna:** Lista de anexos da issue.
+
+#### `mcp_bitbucket_issues_upload_attachment`
+Faz upload de um anexo para uma issue no Bitbucket Cloud.
+
+**Parâmetros:**
+- `issueId`: ID da issue (obrigatório)
+- `name`: Nome do arquivo (obrigatório)
+- `content`: Conteúdo do arquivo em base64 (obrigatório)
+- `type`: Tipo MIME do arquivo (opcional)
+
+**Retorna:** Anexo criado com informações.
+
+#### `mcp_bitbucket_issues_delete_attachment`
+Remove um anexo de uma issue no Bitbucket Cloud.
+
+**Parâmetros:**
+- `issueId`: ID da issue (obrigatório)
+- `attachmentId`: ID do anexo (obrigatório)
+
+**Retorna:** Confirmação da remoção do anexo.
 
 #### `mcp_bitbucket_auth_refresh_oauth_token`
 Atualiza um token OAuth no Bitbucket Data Center.
@@ -725,6 +940,321 @@ Obtém as mudanças de um pull request no Bitbucket Data Center ou Cloud.
 - **Error Handling**: Tratamento robusto de erros com retry automático
 - **Logs Estruturados**: Logs detalhados com sanitização de dados sensíveis
 - **Performance**: Operações otimizadas para <2s de resposta em 95% dos casos
+
+## 🎯 Ferramentas de Issues (Cloud)
+
+O Bitbucket MCP Server implementa 15 ferramentas completas para gestão de issues no Bitbucket Cloud, incluindo operações CRUD, comentários, transições de estado, relacionamentos e anexos. Todas as ferramentas suportam apenas Bitbucket Cloud.
+
+### Gerenciamento de Issues (CRUD)
+
+#### `mcp_bitbucket_cloud_issues_list`
+Lista issues de um repositório no Bitbucket Cloud.
+
+**Funcionalidades:**
+- Listagem de issues com filtros
+- Paginação e ordenação
+- Filtros por estado, prioridade e tipo
+
+**Parâmetros:**
+- `workspace`: Workspace do Bitbucket
+- `repo_slug`: Slug do repositório
+- `state`: Estado das issues (opcional)
+- `kind`: Tipo das issues (opcional)
+- `priority`: Prioridade das issues (opcional)
+- `assignee`: Usuário responsável (opcional)
+- `reporter`: Usuário que reportou (opcional)
+- `start`: Índice inicial para paginação (opcional)
+- `limit`: Número máximo de resultados (opcional)
+
+**Retorna:** Lista de issues com informações básicas.
+
+#### `mcp_bitbucket_cloud_issues_create`
+Cria uma nova issue no Bitbucket Cloud.
+
+**Funcionalidades:**
+- Criação de issues
+- Configuração de metadados
+- Validação de regras de negócio
+
+**Parâmetros:**
+- `workspace`: Workspace do Bitbucket
+- `repo_slug`: Slug do repositório
+- `title`: Título da issue
+- `content`: Conteúdo da issue (opcional)
+- `kind`: Tipo da issue (opcional)
+- `priority`: Prioridade da issue (opcional)
+- `assignee`: Usuário responsável (opcional)
+- `component`: Componente (opcional)
+- `milestone`: Milestone (opcional)
+- `version`: Versão (opcional)
+
+**Retorna:** Issue criada com informações completas.
+
+#### `mcp_bitbucket_cloud_issues_get`
+Obtém uma issue específica no Bitbucket Cloud.
+
+**Funcionalidades:**
+- Detalhes completos da issue
+- Metadados e configurações
+- Informações de relacionamentos
+
+**Parâmetros:**
+- `workspace`: Workspace do Bitbucket
+- `repo_slug`: Slug do repositório
+- `issue_id`: ID da issue
+
+**Retorna:** Detalhes completos da issue.
+
+#### `mcp_bitbucket_cloud_issues_update`
+Atualiza uma issue existente no Bitbucket Cloud.
+
+**Funcionalidades:**
+- Atualização de metadados
+- Modificação de campos
+- Validação de transições
+
+**Parâmetros:**
+- `workspace`: Workspace do Bitbucket
+- `repo_slug`: Slug do repositório
+- `issue_id`: ID da issue
+- `title`: Novo título (opcional)
+- `content`: Novo conteúdo (opcional)
+- `kind`: Novo tipo (opcional)
+- `priority`: Nova prioridade (opcional)
+- `assignee`: Novo responsável (opcional)
+- `component`: Novo componente (opcional)
+- `milestone`: Novo milestone (opcional)
+- `version`: Nova versão (opcional)
+
+**Retorna:** Issue atualizada com novas informações.
+
+#### `mcp_bitbucket_cloud_issues_delete`
+Remove uma issue do Bitbucket Cloud.
+
+**Funcionalidades:**
+- Remoção de issues
+- Limpeza de recursos
+- Verificação de dependências
+
+**Parâmetros:**
+- `workspace`: Workspace do Bitbucket
+- `repo_slug`: Slug do repositório
+- `issue_id`: ID da issue
+
+**Retorna:** Confirmação da remoção da issue.
+
+### Comentários de Issues
+
+#### `mcp_bitbucket_cloud_issues_list_comments`
+Lista comentários de uma issue no Bitbucket Cloud.
+
+**Funcionalidades:**
+- Listagem de comentários
+- Paginação e ordenação
+- Informações de autores
+
+**Parâmetros:**
+- `workspace`: Workspace do Bitbucket
+- `repo_slug`: Slug do repositório
+- `issue_id`: ID da issue
+- `start`: Índice inicial para paginação (opcional)
+- `limit`: Número máximo de resultados (opcional)
+
+**Retorna:** Lista de comentários da issue.
+
+#### `mcp_bitbucket_cloud_issues_create_comment`
+Cria um comentário em uma issue no Bitbucket Cloud.
+
+**Funcionalidades:**
+- Criação de comentários
+- Discussão de issues
+- Feedback e colaboração
+
+**Parâmetros:**
+- `workspace`: Workspace do Bitbucket
+- `repo_slug`: Slug do repositório
+- `issue_id`: ID da issue
+- `content`: Conteúdo do comentário
+
+**Retorna:** Comentário criado com informações.
+
+#### `mcp_bitbucket_cloud_issues_update_comment`
+Atualiza um comentário de uma issue no Bitbucket Cloud.
+
+**Funcionalidades:**
+- Atualização de comentários
+- Edição de conteúdo
+- Histórico de mudanças
+
+**Parâmetros:**
+- `workspace`: Workspace do Bitbucket
+- `repo_slug`: Slug do repositório
+- `issue_id`: ID da issue
+- `comment_id`: ID do comentário
+- `content`: Novo conteúdo do comentário
+
+**Retorna:** Comentário atualizado.
+
+#### `mcp_bitbucket_cloud_issues_delete_comment`
+Remove um comentário de uma issue no Bitbucket Cloud.
+
+**Funcionalidades:**
+- Remoção de comentários
+- Limpeza de dados
+- Confirmação de operação
+
+**Parâmetros:**
+- `workspace`: Workspace do Bitbucket
+- `repo_slug`: Slug do repositório
+- `issue_id`: ID da issue
+- `comment_id`: ID do comentário
+
+**Retorna:** Confirmação da remoção do comentário.
+
+### Transições de Estado
+
+#### `mcp_bitbucket_cloud_issues_list_transitions`
+Lista transições disponíveis para uma issue no Bitbucket Cloud.
+
+**Funcionalidades:**
+- Listagem de transições
+- Estados disponíveis
+- Validação de regras
+
+**Parâmetros:**
+- `workspace`: Workspace do Bitbucket
+- `repo_slug`: Slug do repositório
+- `issue_id`: ID da issue
+
+**Retorna:** Lista de transições disponíveis.
+
+#### `mcp_bitbucket_cloud_issues_transition`
+Executa uma transição de estado em uma issue no Bitbucket Cloud.
+
+**Funcionalidades:**
+- Transição de estados
+- Validação de regras de negócio
+- Histórico de mudanças
+
+**Parâmetros:**
+- `workspace`: Workspace do Bitbucket
+- `repo_slug`: Slug do repositório
+- `issue_id`: ID da issue
+- `transition_id`: ID da transição
+- `resolution`: Resolução (opcional)
+
+**Retorna:** Issue com novo estado.
+
+### Relacionamentos de Issues
+
+#### `mcp_bitbucket_cloud_issues_list_relationships`
+Lista relacionamentos de uma issue no Bitbucket Cloud.
+
+**Funcionalidades:**
+- Listagem de relacionamentos
+- Tipos de relacionamento
+- Issues relacionadas
+
+**Parâmetros:**
+- `workspace`: Workspace do Bitbucket
+- `repo_slug`: Slug do repositório
+- `issue_id`: ID da issue
+
+**Retorna:** Lista de relacionamentos da issue.
+
+#### `mcp_bitbucket_cloud_issues_create_relationship`
+Cria um relacionamento entre issues no Bitbucket Cloud.
+
+**Funcionalidades:**
+- Criação de relacionamentos
+- Tipos de relacionamento
+- Validação de regras
+
+**Parâmetros:**
+- `workspace`: Workspace do Bitbucket
+- `repo_slug`: Slug do repositório
+- `issue_id`: ID da issue
+- `related_issue_id`: ID da issue relacionada
+- `relationship_type`: Tipo do relacionamento
+
+**Retorna:** Relacionamento criado.
+
+#### `mcp_bitbucket_cloud_issues_delete_relationship`
+Remove um relacionamento entre issues no Bitbucket Cloud.
+
+**Funcionalidades:**
+- Remoção de relacionamentos
+- Limpeza de dados
+- Confirmação de operação
+
+**Parâmetros:**
+- `workspace`: Workspace do Bitbucket
+- `repo_slug`: Slug do repositório
+- `issue_id`: ID da issue
+- `relationship_id`: ID do relacionamento
+
+**Retorna:** Confirmação da remoção do relacionamento.
+
+### Anexos de Issues
+
+#### `mcp_bitbucket_cloud_issues_list_attachments`
+Lista anexos de uma issue no Bitbucket Cloud.
+
+**Funcionalidades:**
+- Listagem de anexos
+- Informações de arquivos
+- Metadados de upload
+
+**Parâmetros:**
+- `workspace`: Workspace do Bitbucket
+- `repo_slug`: Slug do repositório
+- `issue_id`: ID da issue
+
+**Retorna:** Lista de anexos da issue.
+
+#### `mcp_bitbucket_cloud_issues_upload_attachment`
+Faz upload de um anexo para uma issue no Bitbucket Cloud.
+
+**Funcionalidades:**
+- Upload de anexos
+- Validação de tipos
+- Metadados de arquivo
+
+**Parâmetros:**
+- `workspace`: Workspace do Bitbucket
+- `repo_slug`: Slug do repositório
+- `issue_id`: ID da issue
+- `filename`: Nome do arquivo
+- `content`: Conteúdo do arquivo (base64)
+
+**Retorna:** Anexo criado com informações.
+
+#### `mcp_bitbucket_cloud_issues_delete_attachment`
+Remove um anexo de uma issue no Bitbucket Cloud.
+
+**Funcionalidades:**
+- Remoção de anexos
+- Limpeza de arquivos
+- Confirmação de operação
+
+**Parâmetros:**
+- `workspace`: Workspace do Bitbucket
+- `repo_slug`: Slug do repositório
+- `issue_id`: ID da issue
+- `attachment_id`: ID do anexo
+
+**Retorna:** Confirmação da remoção do anexo.
+
+### Características Técnicas das Ferramentas de Issues
+
+- **Suporte Cloud**: Todas as ferramentas funcionam exclusivamente com Bitbucket Cloud
+- **Validação Rigorosa**: Parâmetros validados com schemas Zod e regras de negócio
+- **Cache Inteligente**: Cache automático com TTL de 5 minutos para operações de leitura
+- **Rate Limiting**: Proteção contra abuso com diferentes limites para operações leves e pesadas
+- **Error Handling**: Tratamento robusto de erros com retry automático
+- **Logs Estruturados**: Logs detalhados com sanitização de dados sensíveis
+- **Performance**: Operações otimizadas para <2s de resposta em 95% dos casos
+- **Validação de Estado**: Validação automática de transições de estado e regras de negócio
 
 ## 📂 Ferramentas de Projeto
 
@@ -1452,7 +1982,57 @@ const result = await mcp_bitbucket_search_repositories({
 });
 ```
 
-### Exemplo 4: Configurar OAuth
+### Exemplo 4: Criar uma Issue
+
+```typescript
+const result = await mcp_bitbucket_cloud_issues_create({
+  workspace: "meu-workspace",
+  repo_slug: "meu-repositorio",
+  title: "Bug no sistema de login",
+  content: "O sistema de login não está funcionando corretamente",
+  kind: "bug",
+  priority: "high",
+  assignee: "usuario1"
+});
+```
+
+### Exemplo 5: Listar Issues com Filtros
+
+```typescript
+const result = await mcp_bitbucket_cloud_issues_list({
+  workspace: "meu-workspace",
+  repo_slug: "meu-repositorio",
+  state: "open",
+  kind: "bug",
+  priority: "high",
+  limit: 20
+});
+```
+
+### Exemplo 6: Adicionar Comentário a uma Issue
+
+```typescript
+const result = await mcp_bitbucket_cloud_issues_create_comment({
+  workspace: "meu-workspace",
+  repo_slug: "meu-repositorio",
+  issue_id: "123",
+  content: "Vou investigar este problema e retornar com uma solução."
+});
+```
+
+### Exemplo 7: Fazer Transição de Estado
+
+```typescript
+const result = await mcp_bitbucket_cloud_issues_transition({
+  workspace: "meu-workspace",
+  repo_slug: "meu-repositorio",
+  issue_id: "123",
+  transition_id: "resolve",
+  resolution: "fixed"
+});
+```
+
+### Exemplo 8: Configurar OAuth
 
 ```typescript
 const authUrl = await mcp_bitbucket_auth_get_oauth_authorization_url({
@@ -1463,7 +2043,7 @@ const authUrl = await mcp_bitbucket_auth_get_oauth_authorization_url({
 });
 ```
 
-### Exemplo 5: Monitorar Performance
+### Exemplo 9: Monitorar Performance
 
 ```typescript
 const metrics = await getMetrics();

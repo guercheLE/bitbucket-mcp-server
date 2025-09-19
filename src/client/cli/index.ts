@@ -7,6 +7,7 @@
 
 import { Command } from 'commander';
 import { z } from 'zod';
+import { initializeI18n, t, translateCLI } from '../../config/i18n.js';
 
 // URL validation schema
 const UrlSchema = z.string().url('Invalid URL format');
@@ -262,7 +263,7 @@ function createCLI(): Command {
   program
     .name('bitbucket-mcp')
     .description('Bitbucket MCP Server CLI')
-    .version('1.0.0');
+    .version('1.1.0');
   
   // Health check command
   program
@@ -322,6 +323,9 @@ function createCLI(): Command {
  */
 async function main(): Promise<void> {
   try {
+    // Initialize internationalization
+    await initializeI18n();
+    
     const program = createCLI();
     await program.parseAsync(process.argv);
   } catch (error) {

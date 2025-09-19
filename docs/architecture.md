@@ -78,6 +78,10 @@ graph TB
 - **`PullRequestService.ts`**: Gestão de pull requests
 - **`PullRequestCommentsService.ts`**: Gestão de comentários de pull requests
 - **`PullRequestAnalysisService.ts`**: Análise e atividade de pull requests
+- **`IssuesService.ts`**: Gestão de issues (Cloud)
+- **`CommentsService.ts`**: Gestão de comentários de issues (Cloud)
+- **`TransitionsService.ts`**: Gestão de transições de issues (Cloud)
+- **`IssuesValidationService.ts`**: Validação de regras de negócio para issues
 - **`SearchService.ts`**: Busca e pesquisa
 - **`AdminService.ts`**: Operações administrativas
 
@@ -88,6 +92,84 @@ graph TB
 ### 5. **Utilitários** (`src/utils/`)
 - **`logger.ts`**: Sistema de logging estruturado
 - **`validation.ts`**: Validação de dados
+
+## 🐛 Arquitetura das Funcionalidades de Issues (Cloud)
+
+### Visão Geral
+O sistema de gestão de Issues implementa 16 ferramentas MCP organizadas em 5 categorias principais, com suporte exclusivo para Bitbucket Cloud. O sistema inclui validação rigorosa de regras de negócio, transições de estado e relacionamentos entre issues.
+
+### Estrutura de Componentes
+
+```mermaid
+graph TB
+    Client[Cliente MCP] --> IssuesTools[Issues MCP Tools]
+    IssuesTools --> IssuesService[Issues Service]
+    IssuesTools --> CommentsService[Comments Service]
+    IssuesTools --> TransitionsService[Transitions Service]
+    
+    IssuesService --> ValidationService[Issues Validation Service]
+    CommentsService --> ValidationService
+    TransitionsService --> ValidationService
+    
+    ValidationService --> BusinessRules[Business Rules Engine]
+    BusinessRules --> StateTransitions[State Transitions]
+    BusinessRules --> FieldValidation[Field Validation]
+    BusinessRules --> RelationshipRules[Relationship Rules]
+    
+    IssuesService --> BitbucketAPI[Bitbucket Cloud API]
+    CommentsService --> BitbucketAPI
+    TransitionsService --> BitbucketAPI
+    
+    IssuesTools --> Cache[Cache Layer]
+    IssuesTools --> RateLimit[Rate Limiting]
+    IssuesTools --> ErrorHandler[Error Handling]
+    IssuesTools --> Logger[Logging]
+```
+
+### Categorias de Ferramentas
+
+1. **Gestão de Issues** (6 ferramentas)
+   - `mcp_bitbucket_issues_create`: Criação de issues
+   - `mcp_bitbucket_issues_get`: Obtenção de issue específica
+   - `mcp_bitbucket_issues_update`: Atualização de issues
+   - `mcp_bitbucket_issues_delete`: Remoção de issues
+   - `mcp_bitbucket_issues_list`: Listagem de issues
+   - `mcp_bitbucket_issues_search`: Busca de issues
+
+2. **Gestão de Comentários** (4 ferramentas)
+   - `mcp_bitbucket_issues_get_comments`: Listagem de comentários
+   - `mcp_bitbucket_issues_create_comment`: Criação de comentários
+   - `mcp_bitbucket_issues_update_comment`: Atualização de comentários
+   - `mcp_bitbucket_issues_delete_comment`: Remoção de comentários
+
+3. **Gestão de Transições** (2 ferramentas)
+   - `mcp_bitbucket_issues_get_transitions`: Obtenção de transições disponíveis
+   - `mcp_bitbucket_issues_transition`: Execução de transições
+
+4. **Gestão de Relacionamentos** (3 ferramentas)
+   - `mcp_bitbucket_issues_get_relationships`: Listagem de relacionamentos
+   - `mcp_bitbucket_issues_create_relationship`: Criação de relacionamentos
+   - `mcp_bitbucket_issues_delete_relationship`: Remoção de relacionamentos
+
+5. **Gestão de Anexos** (3 ferramentas)
+   - `mcp_bitbucket_issues_get_attachments`: Listagem de anexos
+   - `mcp_bitbucket_issues_upload_attachment`: Upload de anexos
+   - `mcp_bitbucket_issues_delete_attachment`: Remoção de anexos
+
+### Validação de Regras de Negócio
+
+O sistema implementa validação rigorosa através do `IssuesValidationService`:
+
+- **Validação de Estados**: Verifica transições válidas entre estados
+- **Validação de Campos**: Valida campos obrigatórios e valores permitidos
+- **Validação de Relacionamentos**: Verifica tipos de relacionamento válidos
+- **Validação de Permissões**: Verifica permissões do usuário para operações
+
+### Cache e Performance
+
+- **Cache TTL**: 5 minutos para dados de issues
+- **Cache por Categoria**: Diferentes TTLs para issues, comentários, transições
+- **Invalidação Inteligente**: Cache invalidado automaticamente em operações de escrita
 
 ## 🔀 Arquitetura das Funcionalidades de Pull Request
 
@@ -186,6 +268,193 @@ graph TB
     CommentsService --> Cache
     AnalysisService --> Cache
 ```
+
+## 🎯 Arquitetura das Funcionalidades de Issues (Cloud)
+
+### Visão Geral
+O sistema de gestão de issues implementa 15 ferramentas MCP organizadas em 5 categorias principais, com suporte exclusivo para Bitbucket Cloud. O sistema inclui validação rigorosa de regras de negócio e transições de estado.
+
+### Estrutura de Componentes
+
+```mermaid
+graph TB
+    subgraph "Issues Architecture (Cloud Only)"
+        IssuesTools[MCP Issues Tools]
+        
+        subgraph "CRUD Operations"
+            CreateIssue[Create Issue]
+            GetIssue[Get Issue]
+            UpdateIssue[Update Issue]
+            DeleteIssue[Delete Issue]
+            ListIssues[List Issues]
+        end
+        
+        subgraph "Comments"
+            CreateComment[Create Comment]
+            UpdateComment[Update Comment]
+            DeleteComment[Delete Comment]
+            ListComments[List Comments]
+        end
+        
+        subgraph "Transitions"
+            ListTransitions[List Transitions]
+            TransitionIssue[Transition Issue]
+        end
+        
+        subgraph "Relationships"
+            ListRelationships[List Relationships]
+            CreateRelationship[Create Relationship]
+            DeleteRelationship[Delete Relationship]
+        end
+        
+        subgraph "Attachments"
+            ListAttachments[List Attachments]
+            UploadAttachment[Upload Attachment]
+            DeleteAttachment[Delete Attachment]
+        end
+        
+        IssuesTools --> CreateIssue
+        IssuesTools --> GetIssue
+        IssuesTools --> UpdateIssue
+        IssuesTools --> DeleteIssue
+        IssuesTools --> ListIssues
+        IssuesTools --> CreateComment
+        IssuesTools --> UpdateComment
+        IssuesTools --> DeleteComment
+        IssuesTools --> ListComments
+        IssuesTools --> ListTransitions
+        IssuesTools --> TransitionIssue
+        IssuesTools --> ListRelationships
+        IssuesTools --> CreateRelationship
+        IssuesTools --> DeleteRelationship
+        IssuesTools --> ListAttachments
+        IssuesTools --> UploadAttachment
+        IssuesTools --> DeleteAttachment
+    end
+    
+    subgraph "Services Layer"
+        IssuesService[IssuesService]
+        ValidationService[IssuesValidationService]
+    end
+    
+    subgraph "Data Layer"
+        CloudAPI[Bitbucket Cloud API]
+        Cache[Cache Layer]
+    end
+    
+    CreateIssue --> IssuesService
+    GetIssue --> IssuesService
+    UpdateIssue --> IssuesService
+    DeleteIssue --> IssuesService
+    ListIssues --> IssuesService
+    CreateComment --> IssuesService
+    UpdateComment --> IssuesService
+    DeleteComment --> IssuesService
+    ListComments --> IssuesService
+    ListTransitions --> IssuesService
+    TransitionIssue --> IssuesService
+    ListRelationships --> IssuesService
+    CreateRelationship --> IssuesService
+    DeleteRelationship --> IssuesService
+    ListAttachments --> IssuesService
+    UploadAttachment --> IssuesService
+    DeleteAttachment --> IssuesService
+    
+    IssuesService --> ValidationService
+    IssuesService --> CloudAPI
+    IssuesService --> Cache
+```
+
+### Serviços Especializados
+
+#### 1. **IssuesService** (`src/services/issues-service.ts`)
+- **Responsabilidade**: Gestão completa de issues, comentários, transições, relacionamentos e anexos
+- **Funcionalidades**:
+  - Operações CRUD completas para issues
+  - Gestão de comentários com validação
+  - Transições de estado com validação de regras
+  - Relacionamentos entre issues
+  - Upload e gestão de anexos
+  - Integração com validação de regras de negócio
+- **Cache**: TTL de 5 minutos para operações de leitura
+- **Rate Limiting**: Operações pesadas (create, update, delete, transition, upload)
+- **Validação**: Integração com IssuesValidationService para todas as operações
+
+#### 2. **IssuesValidationService** (`src/services/issues-validation-service.ts`)
+- **Responsabilidade**: Validação de regras de negócio e transições de estado
+- **Funcionalidades**:
+  - Validação de criação de issues
+  - Validação de atualizações de issues
+  - Validação de transições de estado
+  - Validação de comentários
+  - Regras de negócio customizáveis
+- **Integração**: Chamado automaticamente pelo IssuesService
+
+### Camada de Ferramentas MCP
+
+#### Estrutura de Arquivos (`src/tools/cloud/issues/`)
+- **`mcp-tools.ts`**: Todas as 15 ferramentas MCP organizadas por categoria
+- **`IssuesMcpHandlers`**: Handlers que fazem a ponte entre MCP e IssuesService
+
+### Fluxo de Dados com Validação
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant MCPTool
+    participant IssuesService
+    participant ValidationService
+    participant Cache
+    participant CloudAPI
+    
+    Client->>MCPTool: MCP Request
+    MCPTool->>IssuesService: Service Call
+    IssuesService->>ValidationService: Validate Operation
+    ValidationService-->>IssuesService: Validation Result
+    
+    alt Validation Failed
+        IssuesService-->>MCPTool: Validation Error
+        MCPTool-->>Client: Error Response
+    else Validation Passed
+        IssuesService->>Cache: Check Cache
+        alt Cache Hit
+            Cache-->>IssuesService: Cached Data
+        else Cache Miss
+            IssuesService->>CloudAPI: API Call
+            CloudAPI-->>IssuesService: Response
+            IssuesService->>Cache: Store Result
+        end
+        IssuesService-->>MCPTool: Service Response
+        MCPTool-->>Client: MCP Response
+    end
+```
+
+### Características Técnicas
+
+#### 1. **Suporte Exclusivo Cloud**
+- **Cloud Only**: Todas as ferramentas funcionam exclusivamente com Bitbucket Cloud
+- **API 2.0**: Uso da API REST 2.0 do Bitbucket Cloud
+- **OAuth 2.0**: Autenticação obrigatória via OAuth 2.0
+
+#### 2. **Validação Rigorosa**
+- **Schemas Zod**: Validação de entrada com schemas rigorosos
+- **Regras de Negócio**: Validação de transições de estado e regras customizáveis
+- **Type Safety**: TypeScript com tipos estritos para todas as operações
+
+#### 3. **Performance e Cache**
+- **Cache Inteligente**: TTL de 5 minutos para operações de leitura
+- **Cache Keys**: Estratégias específicas por tipo de operação
+- **Performance Target**: <2s para 95% das requisições
+
+#### 4. **Error Handling**
+- **Retry Logic**: Retry automático com backoff exponencial
+- **Circuit Breaker**: Proteção contra falhas em cascata
+- **Error Classification**: Diferentes estratégias por tipo de erro
+
+#### 5. **Observabilidade**
+- **Logs Estruturados**: Logs detalhados com sanitização
+- **Métricas**: Métricas de performance e uso
+- **Health Checks**: Monitoramento de saúde dos serviços
 
 ### Serviços Especializados
 
@@ -544,6 +813,15 @@ stateDiagram-v2
 - [x] Métricas detalhadas
 - [x] Monitoramento
 - [x] Sanitização
+
+### Fase 3.5: Issues Management ✅
+- [x] Issues CRUD operations
+- [x] Comments management
+- [x] State transitions
+- [x] Relationships
+- [x] Attachments
+- [x] Business rules validation
+- [x] Cloud-only support
 
 ### Fase 4: Escalabilidade (Futuro)
 - [ ] Clustering

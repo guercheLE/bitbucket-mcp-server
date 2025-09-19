@@ -60,6 +60,13 @@ import {
   reopenPullRequest
 } from '../tools/datacenter/pullrequest/operations.js';
 
+// Import Issues tools
+import { 
+  issuesMcpTools, 
+  IssuesMcpHandlers, 
+  createIssuesMcpHandlers 
+} from '../tools/cloud/issues/index.js';
+
 export interface ToolHandler {
   name: string;
   description: string;
@@ -80,6 +87,7 @@ export interface ToolRegistryConfig {
 export class ToolRegistry {
   private tools: Map<string, ToolHandler> = new Map();
   private config: ToolRegistryConfig;
+  private issuesHandlers: IssuesMcpHandlers | null = null;
 
   constructor(config: Partial<ToolRegistryConfig> = {}) {
     this.config = {
@@ -91,6 +99,7 @@ export class ToolRegistry {
     };
 
     this.registerPullRequestTools();
+    this.registerIssuesTools();
   }
 
   /**
@@ -249,6 +258,39 @@ export class ToolRegistry {
   }
 
   /**
+   * Register all Issues tools
+   */
+  private registerIssuesTools(): void {
+    logger.info('Registering Issues tools');
+
+    // Initialize Issues handlers
+    this.issuesHandlers = createIssuesMcpHandlers({
+      baseUrl: process.env.BITBUCKET_CLOUD_API_URL || 'https://api.bitbucket.org/2.0',
+      workspace: process.env.BITBUCKET_WORKSPACE || '',
+      repository: process.env.BITBUCKET_REPOSITORY || '',
+      accessToken: process.env.BITBUCKET_OAUTH_TOKEN || ''
+    });
+
+    // Register all Issues tools
+    issuesMcpTools.forEach(tool => {
+      this.registerTool({
+        name: tool.name,
+        description: tool.description,
+        inputSchema: tool.inputSchema,
+        handler: this.createIssuesHandler(tool.name),
+        rateLimitType: this.getIssuesRateLimitType(tool.name),
+        cacheKey: this.getIssuesCacheKey(tool.name),
+        cacheTTL: this.getIssuesCacheTTL(tool.name)
+      });
+    });
+
+    logger.info('Issues tools registered successfully', {
+      totalTools: this.tools.size,
+      issuesTools: Array.from(this.tools.keys()).filter(name => name.includes('issues'))
+    });
+  }
+
+  /**
    * Register a tool with the registry
    */
   public registerTool(tool: ToolHandler): void {
@@ -278,6 +320,7 @@ export class ToolRegistry {
 
     const startTime = Date.now();
     const isPullRequestTool = this.isPullRequestTool(name);
+    const isIssuesTool = this.isIssuesTool(name);
     let cacheHit = false;
     let rateLimitRemaining: number | undefined;
     
@@ -508,6 +551,122 @@ export class ToolRegistry {
    */
   private isPullRequestTool(toolName: string): boolean {
     return toolName.includes('pull_request');
+  }
+
+  /**
+   * Check if tool is an Issues tool
+   */
+  private isIssuesTool(toolName: string): boolean {
+    return toolName.includes('issues');
+  }
+
+  /**
+   * Create Issues handler wrapper
+   */
+  private createIssuesHandler(toolName: string): (args: any) => Promise<any> {
+    return async (args: any) => {
+      if (!this.issuesHandlers) {
+        throw new Error('Issues handlers not initialized');
+      }
+
+      // Map tool names to handler methods
+      const handlerMap: { [key: string]: string } = {
+        'mcp_bitbucket_issues_create': 'handleCreateIssue',
+        'mcp_bitbucket_issues_get': 'handleGetIssue',
+        'mcp_bitbucket_issues_update': 'handleUpdateIssue',
+        'mcp_bitbucket_issues_delete': 'handleDeleteIssue',
+        'mcp_bitbucket_issues_search': 'handleSearchIssues',
+        'mcp_bitbucket_issues_list': 'handleListIssues',
+        'mcp_bitbucket_issues_get_transitions': 'handleGetTransitions',
+        'mcp_bitbucket_issues_transition': 'handleTransitionIssue',
+        'mcp_bitbucket_issues_get_comments': 'handleGetComments',
+        'mcp_bitbucket_issues_create_comment': 'handleCreateComment',
+        'mcp_bitbucket_issues_update_comment': 'handleUpdateComment',
+        'mcp_bitbucket_issues_delete_comment': 'handleDeleteComment',
+        'mcp_bitbucket_issues_get_relationships': 'handleGetRelationships',
+        'mcp_bitbucket_issues_create_relationship': 'handleCreateRelationship',
+        'mcp_bitbucket_issues_delete_relationship': 'handleDeleteRelationship',
+        'mcp_bitbucket_issues_get_attachments': 'handleGetAttachments',
+        'mcp_bitbucket_issues_upload_attachment': 'handleUploadAttachment',
+        'mcp_bitbucket_issues_delete_attachment': 'handleDeleteAttachment'
+      };
+
+      const handlerMethod = handlerMap[toolName];
+      if (!handlerMethod) {
+        throw new Error(`Unknown Issues tool: ${toolName}`);
+      }
+
+      const handler = (this.issuesHandlers as any)[handlerMethod];
+      if (typeof handler !== 'function') {
+        throw new Error(`Handler method ${handlerMethod} not found`);
+      }
+
+      return await handler.call(this.issuesHandlers, args);
+    };
+  }
+
+  /**
+   * Get rate limit type for Issues tools
+   */
+  private getIssuesRateLimitType(toolName: string): 'api:light' | 'api:heavy' | 'api:bulk' {
+    if (toolName.includes('create') || toolName.includes('update') || toolName.includes('delete') || toolName.includes('transition') || toolName.includes('upload')) {
+      return 'api:heavy';
+    }
+    if (toolName.includes('search') || toolName.includes('list')) {
+      return 'api:bulk';
+    }
+    return 'api:light';
+  }
+
+  /**
+   * Get cache key for Issues tools
+   */
+  private getIssuesCacheKey(toolName: string): ((args: any) => string) | undefined {
+    if (toolName.includes('create') || toolName.includes('update') || toolName.includes('delete') || toolName.includes('transition') || toolName.includes('upload')) {
+      return undefined; // No caching for write operations
+    }
+
+    return (args: any) => {
+      if (toolName.includes('get') && args.issueId) {
+        return `issue:${args.issueId}`;
+      }
+      if (toolName.includes('search') || toolName.includes('list')) {
+        const params = Object.keys(args).sort().map(key => `${key}:${args[key]}`).join('|');
+        return `issues:search:${params}`;
+      }
+      if (toolName.includes('transitions') && args.issueId) {
+        return `issue:${args.issueId}:transitions`;
+      }
+      if (toolName.includes('comments') && args.issueId) {
+        return `issue:${args.issueId}:comments`;
+      }
+      if (toolName.includes('relationships') && args.issueId) {
+        return `issue:${args.issueId}:relationships`;
+      }
+      if (toolName.includes('attachments') && args.issueId) {
+        return `issue:${args.issueId}:attachments`;
+      }
+      return '';
+    };
+  }
+
+  /**
+   * Get cache TTL for Issues tools
+   */
+  private getIssuesCacheTTL(toolName: string): number {
+    if (toolName.includes('get') && toolName.includes('issue')) {
+      return 60; // 1 minute for individual issues
+    }
+    if (toolName.includes('search') || toolName.includes('list')) {
+      return 120; // 2 minutes for searches and lists
+    }
+    if (toolName.includes('transitions')) {
+      return 300; // 5 minutes for transitions
+    }
+    if (toolName.includes('comments') || toolName.includes('relationships') || toolName.includes('attachments')) {
+      return 180; // 3 minutes for related data
+    }
+    return 60; // Default 1 minute
   }
 
   /**
