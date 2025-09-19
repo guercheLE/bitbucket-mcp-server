@@ -76,6 +76,8 @@ graph TB
 - **`ProjectService.ts`**: Gestão de projetos
 - **`RepositoryService.ts`**: Gestão de repositórios
 - **`PullRequestService.ts`**: Gestão de pull requests
+- **`PullRequestCommentsService.ts`**: Gestão de comentários de pull requests
+- **`PullRequestAnalysisService.ts`**: Análise e atividade de pull requests
 - **`SearchService.ts`**: Busca e pesquisa
 - **`AdminService.ts`**: Operações administrativas
 
@@ -86,6 +88,201 @@ graph TB
 ### 5. **Utilitários** (`src/utils/`)
 - **`logger.ts`**: Sistema de logging estruturado
 - **`validation.ts`**: Validação de dados
+
+## 🔀 Arquitetura das Funcionalidades de Pull Request
+
+### Visão Geral
+O sistema de gestão de pull requests implementa 18 ferramentas MCP organizadas em 4 categorias principais, com suporte completo para Bitbucket Data Center 7.16+ e Cloud.
+
+### Estrutura de Componentes
+
+```mermaid
+graph TB
+    subgraph "Pull Request Architecture"
+        PRTools[MCP Pull Request Tools]
+        
+        subgraph "CRUD Operations"
+            Create[Create PR]
+            Get[Get PR]
+            Update[Update PR]
+            Delete[Delete PR]
+            List[List PRs]
+        end
+        
+        subgraph "Operations"
+            Merge[Merge PR]
+            Decline[Decline PR]
+            Reopen[Reopen PR]
+        end
+        
+        subgraph "Comments"
+            CreateComment[Create Comment]
+            GetComment[Get Comment]
+            UpdateComment[Update Comment]
+            DeleteComment[Delete Comment]
+        end
+        
+        subgraph "Analysis"
+            GetActivity[Get Activity]
+            GetDiff[Get Diff]
+            GetChanges[Get Changes]
+        end
+        
+        PRTools --> Create
+        PRTools --> Get
+        PRTools --> Update
+        PRTools --> Delete
+        PRTools --> List
+        PRTools --> Merge
+        PRTools --> Decline
+        PRTools --> Reopen
+        PRTools --> CreateComment
+        PRTools --> GetComment
+        PRTools --> UpdateComment
+        PRTools --> DeleteComment
+        PRTools --> GetActivity
+        PRTools --> GetDiff
+        PRTools --> GetChanges
+    end
+    
+    subgraph "Services Layer"
+        PRService[PullRequestService]
+        CommentsService[PullRequestCommentsService]
+        AnalysisService[PullRequestAnalysisService]
+    end
+    
+    subgraph "Data Layer"
+        DataCenterAPI[Bitbucket Data Center API]
+        CloudAPI[Bitbucket Cloud API]
+        Cache[Cache Layer]
+    end
+    
+    Create --> PRService
+    Get --> PRService
+    Update --> PRService
+    Delete --> PRService
+    List --> PRService
+    Merge --> PRService
+    Decline --> PRService
+    Reopen --> PRService
+    
+    CreateComment --> CommentsService
+    GetComment --> CommentsService
+    UpdateComment --> CommentsService
+    DeleteComment --> CommentsService
+    
+    GetActivity --> AnalysisService
+    GetDiff --> AnalysisService
+    GetChanges --> AnalysisService
+    
+    PRService --> DataCenterAPI
+    PRService --> CloudAPI
+    CommentsService --> DataCenterAPI
+    CommentsService --> CloudAPI
+    AnalysisService --> DataCenterAPI
+    AnalysisService --> CloudAPI
+    
+    PRService --> Cache
+    CommentsService --> Cache
+    AnalysisService --> Cache
+```
+
+### Serviços Especializados
+
+#### 1. **PullRequestService** (`src/services/pullrequest-service.ts`)
+- **Responsabilidade**: Operações CRUD básicas e operações de merge/decline/reopen
+- **Funcionalidades**:
+  - Criação, leitura, atualização e exclusão de pull requests
+  - Operações de merge com diferentes estratégias
+  - Recusa e reabertura de pull requests
+  - Listagem com filtros e paginação
+- **Cache**: TTL de 5 minutos para operações de leitura
+- **Rate Limiting**: Operações pesadas (create, update, delete, merge, decline, reopen)
+
+#### 2. **PullRequestCommentsService** (`src/services/pullrequest-comments-service.ts`)
+- **Responsabilidade**: Gestão completa de comentários
+- **Funcionalidades**:
+  - Criação de comentários (gerais, inline, threaded)
+  - Leitura, atualização e exclusão de comentários
+  - Suporte a comentários aninhados (threading)
+  - Comentários inline com ancoragem específica
+- **Cache**: TTL de 5 minutos para operações de leitura
+- **Rate Limiting**: Operações leves (todas as operações de comentários)
+
+#### 3. **PullRequestAnalysisService** (`src/services/pullrequest-analysis-service.ts`)
+- **Responsabilidade**: Análise e atividade de pull requests
+- **Funcionalidades**:
+  - Histórico de atividades e eventos
+  - Análise de diffs com contexto configurável
+  - Estatísticas de mudanças e arquivos alterados
+  - Rastreamento de commits e participantes
+- **Cache**: TTL de 5 minutos para operações de leitura
+- **Rate Limiting**: Operações pesadas para diffs, leves para atividades e mudanças
+
+### Camada de Ferramentas MCP
+
+#### Estrutura de Arquivos (`src/tools/datacenter/pullrequest/`)
+- **`crud.ts`**: Ferramentas CRUD (create, get, update, delete, list)
+- **`operations.ts`**: Ferramentas de operações (merge, decline, reopen)
+- **`comments.ts`**: Ferramentas de comentários (create, get, update, delete)
+- **`analysis.ts`**: Ferramentas de análise (activity, diff, changes)
+
+### Fluxo de Dados
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant MCPTool
+    participant Service
+    participant ServerDetection
+    participant Cache
+    participant BitbucketAPI
+    
+    Client->>MCPTool: MCP Request
+    MCPTool->>Service: Service Call
+    Service->>ServerDetection: Detect Server Type
+    ServerDetection-->>Service: Server Info
+    
+    Service->>Cache: Check Cache
+    alt Cache Hit
+        Cache-->>Service: Cached Data
+    else Cache Miss
+        Service->>BitbucketAPI: API Call
+        BitbucketAPI-->>Service: Response
+        Service->>Cache: Store Result
+    end
+    
+    Service-->>MCPTool: Service Response
+    MCPTool-->>Client: MCP Response
+```
+
+### Características Técnicas
+
+#### 1. **Suporte Dual de API**
+- **Data Center**: Endpoints REST API 1.0
+- **Cloud**: Endpoints REST API 2.0
+- **Detecção Automática**: Baseada na URL e headers de resposta
+- **Fallback**: Suporte a fallback entre versões de API
+
+#### 2. **Validação e Sanitização**
+- **Schemas Zod**: Validação rigorosa de entrada
+- **Sanitização**: Limpeza de dados sensíveis nos logs
+- **Type Safety**: TypeScript com tipos estritos
+
+#### 3. **Performance e Cache**
+- **Cache Inteligente**: TTL de 5 minutos para operações de leitura
+- **Cache Keys**: Estratégias específicas por tipo de operação
+- **Performance Target**: <2s para 95% das requisições
+
+#### 4. **Error Handling**
+- **Retry Logic**: Retry automático com backoff exponencial
+- **Circuit Breaker**: Proteção contra falhas em cascata
+- **Error Classification**: Diferentes estratégias por tipo de erro
+
+#### 5. **Observabilidade**
+- **Logs Estruturados**: Logs detalhados com sanitização
+- **Métricas**: Métricas de performance e uso
+- **Health Checks**: Monitoramento de saúde dos serviços
 
 ## 🚀 Fluxo de Requisições
 

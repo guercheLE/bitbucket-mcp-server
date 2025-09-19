@@ -186,6 +186,262 @@ class AuthenticationService {
 - **`jest.config.js`**: Configuração de testes
 - **`.env.example`**: Exemplo de variáveis de ambiente
 
+## 🔀 Desenvolvimento de Funcionalidades de Pull Request
+
+### Visão Geral
+O sistema de pull requests implementa 18 ferramentas MCP organizadas em 4 categorias principais. Este guia fornece diretrizes específicas para contribuir com funcionalidades relacionadas a pull requests.
+
+### Estrutura de Arquivos
+
+#### Serviços (`src/services/`)
+- **`pullrequest-service.ts`**: Operações CRUD e operações de merge/decline/reopen
+- **`pullrequest-comments-service.ts`**: Gestão de comentários
+- **`pullrequest-analysis-service.ts`**: Análise e atividade
+
+#### Ferramentas MCP (`src/tools/datacenter/pullrequest/`)
+- **`crud.ts`**: Ferramentas CRUD (create, get, update, delete, list)
+- **`operations.ts`**: Ferramentas de operações (merge, decline, reopen)
+- **`comments.ts`**: Ferramentas de comentários (create, get, update, delete)
+- **`analysis.ts`**: Ferramentas de análise (activity, diff, changes)
+
+#### Testes (`tests/`)
+- **`unit/pullrequest/`**: Testes unitários dos serviços
+- **`integration/`**: Testes de integração com APIs reais
+- **`contract/`**: Testes de contrato para validação de APIs
+
+### Padrões de Desenvolvimento
+
+#### 1. **Test-Driven Development (TDD)**
+```typescript
+// 1. Escreva o teste primeiro (DEVE FALHAR)
+describe('PullRequestService', () => {
+  it('should create a pull request successfully', async () => {
+    const result = await service.createPullRequest({
+      projectKey: 'TEST',
+      repositorySlug: 'test-repo',
+      title: 'Test PR',
+      fromRef: 'feature/branch',
+      toRef: 'main'
+    });
+    
+    expect(result.id).toBeDefined();
+    expect(result.title).toBe('Test PR');
+  });
+});
+
+// 2. Implemente a funcionalidade
+class PullRequestService {
+  async createPullRequest(request: CreatePullRequestRequest): Promise<PullRequest> {
+    // Implementação...
+  }
+}
+
+// 3. Refatore se necessário
+```
+
+#### 2. **Validação com Zod**
+```typescript
+import { z } from 'zod';
+
+// Schema de validação
+const CreatePullRequestSchema = z.object({
+  projectKey: z.string().min(1),
+  repositorySlug: z.string().min(1),
+  title: z.string().min(1).max(255),
+  description: z.string().optional(),
+  fromRef: z.string().min(1),
+  toRef: z.string().min(1),
+  reviewers: z.array(z.string()).optional(),
+  closeSourceBranch: z.boolean().optional()
+});
+
+// Uso no serviço
+async createPullRequest(request: unknown): Promise<PullRequest> {
+  const validatedRequest = CreatePullRequestSchema.parse(request);
+  // Implementação...
+}
+```
+
+#### 3. **Suporte Dual (Data Center + Cloud)**
+```typescript
+class PullRequestService {
+  private buildApiUrl(serverInfo: ServerInfo, projectKey: string, repoSlug: string): string {
+    if (serverInfo.serverType === 'datacenter') {
+      return `${serverInfo.baseUrl}/rest/api/1.0/projects/${projectKey}/repos/${repoSlug}/pull-requests`;
+    } else {
+      return `${serverInfo.baseUrl}/2.0/repositories/${projectKey}/${repoSlug}/pullrequests`;
+    }
+  }
+}
+```
+
+#### 4. **Cache Inteligente**
+```typescript
+class PullRequestService {
+  async getPullRequest(request: GetPullRequestRequest): Promise<PullRequest> {
+    const cacheKey = `pr:${request.projectKey}:${request.repositorySlug}:${request.pullRequestId}`;
+    
+    // Verificar cache primeiro
+    const cached = await this.cache.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+    
+    // Buscar da API
+    const result = await this.fetchFromAPI(request);
+    
+    // Armazenar no cache (TTL 5 minutos)
+    await this.cache.set(cacheKey, result, 300);
+    
+    return result;
+  }
+}
+```
+
+#### 5. **Error Handling Robusto**
+```typescript
+class PullRequestService {
+  async createPullRequest(request: CreatePullRequestRequest): Promise<PullRequest> {
+    try {
+      return await this.executeWithRetry(async () => {
+        const response = await axios.post(this.buildApiUrl(request.serverInfo, request.projectKey, request.repositorySlug), {
+          title: request.title,
+          description: request.description,
+          fromRef: { id: request.fromRef },
+          toRef: { id: request.toRef }
+        }, {
+          headers: {
+            'Authorization': `Bearer ${request.auth.access_token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        return response.data;
+      });
+    } catch (error) {
+      if (error.response?.status === 409) {
+        throw new ConflictError('Pull request already exists');
+      } else if (error.response?.status === 401) {
+        throw new AuthenticationError('Invalid credentials');
+      } else {
+        throw new PullRequestError('Failed to create pull request', error);
+      }
+    }
+  }
+}
+```
+
+### Checklist de Desenvolvimento
+
+#### Antes de Começar
+- [ ] Issue criada e aprovada
+- [ ] Especificações claras definidas
+- [ ] Testes de contrato escritos (TDD)
+- [ ] Ambiente de desenvolvimento configurado
+
+#### Durante o Desenvolvimento
+- [ ] Testes unitários implementados (>80% cobertura)
+- [ ] Testes de integração com APIs reais
+- [ ] Validação com schemas Zod
+- [ ] Suporte para Data Center e Cloud
+- [ ] Cache implementado com TTL apropriado
+- [ ] Error handling robusto
+- [ ] Logs estruturados com sanitização
+- [ ] Rate limiting configurado
+
+#### Antes do Pull Request
+- [ ] Todos os testes passando
+- [ ] Linting sem erros
+- [ ] Build sem erros
+- [ ] Documentação atualizada
+- [ ] Exemplos de uso adicionados
+- [ ] Performance testada (<2s para 95% das requisições)
+
+### Exemplos de Implementação
+
+#### Criando uma Nova Ferramenta MCP
+```typescript
+// 1. Defina o schema de entrada
+const createPullRequestTool = {
+  name: 'mcp_bitbucket_pull_request_create',
+  description: 'Cria um novo pull request no Bitbucket Data Center',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      project_key: { type: 'string' },
+      repo_slug: { type: 'string' },
+      title: { type: 'string' },
+      description: { type: 'string' },
+      source_branch: { type: 'string' },
+      destination_branch: { type: 'string' },
+      reviewers: { type: 'array', items: { type: 'string' } }
+    },
+    required: ['project_key', 'repo_slug', 'title', 'source_branch', 'destination_branch']
+  }
+};
+
+// 2. Implemente o handler
+export async function createPullRequest(args: CreatePullRequestArgs): Promise<MCPResponse> {
+  try {
+    const service = new PullRequestService();
+    const result = await service.createPullRequest({
+      serverInfo: await detectServer(args.serverUrl),
+      auth: await authenticate(args),
+      projectKey: args.project_key,
+      repositorySlug: args.repo_slug,
+      title: args.title,
+      description: args.description,
+      fromRef: args.source_branch,
+      toRef: args.destination_branch,
+      reviewers: args.reviewers
+    });
+    
+    return {
+      content: [{
+        type: 'text',
+        text: JSON.stringify(result, null, 2)
+      }]
+    };
+  } catch (error) {
+    throw new MCPError('Failed to create pull request', error);
+  }
+}
+
+// 3. Registre a ferramenta
+toolRegistry.registerTool({
+  name: createPullRequestTool.name,
+  description: createPullRequestTool.description,
+  inputSchema: createPullRequestTool.inputSchema,
+  handler: createPullRequest,
+  rateLimitType: 'api:heavy',
+  cacheKey: () => '' // No caching for create operations
+});
+```
+
+### Troubleshooting
+
+#### Problemas Comuns
+
+1. **Erro de Autenticação**
+   - Verifique se o token está válido
+   - Confirme se o usuário tem permissões adequadas
+   - Teste com diferentes métodos de autenticação
+
+2. **Erro de Rate Limiting**
+   - Implemente backoff exponencial
+   - Use cache para reduzir chamadas à API
+   - Configure rate limiting apropriado
+
+3. **Diferenças entre Data Center e Cloud**
+   - Use detecção automática de servidor
+   - Implemente fallbacks quando necessário
+   - Teste com ambos os tipos de servidor
+
+4. **Problemas de Performance**
+   - Implemente cache inteligente
+   - Use paginação para listas grandes
+   - Otimize queries e filtros
+
 ## 🔄 Processo de Desenvolvimento
 
 ### 1. **Planejamento**

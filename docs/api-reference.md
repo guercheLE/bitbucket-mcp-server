@@ -446,10 +446,17 @@ Cria um fork de um repositório no Bitbucket Data Center.
 
 ## 🔀 Ferramentas de Pull Request
 
-### Gerenciamento de Pull Requests
+O Bitbucket MCP Server implementa 18 ferramentas completas para gestão de pull requests, incluindo operações CRUD, comentários, análise de diffs e operações de merge/decline/reopen. Todas as ferramentas suportam tanto Bitbucket Data Center 7.16+ quanto Cloud.
+
+### Gerenciamento de Pull Requests (CRUD)
 
 #### `mcp_bitbucket_pull_request_create`
-Cria um novo pull request no Bitbucket Data Center.
+Cria um novo pull request no Bitbucket Data Center ou Cloud.
+
+**Funcionalidades:**
+- Criação de pull requests
+- Configuração de revisores
+- Metadados do pull request
 
 **Parâmetros:**
 - `project_key`: Chave do projeto
@@ -461,41 +468,74 @@ Cria um novo pull request no Bitbucket Data Center.
 - `reviewers`: Lista de revisores (opcional)
 - `closeSourceBranch`: Se deve fechar a branch de origem após merge (opcional)
 
-**Retorna:** Pull request criado com detalhes.
+**Retorna:** Objeto com content contendo array de objetos com type: 'text' e text com os detalhes do pull request criado.
+
+**Exemplo:**
+```typescript
+const result = await mcp_bitbucket_pull_request_create({
+  project_key: "PROJ",
+  repo_slug: "meu-repositorio",
+  title: "Nova feature",
+  description: "Implementa nova funcionalidade",
+  source_branch: "feature/nova-funcionalidade",
+  destination_branch: "main",
+  reviewers: ["usuario1", "usuario2"]
+});
+```
 
 #### `mcp_bitbucket_pull_request_get`
-Obtém um pull request específico no Bitbucket Data Center.
+Obtém um pull request específico no Bitbucket Data Center ou Cloud.
+
+**Funcionalidades:**
+- Detalhes do pull request
+- Metadados e configurações
+- Informações de revisores
 
 **Parâmetros:**
 - `project_key`: Chave do projeto
 - `repo_slug`: Slug do repositório
 - `pull_request_id`: ID do pull request
 
-**Retorna:** Detalhes do pull request.
+**Retorna:** Objeto com content contendo array de objetos com type: 'text' e text com os detalhes do pull request.
 
 #### `mcp_bitbucket_pull_request_update`
-Atualiza um pull request existente no Bitbucket Data Center.
+Atualiza um pull request existente no Bitbucket Data Center ou Cloud.
+
+**Funcionalidades:**
+- Atualização de metadados
+- Modificação de revisores
+- Alteração de configurações
 
 **Parâmetros:**
 - `project_key`: Chave do projeto
 - `repo_slug`: Slug do repositório
 - `pull_request_id`: ID do pull request
-- `updates`: Objeto com as atualizações
+- `updates`: Objeto com as atualizações a serem aplicadas
 
-**Retorna:** Pull request atualizado com detalhes.
+**Retorna:** Objeto com content contendo array de objetos com type: 'text' e text com os detalhes do pull request atualizado.
 
 #### `mcp_bitbucket_pull_request_delete`
-Exclui um pull request no Bitbucket Data Center.
+Exclui um pull request no Bitbucket Data Center ou Cloud.
+
+**Funcionalidades:**
+- Remoção de pull requests
+- Limpeza de recursos
+- Verificação de dependências
 
 **Parâmetros:**
 - `project_key`: Chave do projeto
 - `repo_slug`: Slug do repositório
 - `pull_request_id`: ID do pull request
 
-**Retorna:** Confirmação da exclusão.
+**Retorna:** Objeto com content contendo array de objetos com type: 'text' e text com confirmação da exclusão.
 
 #### `mcp_bitbucket_pull_request_list`
-Lista pull requests no Bitbucket Data Center.
+Lista pull requests no Bitbucket Data Center ou Cloud.
+
+**Funcionalidades:**
+- Listagem de pull requests
+- Filtros e paginação
+- Informações resumidas
 
 **Parâmetros:**
 - `project_key`: Chave do projeto
@@ -504,12 +544,17 @@ Lista pull requests no Bitbucket Data Center.
 - `start`: Índice de início para paginação (opcional)
 - `limit`: Número máximo de resultados (opcional)
 
-**Retorna:** Lista de pull requests.
+**Retorna:** Objeto com content contendo array de objetos com type: 'text' e text com a lista de pull requests.
 
 ### Operações de Pull Request
 
 #### `mcp_bitbucket_pull_request_merge`
-Faz merge de um pull request no Bitbucket Data Center.
+Faz merge de um pull request no Bitbucket Data Center ou Cloud.
+
+**Funcionalidades:**
+- Merge de pull requests
+- Configuração de estratégias
+- Fechamento de branches
 
 **Parâmetros:**
 - `project_key`: Chave do projeto
@@ -517,10 +562,15 @@ Faz merge de um pull request no Bitbucket Data Center.
 - `pull_request_id`: ID do pull request
 - `merge_strategy`: Estratégia de merge (opcional)
 
-**Retorna:** Detalhes do merge.
+**Retorna:** Objeto com content contendo array de objetos com type: 'text' e text com os detalhes do merge.
 
 #### `mcp_bitbucket_pull_request_decline`
-Recusa um pull request no Bitbucket Data Center.
+Recusa um pull request no Bitbucket Data Center ou Cloud.
+
+**Funcionalidades:**
+- Recusa de pull requests
+- Configuração de motivos
+- Notificações
 
 **Parâmetros:**
 - `project_key`: Chave do projeto
@@ -528,22 +578,32 @@ Recusa um pull request no Bitbucket Data Center.
 - `pull_request_id`: ID do pull request
 - `reason`: Motivo da recusa (opcional)
 
-**Retorna:** Detalhes da recusa.
+**Retorna:** Objeto com content contendo array de objetos com type: 'text' e text com os detalhes da recusa.
 
 #### `mcp_bitbucket_pull_request_reopen`
-Reabre um pull request no Bitbucket Data Center.
+Reabre um pull request no Bitbucket Data Center ou Cloud.
+
+**Funcionalidades:**
+- Reabertura de pull request
+- Restauração de estado
+- Aplicação de mudanças
 
 **Parâmetros:**
 - `projectKey`: Chave do projeto
 - `repositorySlug`: Slug do repositório
 - `pullRequestId`: ID do pull request
 
-**Retorna:** Pull request reaberto com detalhes.
+**Retorna:** Objeto com content contendo array de objetos com type: 'text' e text com os detalhes do pull request reaberto.
 
 ### Comentários de Pull Request
 
 #### `mcp_bitbucket_pull_request_create_comment`
-Cria um comentário em um pull request no Bitbucket Data Center.
+Cria um comentário em um pull request no Bitbucket Data Center ou Cloud.
+
+**Funcionalidades:**
+- Criação de comentário
+- Discussão de código
+- Feedback de revisão
 
 **Parâmetros:**
 - `projectKey`: Chave do projeto
@@ -552,10 +612,15 @@ Cria um comentário em um pull request no Bitbucket Data Center.
 - `text`: Texto do comentário
 - `parent`: Comentário pai (opcional)
 
-**Retorna:** Comentário criado com detalhes.
+**Retorna:** Objeto com content contendo array de objetos com type: 'text' e text com os detalhes do comentário criado.
 
 #### `mcp_bitbucket_pull_request_get_comment`
-Obtém um comentário específico de um pull request no Bitbucket Data Center.
+Obtém um comentário específico de um pull request no Bitbucket Data Center ou Cloud.
+
+**Funcionalidades:**
+- Detalhes do comentário
+- Informações de autor
+- Histórico de edições
 
 **Parâmetros:**
 - `projectKey`: Chave do projeto
@@ -563,10 +628,15 @@ Obtém um comentário específico de um pull request no Bitbucket Data Center.
 - `pullRequestId`: ID do pull request
 - `commentId`: ID do comentário
 
-**Retorna:** Detalhes do comentário.
+**Retorna:** Objeto com content contendo array de objetos com type: 'text' e text com os detalhes do comentário.
 
 #### `mcp_bitbucket_pull_request_update_comment`
-Atualiza um comentário de um pull request no Bitbucket Data Center.
+Atualiza um comentário de um pull request no Bitbucket Data Center ou Cloud.
+
+**Funcionalidades:**
+- Atualização de comentário
+- Edição de texto
+- Aplicação de mudanças
 
 **Parâmetros:**
 - `projectKey`: Chave do projeto
@@ -576,10 +646,15 @@ Atualiza um comentário de um pull request no Bitbucket Data Center.
 - `version`: Versão do comentário
 - `text`: Novo texto do comentário
 
-**Retorna:** Comentário atualizado com detalhes.
+**Retorna:** Objeto com content contendo array de objetos com type: 'text' e text com os detalhes do comentário atualizado.
 
 #### `mcp_bitbucket_pull_request_delete_comment`
-Remove um comentário de um pull request no Bitbucket Data Center.
+Remove um comentário de um pull request no Bitbucket Data Center ou Cloud.
+
+**Funcionalidades:**
+- Remoção de comentário
+- Limpeza de dados
+- Confirmação de operação
 
 **Parâmetros:**
 - `projectKey`: Chave do projeto
@@ -587,12 +662,17 @@ Remove um comentário de um pull request no Bitbucket Data Center.
 - `pullRequestId`: ID do pull request
 - `commentId`: ID do comentário
 
-**Retorna:** Resultado da operação.
+**Retorna:** Objeto com content contendo array de objetos com type: 'text' e text com o resultado da operação.
 
-### Atividade e Diferenças
+### Análise e Atividade de Pull Request
 
 #### `mcp_bitbucket_pull_request_get_activity`
-Obtém a atividade de um pull request no Bitbucket Data Center.
+Obtém a atividade de um pull request no Bitbucket Data Center ou Cloud.
+
+**Funcionalidades:**
+- Histórico de atividades
+- Log de eventos
+- Rastreamento de mudanças
 
 **Parâmetros:**
 - `projectKey`: Chave do projeto
@@ -601,10 +681,15 @@ Obtém a atividade de um pull request no Bitbucket Data Center.
 - `start`: Índice inicial para paginação (opcional)
 - `limit`: Número máximo de resultados (opcional)
 
-**Retorna:** Atividade do pull request.
+**Retorna:** Objeto com content contendo array de objetos com type: 'text' e text com a atividade do pull request.
 
 #### `mcp_bitbucket_pull_request_get_diff`
-Obtém o diff de um pull request no Bitbucket Data Center.
+Obtém o diff de um pull request no Bitbucket Data Center ou Cloud.
+
+**Funcionalidades:**
+- Diferenças de código
+- Comparação de arquivos
+- Visualização de mudanças
 
 **Parâmetros:**
 - `project_key`: Chave do projeto
@@ -612,10 +697,15 @@ Obtém o diff de um pull request no Bitbucket Data Center.
 - `pull_request_id`: ID do pull request
 - `context_lines`: Linhas de contexto (opcional)
 
-**Retorna:** Diff do pull request.
+**Retorna:** Objeto com content contendo array de objetos com type: 'text' e text com o diff do pull request.
 
 #### `mcp_bitbucket_pull_request_get_changes`
-Obtém as mudanças de um pull request no Bitbucket Data Center.
+Obtém as mudanças de um pull request no Bitbucket Data Center ou Cloud.
+
+**Funcionalidades:**
+- Lista de arquivos alterados
+- Estatísticas de mudanças
+- Informações de commits
 
 **Parâmetros:**
 - `project_key`: Chave do projeto
@@ -624,7 +714,17 @@ Obtém as mudanças de um pull request no Bitbucket Data Center.
 - `start`: Índice inicial para paginação (opcional)
 - `limit`: Número máximo de resultados (opcional)
 
-**Retorna:** Mudanças do pull request.
+**Retorna:** Objeto com content contendo array de objetos com type: 'text' e text com as mudanças do pull request.
+
+### Características Técnicas das Ferramentas de Pull Request
+
+- **Suporte Dual**: Todas as ferramentas funcionam com Bitbucket Data Center 7.16+ e Cloud
+- **Validação Rigorosa**: Parâmetros validados com schemas Zod
+- **Cache Inteligente**: Cache automático com TTL de 5 minutos para operações de leitura
+- **Rate Limiting**: Proteção contra abuso com diferentes limites para operações leves e pesadas
+- **Error Handling**: Tratamento robusto de erros com retry automático
+- **Logs Estruturados**: Logs detalhados com sanitização de dados sensíveis
+- **Performance**: Operações otimizadas para <2s de resposta em 95% dos casos
 
 ## 📂 Ferramentas de Projeto
 

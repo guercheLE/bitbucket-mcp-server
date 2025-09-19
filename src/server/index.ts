@@ -22,6 +22,7 @@ import { rateLimitAndCircuitBreaker } from '../services/rate-limiter.js';
 import { errorHandlerService } from '../services/error-handling.js';
 import { cache } from '../services/cache.js';
 import { serverDetectionService } from '../services/server-detection.js';
+import { toolRegistry } from '../mcp/tool-registry.js';
 
 // Health check tool schema
 const HealthCheckSchema = z.object({
@@ -52,61 +53,81 @@ export function createMCPServer(): Server {
 
   // Configure tools/list handler
   server.setRequestHandler(ListToolsRequestSchema, (): ListToolsResult => {
+    // Get all tools from registry plus system tools
+    const systemTools = [
+      {
+        name: 'health_check',
+        description: 'Check Bitbucket server health and connectivity',
+        inputSchema: {
+          type: 'object' as const,
+          properties: {
+            url: {
+              type: 'string' as const,
+              description: 'Bitbucket server URL',
+            },
+          },
+          required: ['url'],
+        },
+      },
+      {
+        name: 'server_info',
+        description: 'Get Bitbucket server information and type detection',
+        inputSchema: {
+          type: 'object' as const,
+          properties: {
+            url: {
+              type: 'string' as const,
+              description: 'Bitbucket server URL',
+            },
+          },
+          required: ['url'],
+        },
+      },
+      {
+        name: 'system_health',
+        description: 'Get comprehensive system health status',
+        inputSchema: {
+          type: 'object' as const,
+          properties: {},
+        },
+      },
+      {
+        name: 'cache_stats',
+        description: 'Get cache statistics and performance metrics',
+        inputSchema: {
+          type: 'object' as const,
+          properties: {},
+        },
+      },
+      {
+        name: 'rate_limit_status',
+        description: 'Get rate limiting and circuit breaker status',
+        inputSchema: {
+          type: 'object' as const,
+          properties: {},
+        },
+      },
+      {
+        name: 'tool_registry_stats',
+        description: 'Get tool registry statistics and information',
+        inputSchema: {
+          type: 'object' as const,
+          properties: {},
+        },
+      },
+    ];
+
+    // Combine system tools with registered tools
+    const allTools = [...systemTools, ...toolRegistry.getTools()];
+
+    logger.debug('Tools list requested', {
+      systemTools: systemTools.length,
+      registeredTools: toolRegistry.getTools().length,
+      totalTools: allTools.length
+    });
+
     return {
-      tools: [
-        {
-          name: 'health_check',
-          description: 'Check Bitbucket server health and connectivity',
-          inputSchema: {
-            type: 'object',
-            properties: {
-              url: {
-                type: 'string',
-                description: 'Bitbucket server URL',
-              },
-            },
-            required: ['url'],
-          },
-        },
-        {
-          name: 'server_info',
-          description: 'Get Bitbucket server information and type detection',
-          inputSchema: {
-            type: 'object',
-            properties: {
-              url: {
-                type: 'string',
-                description: 'Bitbucket server URL',
-              },
-            },
-            required: ['url'],
-          },
-        },
-        {
-          name: 'system_health',
-          description: 'Get comprehensive system health status',
-          inputSchema: {
-            type: 'object',
-            properties: {},
-          },
-        },
-        {
-          name: 'cache_stats',
-          description: 'Get cache statistics and performance metrics',
-          inputSchema: {
-            type: 'object',
-            properties: {},
-          },
-        },
-        {
-          name: 'rate_limit_status',
-          description: 'Get rate limiting and circuit breaker status',
-          inputSchema: {
-            type: 'object',
-            properties: {},
-          },
-        },
-      ],
+      tools: allTools,
     };
   });
 
@@ -132,6 +153,7 @@ export function createMCPServer(): Server {
 
       // Execute tool with error handling
       return await errorHandlerService.executeWithErrorHandling(async () => {
+        // Check if it's a system tool first
         switch (name) {
           case 'health_check':
             return handleHealthCheck(args);
@@ -143,7 +165,13 @@ export function createMCPServer(): Server {
             return handleCacheStats();
           case 'rate_limit_status':
             return handleRateLimitStatus();
+          case 'tool_registry_stats':
+            return handleToolRegistryStats();
           default:
+            // Check if it's a registered tool
+            if (toolRegistry.hasTool(name)) {
+              return await toolRegistry.executeTool(name, args);
+            }
             throw new Error(`Unknown tool: ${name}`);
         }
       }, context);
@@ -306,6 +334,26 @@ async function handleRateLimitStatus(): Promise<CallToolResult> {
 }
 
 /**
+ * Handle tool registry stats tool
+ */
+async function handleToolRegistryStats(): Promise<CallToolResult> {
+  try {
+    const stats = toolRegistry.getStats();
+    
+    return {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify(stats, null, 2),
+        },
+      ],
+    };
+  } catch (error) {
+    throw new Error(`Tool registry stats retrieval failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
  * Main function to start the server with full integration
  */
 export async function main(): Promise<void> {
@@ -332,7 +380,8 @@ export async function main(): Promise<void> {
     
     logger.info('MCP Server started successfully', {
       activeTransport: transportManager.getActiveTransport(),
-      availableTransports: transportManager.getAvailableTransports()
+      availableTransports: transportManager.getAvailableTransports(),
+      registeredTools: toolRegistry.getStats()
     });
 
     // Start health check service

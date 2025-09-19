@@ -341,3 +341,6 @@ export class ServerDetectionService {
 
 // Export singleton instance
 export const serverDetectionService = new ServerDetectionService();
+
+// Export convenience function
+export const detectServer = (baseUrl: string) => serverDetectionService.detectServerType(baseUrl);
