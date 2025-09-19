@@ -3,9 +3,9 @@
  * SSE transport for real-time MCP server communication
  */
 
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { TransportType, TransportConfig } from '../../types/index.js';
-import { logger } from '../../utils/logger.js';
+import { Server } from '@modelcontextprotocol/sdk/server/index';
+import { TransportType, TransportConfig } from '../../types/index';
+import { logger } from '../../utils/logger';
 import express, { Express, Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';

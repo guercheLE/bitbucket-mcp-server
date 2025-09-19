@@ -6,7 +6,7 @@
  */
 
 import { AxiosInstance } from 'axios';
-import { Cache } from '../utils/cache.js';
+import { Cache } from '../utils/cache';
 import {
   SearchQuery,
   SearchResult,
@@ -16,10 +16,12 @@ import {
   QueryAnalysis,
   UserSearchBehavior,
   SearchOptimizationSuggestion,
-} from '../types/search.js';
-import { ServerInfo } from '../types/index.js';
-import { SearchHistoryService } from './search-history-service.js';
-import { logger } from '../utils/logger.js';
+  SearchResultType,
+  SearchHistoryEntry,
+} from '../types/search';
+import { ServerInfo } from '../types/index';
+import { SearchHistoryService } from './search-history-service';
+import { logger } from '../utils/logger';
 
 // ============================================================================
 // Search Analysis Service
@@ -121,10 +123,11 @@ export class SearchAnalysisService {
     const analysis: QueryAnalysis = {
       query: query.query,
       complexity: this.calculateQueryComplexity(query),
+      effectiveness: this.calculateQueryEffectiveness(query),
       estimatedPerformance: this.estimateQueryPerformance(query),
       suggestions: this.generateQuerySuggestions(query),
+      patterns: this.identifySearchPatterns([query]),
       filters: this.analyzeFilters(query.filters || {}),
-      optimization: this.generateOptimizationSuggestions(query),
     };
 
     return analysis;
@@ -192,6 +195,8 @@ export class SearchAnalysisService {
       searchTiming: this.analyzeSearchTiming(history.entries),
       successRate: this.calculateUserSuccessRate(history.entries),
       averageQueryLength: this.calculateAverageQueryLength(history.entries),
+      searchPatterns: this.identifyUserSearchPatterns(history.entries),
+      preferences: this.analyzeUserPreferences(history.entries),
       period: {
         fromDate: options.fromDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
         toDate: options.toDate || new Date().toISOString(),
@@ -296,6 +301,9 @@ export class SearchAnalysisService {
       successRate: analytics.totalSearches > 0 
         ? analytics.successfulSearches / analytics.totalSearches 
         : 0,
+      averageResponseTime: analytics.averageExecutionTime, // Using execution time as proxy
+      p95ResponseTime: 0, // Would need to calculate from raw data
+      p99ResponseTime: 0, // Would need to calculate from raw data
       averageExecutionTime: analytics.averageExecutionTime,
       medianExecutionTime: 0, // Would need to calculate from raw data
       p95ExecutionTime: 0, // Would need to calculate from raw data
@@ -304,13 +312,9 @@ export class SearchAnalysisService {
         ? analytics.failedSearches / analytics.totalSearches 
         : 0,
       throughput: this.calculateThroughput(analytics),
-      period: analytics.period,
+      searchTypeBreakdown: analytics.searchTypeBreakdown || {},
+      serverTypeBreakdown: analytics.serverTypeBreakdown || {},
     };
-
-    if (options.includeBreakdown) {
-      metrics.searchTypeBreakdown = analytics.searchTypeBreakdown;
-      metrics.serverTypeBreakdown = analytics.serverTypeBreakdown;
-    }
 
     return metrics;
   }
@@ -335,6 +339,30 @@ export class SearchAnalysisService {
     complexity += operatorCount * 0.3;
 
     return Math.min(complexity, 10); // Cap at 10
+  }
+
+  /**
+   * Calculates query effectiveness score
+   */
+  private calculateQueryEffectiveness(query: SearchQuery): number {
+    let effectiveness = 0.5; // Base effectiveness
+    
+    // Query length effectiveness
+    if (query.query.length >= 3 && query.query.length <= 50) {
+      effectiveness += 0.2;
+    }
+    
+    // Filter usage effectiveness
+    if (query.filters && Object.keys(query.filters).length > 0) {
+      effectiveness += 0.2;
+    }
+    
+    // Specific search terms effectiveness
+    if (query.query.includes(':')) {
+      effectiveness += 0.1;
+    }
+    
+    return Math.min(effectiveness, 1.0); // Cap at 1.0
   }
 
   /**
@@ -529,15 +557,19 @@ export class SearchAnalysisService {
   /**
    * Calculates preferred search types for a user
    */
-  private calculatePreferredSearchTypes(entries: any[]): Record<string, number> {
+  private calculatePreferredSearchTypes(entries: any[]): SearchResultType[] {
     const types: Record<string, number> = {};
     
     entries.forEach(entry => {
-      const type = entry.searchType || 'general';
+      const type = entry.searchType || 'repository';
       types[type] = (types[type] || 0) + 1;
     });
     
-    return types;
+    // Return top 3 search types as array
+    return Object.entries(types)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 3)
+      .map(([type]) => type as SearchResultType);
   }
 
   /**
@@ -615,13 +647,9 @@ export class SearchAnalysisService {
   /**
    * Identifies search patterns
    */
-  private identifySearchPatterns(entries: any[]): Array<{
-    pattern: string;
-    frequency: number;
-    description: string;
-  }> {
+  private identifySearchPatterns(entries: any[]): string[] {
     // Simple pattern identification
-    const patterns = [];
+    const patterns: string[] = [];
     
     // Check for repetitive searches
     const queryFreq: Record<string, number> = {};
@@ -631,32 +659,13 @@ export class SearchAnalysisService {
     
     Object.entries(queryFreq).forEach(([query, freq]) => {
       if (freq > 5) {
-        patterns.push({
-          pattern: 'repetitive_search',
-          frequency: freq,
-          description: `Frequently searches for: "${query}"`,
-        });
+        patterns.push(`Frequently searches for: "${query}"`);
       }
     });
     
     return patterns;
   }
 
-  /**
-   * Analyzes user preferences
-   */
-  private analyzeUserPreferences(entries: any[]): {
-    preferredSortOrder: string;
-    preferredResultsPerPage: number;
-    preferredFilters: string[];
-  } {
-    // Analyze preferences from search history
-    return {
-      preferredSortOrder: 'desc', // Most common
-      preferredResultsPerPage: 25, // Default
-      preferredFilters: [], // Most used filters
-    };
-  }
 
   /**
    * Calculates insights
@@ -685,6 +694,8 @@ export class SearchAnalysisService {
         severity: 'high',
         title: 'High average execution time',
         description: `Search queries are taking ${analytics.averageExecutionTime}ms on average`,
+        priority: 'high',
+        suggestions: [],
         recommendation: 'Consider optimizing slow queries or adding more specific filters',
         impact: 'User experience degradation',
         data: { averageExecutionTime: analytics.averageExecutionTime },
@@ -702,6 +713,8 @@ export class SearchAnalysisService {
         severity: 'medium',
         title: 'Low search success rate',
         description: `Only ${(successRate * 100).toFixed(1)}% of searches are successful`,
+        priority: 'medium',
+        suggestions: [],
         recommendation: 'Review failed searches and improve error handling',
         impact: 'Reduced user satisfaction',
         data: { successRate },
@@ -720,6 +733,42 @@ export class SearchAnalysisService {
     const hours = (periodEnd.getTime() - periodStart.getTime()) / (1000 * 60 * 60);
     
     return hours > 0 ? analytics.totalSearches / hours : 0;
+  }
+
+  /**
+   * Identifies user-specific search patterns
+   */
+  private identifyUserSearchPatterns(entries: SearchHistoryEntry[]): string[] {
+    return this.identifySearchPatterns(entries);
+  }
+
+  /**
+   * Analyzes user preferences from search history
+   */
+  private analyzeUserPreferences(entries: SearchHistoryEntry[]): Record<string, any> {
+    const preferences: Record<string, any> = {};
+    
+    // Analyze preferred search types
+    const searchTypeCounts = entries.reduce((acc, entry) => {
+      acc[entry.searchType] = (acc[entry.searchType] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    
+    preferences.preferredSearchTypes = Object.keys(searchTypeCounts)
+      .sort((a, b) => searchTypeCounts[b] - searchTypeCounts[a]);
+    
+    // Analyze preferred filters
+    const filterUsage = entries.reduce((acc, entry) => {
+      Object.keys(entry.filters).forEach(filter => {
+        acc[filter] = (acc[filter] || 0) + 1;
+      });
+      return acc;
+    }, {} as Record<string, number>);
+    
+    preferences.preferredFilters = Object.keys(filterUsage)
+      .sort((a, b) => filterUsage[b] - filterUsage[a]);
+    
+    return preferences;
   }
 }
 

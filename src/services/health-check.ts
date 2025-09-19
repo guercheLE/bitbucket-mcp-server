@@ -3,11 +3,11 @@
  * Comprehensive health monitoring for all system components
  */
 
-import { environment } from '../config/environment.js';
-import { logger } from '../utils/logger.js';
-import { cache } from './cache.js';
-import { rateLimitAndCircuitBreaker } from './rate-limiter.js';
-import { serverDetectionService } from './server-detection.js';
+import { environment } from '../config/environment';
+import { logger } from '../utils/logger';
+import { cache } from './cache';
+import { rateLimitAndCircuitBreaker } from './rate-limiter';
+import { serverDetectionService } from './server-detection';
 import axios from 'axios';
 
 // ============================================================================

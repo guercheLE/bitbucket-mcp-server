@@ -10,7 +10,7 @@ import {
   ClassifiedError,
   RetryResult,
   ErrorContext
-} from '../../../src/services/error-handling.js';
+} from '../../../src/services/error-handling';
 
 // Mock logger
 jest.mock('../../../src/utils/logger', () => ({

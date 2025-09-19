@@ -15,16 +15,17 @@ import {
   SearchPagination,
   SearchConfiguration,
   SearchHistory,
+  SearchHistoryEntry,
   DEFAULT_SEARCH_CONFIG,
-} from '../types/search.js';
+} from '../types/search';
 import {
   SearchQuerySchema,
   SearchResponseSchema,
   transformSearchQuery,
-} from '../types/search-schemas.js';
-import { Cache } from '../utils/cache.js';
-import { logger, logPerformance } from '../utils/logger.js';
-import { ServerInfo } from '../types/index.js';
+} from '../types/search-schemas';
+import { Cache } from '../utils/cache';
+import { logger, logPerformance } from '../utils/logger';
+import { ServerInfo } from '../types/index';
 
 // ============================================================================
 // Search Service Base Class
@@ -213,6 +214,11 @@ export abstract class SearchService {
         totalCount: this.extractTotalCount(response.data, results.length),
         searchTime: Date.now() - Date.now(), // Will be overwritten by caller
         suggestions,
+        metadata: {
+          executionTime: Date.now() - Date.now(),
+          searchTypes: [this.searchType],
+          cacheHit: false
+        }
       };
 
       // Validate response
@@ -248,6 +254,7 @@ export abstract class SearchService {
       page,
       limit,
       totalPages,
+      totalResults: totalCount,
       hasNext: page < totalPages - 1,
       hasPrevious: page > 0,
       nextPage: page < totalPages - 1 ? page + 1 : undefined,
@@ -360,13 +367,17 @@ export abstract class SearchService {
     try {
       // This would typically save to a database or external service
       // For now, we'll just log it
-      const historyEntry: SearchHistory = {
+      const historyEntry: SearchHistoryEntry = {
+        id: `search_${Date.now()}`,
         userId: 'current-user', // Would come from authentication context
         query: query.query,
         timestamp: new Date().toISOString(),
         resultCount: response.totalCount,
         filters: query.filters || {},
         searchType: this.searchType,
+        success: true,
+        executionTime: response.searchTime,
+        serverType: serverInfo.serverType
       };
 
       logger.info('Search recorded in history', {

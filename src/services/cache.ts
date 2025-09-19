@@ -3,9 +3,9 @@
  * In-memory cache with TTL and optional Redis support
  */
 
-import { CacheConfig } from '../types/index.js';
-import { logger } from '../utils/logger.js';
-import { environment } from '../config/environment.js';
+import { CacheConfig } from '../types/index';
+import { logger } from '../utils/logger';
+import { environment } from '../config/environment';
 
 // ============================================================================
 // Cache Entry Interface

@@ -6,17 +6,17 @@
  */
 
 import { AxiosInstance } from 'axios';
-import { SearchService } from './search-service.js';
-import { Cache } from '../utils/cache.js';
+import { SearchService } from './search-service';
+import { Cache } from '../utils/cache';
 import {
   SearchQuery,
   SearchResult,
   UserSearchResult,
   UserMetadata,
   SearchConfiguration,
-} from '../types/search.js';
-import { ServerInfo } from '../types/index.js';
-import { logger } from '../utils/logger.js';
+} from '../types/search';
+import { ServerInfo } from '../types/index';
+import { logger } from '../utils/logger';
 
 // ============================================================================
 // User Search Service
@@ -316,7 +316,7 @@ export class UserSearchService extends SearchService {
     return {
       username: user.name || user.username,
       displayName: user.displayName || user.display_name,
-      email: user.emailAddress || user.email,
+      emailAddress: user.emailAddress || user.email,
       role: this.extractRole(user),
       workspace: this.extractWorkspace(user),
       active: this.extractActiveStatus(user),

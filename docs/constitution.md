@@ -44,8 +44,8 @@ O SDK oficial do Model Context Protocol (`@modelcontextprotocol/sdk`) é a únic
 
 ```typescript
 // ✅ Correto - Usar SDK oficial
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { Server } from '@modelcontextprotocol/sdk/server/index';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio';
 
 // ❌ Incorreto - Implementação customizada
 class CustomMCPServer {

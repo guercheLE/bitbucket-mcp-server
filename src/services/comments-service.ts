@@ -102,7 +102,7 @@ export class CommentsService {
       logger.info('Getting comments for issue', { issueId, page, pagelen });
 
       // Validate input
-      issuesValidationService.validateIssueId(issueId);
+      issuesValidationService.validateIssueId(issueId.toString());
       issuesValidationService.validatePaginationParams(page, pagelen);
 
       const response: AxiosResponse<CommentsListResponse> = await this.axios.get(
@@ -131,8 +131,8 @@ export class CommentsService {
       logger.info('Getting comment', { issueId, commentId });
 
       // Validate input
-      issuesValidationService.validateIssueId(issueId);
-      issuesValidationService.validateCommentId(commentId);
+      issuesValidationService.validateIssueId(issueId.toString());
+      issuesValidationService.validateCommentId(String(commentId));
 
       const response: AxiosResponse<IssueComment> = await this.axios.get(
         `/${issueId}/comments/${commentId}`
@@ -157,7 +157,7 @@ export class CommentsService {
       logger.info('Creating comment', { issueId, request });
 
       // Validate input
-      issuesValidationService.validateIssueId(issueId);
+      issuesValidationService.validateIssueId(issueId.toString());
       issuesValidationService.validateCreateCommentRequest(request);
 
       const response: AxiosResponse<IssueComment> = await this.axios.post(
@@ -184,8 +184,8 @@ export class CommentsService {
       logger.info('Updating comment', { issueId, commentId, request });
 
       // Validate input
-      issuesValidationService.validateIssueId(issueId);
-      issuesValidationService.validateCommentId(commentId);
+      issuesValidationService.validateIssueId(issueId.toString());
+      issuesValidationService.validateCommentId(String(commentId));
       issuesValidationService.validateUpdateCommentRequest(request);
 
       const response: AxiosResponse<IssueComment> = await this.axios.put(
@@ -212,8 +212,8 @@ export class CommentsService {
       logger.info('Deleting comment', { issueId, commentId });
 
       // Validate input
-      issuesValidationService.validateIssueId(issueId);
-      issuesValidationService.validateCommentId(commentId);
+      issuesValidationService.validateIssueId(issueId.toString());
+      issuesValidationService.validateCommentId(String(commentId));
 
       await this.axios.delete(`/${issueId}/comments/${commentId}`);
 

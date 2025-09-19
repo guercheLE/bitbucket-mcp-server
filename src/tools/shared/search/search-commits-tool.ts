@@ -4,9 +4,9 @@
  */
 
 import { z } from 'zod';
-import { SearchCoordinatorService } from '../../../services/search-coordinator-service.js';
-import { ServerInfo } from '../../../types/index.js';
-import { logger } from '../../../utils/logger.js';
+import { SearchCoordinatorService } from '../../../services/search-coordinator-service';
+import { ServerInfo } from '../../../types/index';
+import { logger } from '../../../utils/logger';
 
 // ============================================================================
 // Schema Definitions

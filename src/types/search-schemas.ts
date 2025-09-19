@@ -11,7 +11,7 @@ import {
   SortOrder, 
   DEFAULT_SEARCH_CONFIG,
   VALID_SORT_FIELDS,
-} from './search.js';
+} from './search';
 
 // ============================================================================
 // Basic Validation Schemas
@@ -345,6 +345,7 @@ export const SearchPaginationSchema = z.object({
   page: z.number().int().min(0),
   limit: z.number().int().min(1),
   totalPages: z.number().int().min(0),
+  totalResults: z.number().int().min(0),
   hasNext: z.boolean(),
   hasPrevious: z.boolean(),
   nextPage: z.number().int().optional(),
@@ -364,6 +365,11 @@ export const SearchResponseSchema = z.object({
   totalCount: z.number().int().min(0),
   searchTime: z.number().min(0),
   suggestions: z.array(z.string()).optional(),
+  metadata: z.object({
+    executionTime: z.number().min(0),
+    searchTypes: z.array(SearchResultTypeSchema),
+    cacheHit: z.boolean(),
+  }),
 }).strict();
 
 // ============================================================================
@@ -603,49 +609,4 @@ export function transformSearchQuery(rawQuery: unknown, searchType: SearchResult
 // Export All Schemas
 // ============================================================================
 
-export {
-  // Basic schemas
-  SearchResultTypeSchema,
-  SortOrderSchema,
-  PullRequestStateSchema,
-  DateTimeSchema,
-  UrlSchema,
-  NonEmptyStringSchema,
-  EmailSchema,
-  
-  // Query schemas
-  SearchFiltersSchema,
-  SearchQuerySchema,
-  RepositorySearchOptionsSchema,
-  CommitSearchOptionsSchema,
-  PullRequestSearchOptionsSchema,
-  CodeSearchOptionsSchema,
-  UserSearchOptionsSchema,
-  
-  // Metadata schemas
-  RepositoryMetadataSchema,
-  CommitMetadataSchema,
-  PullRequestMetadataSchema,
-  CodeMetadataSchema,
-  UserMetadataSchema,
-  SearchResultMetadataSchema,
-  
-  // Result schemas
-  SearchResultSchema,
-  RepositorySearchResultSchema,
-  CommitSearchResultSchema,
-  PullRequestSearchResultSchema,
-  CodeSearchResultSchema,
-  UserSearchResultSchema,
-  
-  // Response schemas
-  SearchPaginationSchema,
-  SearchResponseSchema,
-  
-  // Other schemas
-  SearchHistorySchema,
-  SearchAnalyticsSchema,
-  SearchConfigurationSchema,
-  SearchIndexSchema,
-  SearchErrorSchema,
-};
+// All schemas are already exported above with their definitions

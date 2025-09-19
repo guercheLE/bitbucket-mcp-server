@@ -1,4 +1,4 @@
-import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { Tool } from '@modelcontextprotocol/sdk/types';
 import { z } from 'zod';
 import { pullRequestService } from '../../../services/pullrequest-service';
 import { detectServer } from '../../../services/server-detection';

@@ -152,7 +152,7 @@ export const createRepository = async (input: unknown) => {
 Use o sistema de logging estruturado:
 
 ```typescript
-import { logger } from '../utils/logger.js';
+import { logger } from '../utils/logger';
 
 // ✅ Bom
 logger.info('Repository created', {
@@ -203,7 +203,7 @@ Este projeto segue TDD rigorosamente (Article V da Constituição):
 ```typescript
 // tests/unit/services/authentication.test.ts
 import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
-import { AuthenticationService } from '../../../src/services/authentication.js';
+import { AuthenticationService } from '../../../src/services/authentication';
 
 describe('AuthenticationService', () => {
   let authService: AuthenticationService;
@@ -391,9 +391,9 @@ export type CreateRepositoryInput = z.infer<typeof CreateRepositorySchema>;
 
 ```typescript
 // src/tools/shared/repository.ts
-import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { CreateRepositorySchema, type CreateRepositoryInput } from './schemas/repository.js';
-import { logger } from '../../utils/logger.js';
+import { Tool } from '@modelcontextprotocol/sdk/types';
+import { CreateRepositorySchema, type CreateRepositoryInput } from './schemas/repository';
+import { logger } from '../../utils/logger';
 
 export const createRepositoryTool: Tool = {
   name: 'mcp_bitbucket_repository_create',
@@ -468,7 +468,7 @@ export const createRepository = async (input: unknown) => {
 
 ```typescript
 // src/server/index.ts
-import { createRepositoryTool, createRepository } from '../tools/shared/repository.js';
+import { createRepositoryTool, createRepository } from '../tools/shared/repository';
 
 // Registrar ferramenta
 server.setRequestHandler(ListToolsRequestSchema, async () => {
@@ -495,7 +495,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 ```typescript
 // tests/unit/tools/repository.test.ts
 import { describe, it, expect, beforeEach } from '@jest/globals';
-import { createRepository } from '../../../src/tools/shared/repository.js';
+import { createRepository } from '../../../src/tools/shared/repository';
 
 describe('createRepository', () => {
   beforeEach(() => {
@@ -556,7 +556,7 @@ npm run test -- --testNamePattern="AuthenticationService" --verbose
 ### Monitoramento
 
 ```typescript
-import { performanceManager } from '../utils/performance.js';
+import { performanceManager } from '../utils/performance';
 
 // Iniciar monitoramento de requisição
 const requestId = performanceManager.getMonitor().startRequest();
@@ -578,7 +578,7 @@ try {
 ### Cache
 
 ```typescript
-import { cache } from '../services/cache.js';
+import { cache } from '../services/cache';
 
 // Cache automático
 const result = await cache.getOrSet(
@@ -591,7 +591,7 @@ const result = await cache.getOrSet(
 ### Rate Limiting
 
 ```typescript
-import { createRateLimiter } from '../utils/performance.js';
+import { createRateLimiter } from '../utils/performance';
 
 const rateLimiter = createRateLimiter('api', {
   windowMs: 60000, // 1 minuto

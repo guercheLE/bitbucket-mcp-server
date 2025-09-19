@@ -1,4 +1,4 @@
-import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { Tool } from '@modelcontextprotocol/sdk/types';
 import { z } from 'zod';
 
 // Schemas de validação para aplicações OAuth do Data Center

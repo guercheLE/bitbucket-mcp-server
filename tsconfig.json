@@ -19,7 +19,9 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "types": ["node", "jest"]
+    "types": ["node", "jest"],
+    "allowImportingTsExtensions": false,
+    "noEmit": false
   },
   "include": [
     "src/**/*"

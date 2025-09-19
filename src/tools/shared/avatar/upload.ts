@@ -5,11 +5,11 @@
  * Uploads avatars for both Data Center and Cloud
  */
 
-import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { Tool } from '@modelcontextprotocol/sdk/types';
 import { z } from 'zod';
-import { AvatarService } from '../../../services/AvatarService.js';
-import { serverDetectionService } from '../../../services/server-detection.js';
-import { logger } from '../../../utils/logger.js';
+import { AvatarService } from '../../../services/AvatarService';
+import { serverDetectionService } from '../../../services/server-detection';
+import { logger } from '../../../utils/logger';
 
 // Tool schema
 const UploadAvatarSchema = z.object({

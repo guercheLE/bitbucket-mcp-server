@@ -523,6 +523,9 @@ export type InitializeProjectRequest = z.infer<typeof InitializeProjectRequestSc
 export type ProjectConfiguration = z.infer<typeof ProjectConfigurationSchema>;
 export type ProjectInitializationResponse = z.infer<typeof ProjectInitializationResponseSchema>;
 
+// Re-export ServerInfo from server-detection service
+export type { ServerInfo } from '../services/server-detection';
+
 // Re-export commonly used types (avoiding conflicts)
 export type {
   Project as ProjectType,

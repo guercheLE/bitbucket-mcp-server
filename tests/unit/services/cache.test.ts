@@ -3,7 +3,7 @@
  * Tests for memory and Redis cache implementations
  */
 
-import { CacheManager } from '../../../src/services/cache.js';
+import { CacheManager } from '../../../src/services/cache';
 import { environment } from '../../../src/config/environment';
 
 // Mock environment

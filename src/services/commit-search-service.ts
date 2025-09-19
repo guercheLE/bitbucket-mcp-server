@@ -6,17 +6,17 @@
  */
 
 import { AxiosInstance } from 'axios';
-import { SearchService } from './search-service.js';
-import { Cache } from '../utils/cache.js';
+import { SearchService } from './search-service';
+import { Cache } from '../utils/cache';
 import {
   SearchQuery,
   SearchResult,
   CommitSearchResult,
   CommitMetadata,
   SearchConfiguration,
-} from '../types/search.js';
-import { ServerInfo } from '../types/index.js';
-import { logger } from '../utils/logger.js';
+} from '../types/search';
+import { ServerInfo } from '../types/index';
+import { logger } from '../utils/logger';
 
 // ============================================================================
 // Commit Search Service

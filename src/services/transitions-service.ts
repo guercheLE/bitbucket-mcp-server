@@ -69,7 +69,13 @@ export class TransitionsService {
     // Request interceptor
     this.axios.interceptors.request.use(
       (config) => {
-        logRequest(config);
+        logRequest({
+          method: config.method || 'GET',
+          url: config.url || '',
+          headers: config.headers as Record<string, string>,
+          body: config.data,
+          query: config.params,
+        });
         return config;
       },
       (error) => {
@@ -81,7 +87,12 @@ export class TransitionsService {
     // Response interceptor
     this.axios.interceptors.response.use(
       (response) => {
-        logResponse(response);
+        logResponse({
+          statusCode: response.status,
+          headers: response.headers as Record<string, string>,
+          body: response.data,
+          responseTime: (response.config as any).metadata?.responseTime,
+        });
         return response;
       },
       (error) => {
@@ -101,7 +112,7 @@ export class TransitionsService {
       logger.info('Getting transitions for issue', { issueId });
 
       // Validate input
-      issuesValidationService.validateIssueId(issueId);
+      issuesValidationService.validateIssueId(String(issueId));
 
       const response: AxiosResponse<TransitionsListResponse> = await this.axios.get(
         `/${issueId}/transitions`
@@ -126,7 +137,7 @@ export class TransitionsService {
       logger.info('Transitioning issue', { issueId, request });
 
       // Validate input
-      issuesValidationService.validateIssueId(issueId);
+      issuesValidationService.validateIssueId(String(issueId));
       issuesValidationService.validateTransitionRequest(request);
 
       // Validate business rules
@@ -166,15 +177,16 @@ export class TransitionsService {
       // Validate required fields
       if (requestedTransition.fields) {
         for (const [fieldName, fieldConfig] of Object.entries(requestedTransition.fields)) {
-          if (fieldConfig.required && !request.fields?.[fieldName]) {
+          const config = fieldConfig as any;
+          if (config.required && !request.fields?.[fieldName]) {
             throw new Error(`Required field '${fieldName}' is missing for transition '${request.transition.id}'`);
           }
           
           // Validate field values
-          if (fieldConfig.allowed_values && request.fields?.[fieldName]) {
+          if (config.allowed_values && request.fields?.[fieldName]) {
             const fieldValue = request.fields[fieldName];
-            if (!fieldConfig.allowed_values.includes(fieldValue)) {
-              throw new Error(`Field '${fieldName}' value '${fieldValue}' is not allowed. Allowed values: ${fieldConfig.allowed_values.join(', ')}`);
+            if (!config.allowed_values.includes(fieldValue)) {
+              throw new Error(`Field '${fieldName}' value '${fieldValue}' is not allowed. Allowed values: ${config.allowed_values.join(', ')}`);
             }
           }
         }
@@ -182,7 +194,7 @@ export class TransitionsService {
       
       logger.debug('Transition validation passed', { issueId, transition: request.transition.id });
     } catch (error) {
-      if (error instanceof Error && error.message.includes('Transition') || error.message.includes('Field')) {
+      if (error instanceof Error && (error.message.includes('Transition') || error.message.includes('Field'))) {
         throw error; // Re-throw validation errors
       }
       throw new Error(`Failed to validate transition rules: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -199,7 +211,7 @@ export class TransitionsService {
       logger.info('Getting transition history', { issueId, page, pagelen });
 
       // Validate input
-      issuesValidationService.validateIssueId(issueId);
+      issuesValidationService.validateIssueId(String(issueId));
       issuesValidationService.validatePaginationParams(page, pagelen);
 
       const response = await this.axios.get(

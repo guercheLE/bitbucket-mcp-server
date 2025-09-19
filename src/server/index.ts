@@ -3,27 +3,27 @@
  * Main server implementation using official MCP SDK with comprehensive integration
  */
 
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { Server } from '@modelcontextprotocol/sdk/server/index';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio';
 import { z } from 'zod';
 import { 
   ListToolsRequestSchema,
   CallToolRequestSchema,
   ListToolsResult,
   CallToolResult
-} from '@modelcontextprotocol/sdk/types.js';
+} from '@modelcontextprotocol/sdk/types';
 
 // Import services
-import { logger } from '../utils/logger.js';
-import { environment } from '../config/environment.js';
-import { TransportManager } from './transports/manager.js';
-import { healthCheckService } from '../services/health-check.js';
-import { rateLimitAndCircuitBreaker } from '../services/rate-limiter.js';
-import { errorHandlerService } from '../services/error-handling.js';
-import { cache } from '../services/cache.js';
-import { serverDetectionService } from '../services/server-detection.js';
-import { toolRegistry } from '../mcp/tool-registry.js';
-import { initializeI18n, i18nMiddleware } from '../config/i18n.js';
+import { logger } from '../utils/logger';
+import { environment } from '../config/environment';
+import { TransportManager } from './transports/manager';
+import { healthCheckService } from '../services/health-check';
+import { rateLimitAndCircuitBreaker } from '../services/rate-limiter';
+import { errorHandlerService } from '../services/error-handling';
+import { cache } from '../services/cache';
+import { serverDetectionService } from '../services/server-detection';
+import { toolRegistry } from '../mcp/tool-registry';
+import { initializeI18n, i18nMiddleware } from '../config/i18n';
 
 // Health check tool schema
 const HealthCheckSchema = z.object({

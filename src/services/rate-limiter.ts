@@ -5,9 +5,9 @@
 
 import { RateLimiterMemory, RateLimiterRedis } from 'rate-limiter-flexible';
 import CircuitBreaker from 'opossum';
-import { environment } from '../config/environment.js';
-import { logger } from '../utils/logger.js';
-import { cache } from './cache.js';
+import { environment } from '../config/environment';
+import { logger } from '../utils/logger';
+import { cache } from './cache';
 
 // ============================================================================
 // Rate Limiter Configuration

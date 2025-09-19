@@ -237,8 +237,8 @@ module.exports = {
 
 ```typescript
 // src/server/index.ts
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { Server } from '@modelcontextprotocol/sdk/server/index';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio';
 import { z } from 'zod';
 
 // Initialize MCP server (Article I compliance)
@@ -331,7 +331,7 @@ program.parse();
 ```typescript
 // tests/unit/server.test.ts
 import { describe, it, expect, beforeEach } from '@jest/globals';
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { Server } from '@modelcontextprotocol/sdk/server/index';
 
 describe('MCP Server', () => {
   let server: Server;

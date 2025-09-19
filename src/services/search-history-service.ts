@@ -6,7 +6,7 @@
  */
 
 import { AxiosInstance } from 'axios';
-import { Cache } from '../utils/cache.js';
+import { Cache } from '../utils/cache';
 import {
   SearchQuery,
   SearchHistory,
@@ -14,9 +14,10 @@ import {
   SearchAnalytics,
   SearchTrend,
   PopularQuery,
-} from '../types/search.js';
-import { ServerInfo } from '../types/index.js';
-import { logger } from '../utils/logger.js';
+  SearchResultType,
+} from '../types/search';
+import { ServerInfo } from '../types/index';
+import { logger } from '../utils/logger';
 
 // ============================================================================
 // Search History Service
@@ -73,6 +74,7 @@ export class SearchHistoryService {
         filters: query.filters || {},
         searchType: this.determineSearchType(query),
         timestamp: new Date().toISOString(),
+        resultCount: results.totalResults,
         totalResults: results.totalResults,
         executionTime: results.executionTime,
         serverType: results.serverInfo.serverType,
@@ -116,11 +118,11 @@ export class SearchHistoryService {
         filters: query.filters || {},
         searchType: this.determineSearchType(query),
         timestamp: new Date().toISOString(),
+        resultCount: 0,
         totalResults: 0,
         executionTime: 0,
         serverType: serverInfo.serverType,
         success: false,
-        error: error.message,
       };
 
       // Add to user's history
@@ -319,7 +321,7 @@ export class SearchHistoryService {
   /**
    * Determines the search type from the query
    */
-  private determineSearchType(query: SearchQuery): string {
+  private determineSearchType(query: SearchQuery): SearchResultType {
     // Try to determine search type from filters or query content
     if (query.filters?.repositorySlug && !query.filters.filePath) {
       return 'repository';
@@ -364,8 +366,8 @@ export class SearchHistoryService {
       return 'user';
     }
     
-    // Default to general search
-    return 'general';
+    // Default to repository search
+    return 'repository';
   }
 
   /**
@@ -401,7 +403,7 @@ export class SearchHistoryService {
   private async loadUserHistory(userId: string): Promise<SearchHistoryEntry[]> {
     try {
       const cacheKey = `user_history:${userId}`;
-      const cachedHistory = await this.cache.get<SearchHistoryEntry[]>(cacheKey);
+      const cachedHistory = await this.cache.get(cacheKey) as SearchHistoryEntry[] | undefined;
       
       return cachedHistory || [];
     } catch (error) {
@@ -455,7 +457,23 @@ export class SearchHistoryService {
       totalSearches: 0,
       successfulSearches: 0,
       failedSearches: 0,
+      averageSearchTime: 0,
       averageExecutionTime: 0,
+      popularTerms: [],
+      popularQueries: [],
+      trends: [],
+      performanceMetrics: {
+        averageResponseTime: 0,
+        p95ResponseTime: 0,
+        p99ResponseTime: 0,
+        successRate: 0,
+        errorRate: 0,
+        totalSearches: 0,
+        searchTypeBreakdown: {},
+        serverTypeBreakdown: {},
+        averageExecutionTime: 0
+      },
+      searchTypeUsage: [],
       searchTypeBreakdown: {},
       serverTypeBreakdown: {},
       period: {
@@ -597,10 +615,12 @@ export class SearchHistoryService {
     return Object.entries(queryCount)
       .map(([query, stats]) => ({
         query,
+        frequency: stats.count,
         count: stats.count,
         lastUsed: stats.lastUsed,
         avgExecutionTime: stats.avgExecutionTime,
         successRate: stats.successRate,
+        averageResults: 0 // Would be calculated from actual results
       }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 20); // Top 20 queries
@@ -633,8 +653,19 @@ export class SearchHistoryService {
     
     return Object.values(dailyTrends)
       .map(trend => ({
-        ...trend,
+        period: trend.date,
+        type: 'repository' as SearchResultType,
+        direction: 'stable' as const,
+        magnitude: 0,
+        dataPoints: [{
+          date: trend.date,
+          value: trend.count
+        }],
+        date: trend.date,
+        avgExecutionTime: 0,
         successRate: trend.count > 0 ? trend.successCount / trend.count : 0,
+        count: trend.count,
+        p95ExecutionTime: 0
       }))
       .sort((a, b) => a.date.localeCompare(b.date));
   }

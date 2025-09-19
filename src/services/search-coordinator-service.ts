@@ -6,7 +6,7 @@
  */
 
 import { AxiosInstance } from 'axios';
-import { Cache } from '../utils/cache.js';
+import { Cache } from '../utils/cache';
 import {
   SearchQuery,
   SearchResponse,
@@ -16,18 +16,18 @@ import {
   MultiSearchRequest,
   MultiSearchResponse,
   SearchSuggestion,
-} from '../types/search.js';
-import { ServerInfo } from '../types/index.js';
-import { logger } from '../utils/logger.js';
+} from '../types/search';
+import { ServerInfo } from '../types/index';
+import { logger } from '../utils/logger';
 
 // Import all search services
-import { RepositorySearchService } from './repository-search-service.js';
-import { CommitSearchService } from './commit-search-service.js';
-import { PullRequestSearchService } from './pullrequest-search-service.js';
-import { CodeSearchService } from './code-search-service.js';
-import { UserSearchService } from './user-search-service.js';
-import { SearchHistoryService } from './search-history-service.js';
-import { SearchAnalysisService } from './search-analysis-service.js';
+import { RepositorySearchService } from './repository-search-service';
+import { CommitSearchService } from './commit-search-service';
+import { PullRequestSearchService } from './pullrequest-search-service';
+import { CodeSearchService } from './code-search-service';
+import { UserSearchService } from './user-search-service';
+import { SearchHistoryService } from './search-history-service';
+import { SearchAnalysisService } from './search-analysis-service';
 
 // ============================================================================
 // Search Coordinator Service
@@ -42,16 +42,16 @@ export class SearchCoordinatorService {
   private config: SearchConfiguration;
 
   // Search services
-  private repositoryService: RepositorySearchService;
-  private commitService: CommitSearchService;
-  private pullRequestService: PullRequestSearchService;
-  private codeService: CodeSearchService;
-  private userService: UserSearchService;
-  private historyService: SearchHistoryService;
-  private analysisService: SearchAnalysisService;
+  private repositoryService!: RepositorySearchService;
+  private commitService!: CommitSearchService;
+  private pullRequestService!: PullRequestSearchService;
+  private codeService!: CodeSearchService;
+  private userService!: UserSearchService;
+  private historyService!: SearchHistoryService;
+  private analysisService!: SearchAnalysisService;
 
   // Service registry
-  private services: Map<string, any>;
+  private services!: Map<string, any>;
 
   constructor(
     httpClient: AxiosInstance,
@@ -65,7 +65,17 @@ export class SearchCoordinatorService {
     this.config = {
       defaultResultsPerPage: 25,
       maxResultsPerPage: 100,
+      searchTimeout: 30000,
+      cacheTtl: 300000,
       cacheTimeout: 300, // 5 minutes
+      historyRetentionDays: 90,
+      maxHistoryEntries: 1000,
+      enabledSearchTypes: ['repository', 'commit', 'pullrequest', 'code', 'user'],
+      rateLimiting: {
+        maxRequestsPerMinute: 60,
+        maxRequestsPerHour: 1000,
+        maxRequestsPerDay: 10000,
+      },
       enableAnalytics: true,
       enableHistory: true,
       enableSuggestions: true,
@@ -106,11 +116,11 @@ export class SearchCoordinatorService {
 
       // Create service registry
       this.services = new Map([
-        ['repository', this.repositoryService],
-        ['commit', this.commitService],
-        ['pullrequest', this.pullRequestService],
-        ['code', this.codeService],
-        ['user', this.userService],
+        ['repository', this.repositoryService as any],
+        ['commit', this.commitService as any],
+        ['pullrequest', this.pullRequestService as any],
+        ['code', this.codeService as any],
+        ['user', this.userService as any],
       ]);
 
       logger.info('Search services initialized successfully', {
@@ -136,7 +146,11 @@ export class SearchCoordinatorService {
   public async search(
     serverInfo: ServerInfo,
     query: SearchQuery,
-    context: SearchContext = {}
+    context: SearchContext = {
+      timestamp: new Date().toISOString(),
+      searchTypes: [],
+      metadata: {}
+    }
   ): Promise<SearchResponse> {
     const startTime = Date.now();
     const searchId = this.generateSearchId();
@@ -173,17 +187,18 @@ export class SearchCoordinatorService {
         pagination: {
           page: query.page || 0,
           limit: query.limit || this.config.defaultResultsPerPage,
+          totalPages: Math.ceil(mergedResults.length / (query.limit || this.config.defaultResultsPerPage)),
           totalResults: mergedResults.length,
-          hasMore: this.hasMoreResults(mergedResults, query),
+          hasNext: this.hasMoreResults(mergedResults, query),
+          hasPrevious: (query.page || 0) > 0,
+          nextPage: this.hasMoreResults(mergedResults, query) ? (query.page || 0) + 1 : undefined,
+          previousPage: (query.page || 0) > 0 ? (query.page || 0) - 1 : undefined,
         },
+        totalCount: mergedResults.length,
+        searchTime: executionTime,
         metadata: {
-          searchId,
           executionTime,
           searchTypes,
-          serverInfo: {
-            serverType: serverInfo.serverType,
-            version: serverInfo.version,
-          },
           cacheHit: false, // Would be determined by individual services
         },
       };
@@ -227,7 +242,11 @@ export class SearchCoordinatorService {
   public async multiSearch(
     serverInfo: ServerInfo,
     request: MultiSearchRequest,
-    context: SearchContext = {}
+    context: SearchContext = {
+      timestamp: new Date().toISOString(),
+      searchTypes: [],
+      metadata: {}
+    }
   ): Promise<MultiSearchResponse> {
     const startTime = Date.now();
     const searchId = this.generateSearchId();
@@ -242,9 +261,9 @@ export class SearchCoordinatorService {
       // Execute all searches in parallel
       const searchPromises = request.searches.map(async (searchRequest, index) => {
         try {
-          const response = await this.search(serverInfo, searchRequest.query, {
+          const response = await this.search(serverInfo, searchRequest, {
             ...context,
-            searchTypes: searchRequest.searchTypes,
+            searchTypes: searchRequest.searchTypes || ['repository'],
           });
 
           return {
@@ -265,13 +284,16 @@ export class SearchCoordinatorService {
       const executionTime = Date.now() - startTime;
 
       const multiResponse: MultiSearchResponse = {
+        responses: results.filter(r => r.response !== null).map(r => r.response!),
         searches: results,
         metadata: {
           searchId,
           executionTime,
+          totalExecutionTime: executionTime,
           totalSearches: request.searches.length,
           successfulSearches: results.filter(r => r.response !== null).length,
           failedSearches: results.filter(r => r.error !== null).length,
+          cacheHits: 0,
         },
       };
 
@@ -306,7 +328,11 @@ export class SearchCoordinatorService {
   public async searchRepositories(
     serverInfo: ServerInfo,
     options: Parameters<RepositorySearchService['searchRepositories']>[1],
-    context: SearchContext = {}
+    context: SearchContext = {
+      timestamp: new Date().toISOString(),
+      searchTypes: [],
+      metadata: {}
+    }
   ) {
     return this.repositoryService.searchRepositories(serverInfo, options);
   }
@@ -317,7 +343,11 @@ export class SearchCoordinatorService {
   public async searchCommits(
     serverInfo: ServerInfo,
     options: Parameters<CommitSearchService['searchCommits']>[1],
-    context: SearchContext = {}
+    context: SearchContext = {
+      timestamp: new Date().toISOString(),
+      searchTypes: [],
+      metadata: {}
+    }
   ) {
     return this.commitService.searchCommits(serverInfo, options);
   }
@@ -328,7 +358,11 @@ export class SearchCoordinatorService {
   public async searchPullRequests(
     serverInfo: ServerInfo,
     options: Parameters<PullRequestSearchService['searchPullRequests']>[1],
-    context: SearchContext = {}
+    context: SearchContext = {
+      timestamp: new Date().toISOString(),
+      searchTypes: [],
+      metadata: {}
+    }
   ) {
     return this.pullRequestService.searchPullRequests(serverInfo, options);
   }
@@ -339,7 +373,11 @@ export class SearchCoordinatorService {
   public async searchCode(
     serverInfo: ServerInfo,
     options: Parameters<CodeSearchService['searchCode']>[1],
-    context: SearchContext = {}
+    context: SearchContext = {
+      timestamp: new Date().toISOString(),
+      searchTypes: [],
+      metadata: {}
+    }
   ) {
     return this.codeService.searchCode(serverInfo, options);
   }
@@ -350,7 +388,11 @@ export class SearchCoordinatorService {
   public async searchUsers(
     serverInfo: ServerInfo,
     options: Parameters<UserSearchService['searchUsers']>[1],
-    context: SearchContext = {}
+    context: SearchContext = {
+      timestamp: new Date().toISOString(),
+      searchTypes: [],
+      metadata: {}
+    }
   ) {
     return this.userService.searchUsers(serverInfo, options);
   }
@@ -365,7 +407,11 @@ export class SearchCoordinatorService {
   public async getSearchSuggestions(
     serverInfo: ServerInfo,
     partialQuery: string,
-    context: SearchContext = {}
+    context: SearchContext = {
+      timestamp: new Date().toISOString(),
+      searchTypes: [],
+      metadata: {}
+    }
   ): Promise<SearchSuggestion[]> {
     if (!this.config.enableSuggestions) {
       return [];
@@ -384,6 +430,7 @@ export class SearchCoordinatorService {
 
         historySuggestions.forEach(suggestion => {
           suggestions.push({
+            text: suggestion,
             query: suggestion,
             type: 'history',
             confidence: 0.8,
@@ -402,14 +449,11 @@ export class SearchCoordinatorService {
         .slice(0, 5)
         .forEach(pq => {
           suggestions.push({
+            text: pq.query,
             query: pq.query,
             type: 'popular',
             confidence: Math.min(0.9, pq.successRate),
             source: 'popular_queries',
-            metadata: {
-              usageCount: pq.count,
-              successRate: pq.successRate,
-            },
           });
         });
 

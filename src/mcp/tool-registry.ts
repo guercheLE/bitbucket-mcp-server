@@ -6,14 +6,14 @@
  * Integrates pull request tools with the MCP server infrastructure
  */
 
-import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { Tool } from '@modelcontextprotocol/sdk/types';
 import { z } from 'zod';
-import { logger } from '../utils/logger.js';
-import { errorHandlerService } from '../services/error-handling.js';
-import { rateLimitAndCircuitBreaker } from '../services/rate-limiter.js';
-import { cache } from '../services/cache.js';
-import { pullRequestAuthService, AuthenticationRequest, AuthenticationMethod } from '../services/pullrequest-auth-service.js';
-import { pullRequestLoggingService } from '../services/pullrequest-logging-service.js';
+import { logger } from '../utils/logger';
+import { errorHandlerService } from '../services/error-handling';
+import { rateLimitAndCircuitBreaker } from '../services/rate-limiter';
+import { cache } from '../services/cache';
+import { pullRequestAuthService, AuthenticationRequest, AuthenticationMethod } from '../services/pullrequest-auth-service';
+import { pullRequestLoggingService } from '../services/pullrequest-logging-service';
 
 // Import pull request tools
 import { 
@@ -27,7 +27,7 @@ import {
   updatePullRequest,
   deletePullRequest,
   listPullRequests
-} from '../tools/datacenter/pullrequest/crud.js';
+} from '../tools/datacenter/pullrequest/crud';
 
 import {
   createCommentTool,
@@ -40,7 +40,7 @@ import {
   updateComment,
   deleteComment,
   listComments
-} from '../tools/datacenter/pullrequest/comments.js';
+} from '../tools/datacenter/pullrequest/comments';
 
 import {
   getActivitiesTool,
@@ -49,7 +49,7 @@ import {
   getActivities,
   getDiff,
   getChanges
-} from '../tools/datacenter/pullrequest/analysis.js';
+} from '../tools/datacenter/pullrequest/analysis';
 
 import {
   mergePullRequestTool,
@@ -58,14 +58,14 @@ import {
   mergePullRequest,
   declinePullRequest,
   reopenPullRequest
-} from '../tools/datacenter/pullrequest/operations.js';
+} from '../tools/datacenter/pullrequest/operations';
 
 // Import Issues tools
 import { 
   issuesMcpTools, 
   IssuesMcpHandlers, 
   createIssuesMcpHandlers 
-} from '../tools/cloud/issues/index.js';
+} from '../tools/cloud/issues/index';
 
 export interface ToolHandler {
   name: string;

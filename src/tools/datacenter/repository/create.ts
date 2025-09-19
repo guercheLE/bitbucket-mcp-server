@@ -5,11 +5,11 @@
  * Creates a new repository in Bitbucket Data Center
  */
 
-import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { Tool } from '@modelcontextprotocol/sdk/types';
 import { z } from 'zod';
-import { RepositoryService } from '../../../services/RepositoryService.js';
-import { serverDetectionService } from '../../../services/server-detection.js';
-import { logger } from '../../../utils/logger.js';
+import { RepositoryService } from '../../../services/RepositoryService';
+import { serverDetectionService } from '../../../services/server-detection';
+import { logger } from '../../../utils/logger';
 
 // Tool schema
 const CreateRepositorySchema = z.object({

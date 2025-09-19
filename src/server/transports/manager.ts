@@ -3,13 +3,13 @@
  * Manages multiple transport types with automatic fallback and priority handling
  */
 
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { TransportType, TransportConfig } from '../../types/index.js';
-import { logger } from '../../utils/logger.js';
-import { StdioTransport } from './stdio.js';
-import { HttpTransport } from './http.js';
-import { SseTransport } from './sse.js';
-import { StreamingTransport } from './streaming.js';
+import { Server } from '@modelcontextprotocol/sdk/server/index';
+import { TransportType, TransportConfig } from '../../types/index';
+import { logger } from '../../utils/logger';
+import { StdioTransport } from './stdio';
+import { HttpTransport } from './http';
+import { SseTransport } from './sse';
+import { StreamingTransport } from './streaming';
 
 export interface TransportManagerConfig {
   transports: TransportType[];

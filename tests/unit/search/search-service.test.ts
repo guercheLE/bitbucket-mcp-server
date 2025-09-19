@@ -3,10 +3,10 @@
  * Tests the core search functionality and common methods
  */
 
-import { SearchService } from '../../../src/services/search-service.js';
-import { Cache } from '../../../src/utils/cache.js';
-import { ServerInfo } from '../../../src/services/server-detection.js';
-import { SearchQuery, SearchConfiguration } from '../../../src/types/search.js';
+import { SearchService } from '../../../src/services/search-service';
+import { Cache } from '../../../src/utils/cache';
+import { ServerInfo } from '../../../src/services/server-detection';
+import { SearchQuery, SearchConfiguration } from '../../../src/types/search';
 import axios, { AxiosInstance } from 'axios';
 
 // Mock implementations

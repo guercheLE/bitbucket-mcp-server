@@ -344,6 +344,170 @@ export class IssuesValidationService {
   }
 
   // ============================================================================
+  // Additional Validation Methods
+  // ============================================================================
+
+  /**
+   * Validate issue ID
+   */
+  validateIssueId(issueId: string): ValidationResult {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+
+    if (!issueId || issueId.trim().length === 0) {
+      errors.push('ID da issue é obrigatório');
+    } else if (!/^\d+$/.test(issueId)) {
+      errors.push('ID da issue deve ser um número válido');
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings
+    };
+  }
+
+  /**
+   * Validate comment ID
+   */
+  validateCommentId(commentId: string): ValidationResult {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+
+    if (!commentId || commentId.trim().length === 0) {
+      errors.push('ID do comentário é obrigatório');
+    } else if (!/^\d+$/.test(commentId)) {
+      errors.push('ID do comentário deve ser um número válido');
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings
+    };
+  }
+
+  /**
+   * Validate create comment request
+   */
+  validateCreateCommentRequest(request: any): ValidationResult {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+
+    if (!request) {
+      errors.push('Request é obrigatório');
+      return { isValid: false, errors, warnings };
+    }
+
+    if (!request.content || request.content.trim().length === 0) {
+      errors.push('Conteúdo do comentário é obrigatório');
+    } else {
+      if (request.content.length > this.rules.contentMaxLength) {
+        errors.push(`Comentário deve ter no máximo ${this.rules.contentMaxLength} caracteres`);
+      }
+      if (request.content.length < 3) {
+        errors.push('Comentário deve ter pelo menos 3 caracteres');
+      }
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings
+    };
+  }
+
+  /**
+   * Validate update comment request
+   */
+  validateUpdateCommentRequest(request: any): ValidationResult {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+
+    if (!request) {
+      errors.push('Request é obrigatório');
+      return { isValid: false, errors, warnings };
+    }
+
+    if (!request.content || request.content.trim().length === 0) {
+      errors.push('Conteúdo do comentário é obrigatório');
+    } else {
+      if (request.content.length > this.rules.contentMaxLength) {
+        errors.push(`Comentário deve ter no máximo ${this.rules.contentMaxLength} caracteres`);
+      }
+      if (request.content.length < 3) {
+        errors.push('Comentário deve ter pelo menos 3 caracteres');
+      }
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings
+    };
+  }
+
+  /**
+   * Validate transition request
+   */
+  validateTransitionRequest(request: any): ValidationResult {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+
+    if (!request) {
+      errors.push('Request é obrigatório');
+      return { isValid: false, errors, warnings };
+    }
+
+    if (!request.transition || !request.transition.name) {
+      errors.push('Transição é obrigatória');
+    }
+
+    if (request.fields) {
+      // Validate fields if provided
+      for (const [fieldName, fieldValue] of Object.entries(request.fields)) {
+        if (fieldValue === null || fieldValue === undefined || fieldValue === '') {
+          warnings.push(`Campo '${fieldName}' está vazio`);
+        }
+      }
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings
+    };
+  }
+
+  /**
+   * Validate pagination parameters
+   */
+  validatePaginationParams(page?: number, pagelen?: number): ValidationResult {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+
+    if (page !== undefined) {
+      if (page < 0) {
+        errors.push('Página deve ser um número não negativo');
+      }
+    }
+
+    if (pagelen !== undefined) {
+      if (pagelen < 1) {
+        errors.push('Tamanho da página deve ser pelo menos 1');
+      } else if (pagelen > 1000) {
+        errors.push('Tamanho da página não pode exceder 1000');
+      }
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings
+    };
+  }
+
+  // ============================================================================
   // Utility Methods
   // ============================================================================
 

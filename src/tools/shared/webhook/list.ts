@@ -5,11 +5,11 @@
  * Lists webhooks for both Data Center and Cloud
  */
 
-import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { Tool } from '@modelcontextprotocol/sdk/types';
 import { z } from 'zod';
-import { WebhookService } from '../../../services/WebhookService.js';
-import { serverDetectionService } from '../../../services/server-detection.js';
-import { logger } from '../../../utils/logger.js';
+import { WebhookService } from '../../../services/WebhookService';
+import { serverDetectionService } from '../../../services/server-detection';
+import { logger } from '../../../utils/logger';
 
 // Tool schema
 const ListWebhooksSchema = z.object({

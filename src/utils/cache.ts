@@ -3,8 +3,8 @@
  * In-memory cache with TTL support for pull request operations
  */
 
-import { logger } from './logger.js';
-import { environment } from '../config/environment.js';
+import { logger } from './logger';
+import { environment } from '../config/environment';
 
 // ============================================================================
 // Cache Types

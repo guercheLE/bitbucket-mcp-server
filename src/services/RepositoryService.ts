@@ -8,9 +8,9 @@
 
 import axios, { AxiosResponse } from 'axios';
 import { z } from 'zod';
-import { ServerInfo } from './server-detection.js';
-import { logger } from '../utils/logger.js';
-import { cache } from './cache.js';
+import { ServerInfo } from './server-detection';
+import { logger } from '../utils/logger';
+import { cache } from './cache';
 
 // Repository schemas
 export const RepositorySchema = z.object({

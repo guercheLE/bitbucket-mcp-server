@@ -5,11 +5,11 @@
  * Gets a specific project from Bitbucket Data Center
  */
 
-import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { Tool } from '@modelcontextprotocol/sdk/types';
 import { z } from 'zod';
-import { ProjectService } from '../../../services/ProjectService.js';
-import { serverDetectionService } from '../../../services/server-detection.js';
-import { logger } from '../../../utils/logger.js';
+import { ProjectService } from '../../../services/ProjectService';
+import { serverDetectionService } from '../../../services/server-detection';
+import { logger } from '../../../utils/logger';
 
 // Tool schema
 const GetProjectSchema = z.object({

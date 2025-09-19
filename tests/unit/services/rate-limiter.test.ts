@@ -3,7 +3,7 @@
  * Tests for rate limiting and circuit breaker functionality
  */
 
-import { RateLimiterService, CircuitBreakerService, RateLimitAndCircuitBreakerService } from '../../../src/services/rate-limiter.js';
+import { RateLimiterService, CircuitBreakerService, RateLimitAndCircuitBreakerService } from '../../../src/services/rate-limiter';
 
 // Mock logger
 jest.mock('../../../src/utils/logger', () => ({

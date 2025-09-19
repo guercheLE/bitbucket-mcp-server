@@ -3,10 +3,10 @@
  * Standard input/output transport for MCP server
  */
 
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { TransportType, TransportConfig } from '../../types/index.js';
-import { logger } from '../../utils/logger.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio';
+import { Server } from '@modelcontextprotocol/sdk/server/index';
+import { TransportType, TransportConfig } from '../../types/index';
+import { logger } from '../../utils/logger';
 
 export class StdioTransport {
   private transport: StdioServerTransport;

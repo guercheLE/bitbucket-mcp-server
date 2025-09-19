@@ -4,8 +4,8 @@
  */
 
 import winston from 'winston';
-import { environment } from '../config/environment.js';
-import { LogLevel } from '../types/index.js';
+import { environment } from '../config/environment';
+import { LogLevel } from '../types/index';
 
 // ============================================================================
 // Logger Configuration
@@ -88,8 +88,8 @@ export const logger = winston.createLogger({
 // ============================================================================
 
 export interface RequestLogData {
-  method: string;
-  url: string;
+  method?: string;
+  url?: string;
   headers?: Record<string, string>;
   body?: any;
   query?: Record<string, any>;
@@ -100,15 +100,15 @@ export interface RequestLogData {
 }
 
 export interface ResponseLogData {
-  statusCode: number;
-  headers?: Record<string, string>;
+  statusCode?: number;
+  headers?: Record<string, any>;
   body?: any;
   responseTime?: number;
   requestId?: string;
 }
 
 export interface ErrorLogData {
-  error: Error;
+  error?: Error;
   requestId?: string;
   context?: Record<string, any>;
   stack?: string;
@@ -143,15 +143,21 @@ export function logResponse(data: ResponseLogData): void {
 /**
  * Logs errors with sanitization and context
  */
-export function logError(data: ErrorLogData): void {
-  const sanitizedData = environment.sanitizeForLogging(data);
+export function logError(message: string, error?: Error | unknown, context?: Record<string, any>): void {
+  const errorObj = error instanceof Error ? error : new Error(String(error || message));
+  const errorData: ErrorLogData = {
+    error: errorObj,
+    context: context || {}
+  };
   
-  logger.error('Error occurred', {
+  const sanitizedData = environment.sanitizeForLogging(errorData);
+  
+  logger.error(message, {
     type: 'error',
     error: {
-      name: data.error.name,
-      message: data.error.message,
-      stack: data.error.stack
+      name: errorObj.name,
+      message: errorObj.message,
+      stack: errorObj.stack
     },
     ...sanitizedData,
     timestamp: new Date().toISOString()

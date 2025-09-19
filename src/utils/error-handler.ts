@@ -3,8 +3,8 @@
  * Centralized error handling with sanitization and logging
  */
 
-import { logger } from './logger.js';
-import { environment } from '../config/environment.js';
+import { logger } from './logger';
+import { environment } from '../config/environment';
 
 // ============================================================================
 // Error Types

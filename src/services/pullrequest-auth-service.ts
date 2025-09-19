@@ -7,10 +7,10 @@
  */
 
 import { z } from 'zod';
-import { logger } from '../utils/logger.js';
-import { cache } from './cache.js';
-import { authConfigurationManager } from '../config/auth.js';
-import { ServerInfo } from './server-detection.js';
+import { logger } from '../utils/logger';
+import { cache } from './cache';
+import { authConfigurationManager } from '../config/auth';
+import { ServerInfo } from './server-detection';
 
 // Authentication method types
 export type AuthenticationMethod = 'oauth2' | 'personal_token' | 'app_password' | 'basic_auth';

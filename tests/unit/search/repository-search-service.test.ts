@@ -3,10 +3,10 @@
  * Tests repository-specific search functionality
  */
 
-import { RepositorySearchService } from '../../../src/services/repository-search-service.js';
-import { Cache } from '../../../src/utils/cache.js';
-import { ServerInfo } from '../../../src/services/server-detection.js';
-import { SearchQuery } from '../../../src/types/search.js';
+import { RepositorySearchService } from '../../../src/services/repository-search-service';
+import { Cache } from '../../../src/utils/cache';
+import { ServerInfo } from '../../../src/services/server-detection';
+import { SearchQuery } from '../../../src/types/search';
 import { AxiosInstance } from 'axios';
 
 describe('RepositorySearchService', () => {

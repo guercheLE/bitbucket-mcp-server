@@ -3,7 +3,7 @@
  * Tests for health monitoring and system status
  */
 
-import { HealthCheckService } from '../../../src/services/health-check.js';
+import { HealthCheckService } from '../../../src/services/health-check';
 
 // Mock dependencies
 jest.mock('../../../src/services/cache', () => ({

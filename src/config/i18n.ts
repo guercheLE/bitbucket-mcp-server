@@ -99,8 +99,6 @@ export async function initializeI18n(): Promise<void> {
         enabled: true
       },
       
-      // Configurações de reload
-      reloadOnPrerender: process.env.NODE_ENV === 'development',
       
       // Configurações de save missing
       saveMissing: process.env.NODE_ENV === 'development',
@@ -126,7 +124,8 @@ export function getI18n() {
  * Traduz uma chave
  */
 export function t(key: string, options?: any): string {
-  return i18next.t(key, options);
+  const result = i18next.t(key, options);
+  return typeof result === 'string' ? result : String(result);
 }
 
 /**

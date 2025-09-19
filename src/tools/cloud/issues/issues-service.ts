@@ -94,7 +94,7 @@ export class IssuesService {
         return config;
       },
       (error) => {
-        logError({ error });
+        logError('Request failed', error);
         return Promise.reject(error);
       }
     );
@@ -112,7 +112,7 @@ export class IssuesService {
         return response;
       },
       async (error) => {
-        logError({ error });
+        logError('Request failed', error);
         
         // Handle authentication errors
         if (error.response?.status === 401) {

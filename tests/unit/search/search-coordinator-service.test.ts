@@ -3,10 +3,10 @@
  * Tests the main orchestration service for search operations
  */
 
-import { SearchCoordinatorService } from '../../../src/services/search-coordinator-service.js';
-import { Cache } from '../../../src/utils/cache.js';
-import { ServerInfo } from '../../../src/services/server-detection.js';
-import { SearchQuery, SearchConfiguration } from '../../../src/types/search.js';
+import { SearchCoordinatorService } from '../../../src/services/search-coordinator-service';
+import { Cache } from '../../../src/utils/cache';
+import { ServerInfo } from '../../../src/services/server-detection';
+import { SearchQuery, SearchConfiguration } from '../../../src/types/search';
 import { AxiosInstance } from 'axios';
 
 describe('SearchCoordinatorService', () => {

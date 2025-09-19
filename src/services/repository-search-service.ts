@@ -6,17 +6,17 @@
  */
 
 import { AxiosInstance } from 'axios';
-import { SearchService } from './search-service.js';
-import { Cache } from '../utils/cache.js';
+import { SearchService } from './search-service';
+import { Cache } from '../utils/cache';
 import {
   SearchQuery,
   SearchResult,
   RepositorySearchResult,
   RepositoryMetadata,
   SearchConfiguration,
-} from '../types/search.js';
-import { ServerInfo } from '../types/index.js';
-import { logger } from '../utils/logger.js';
+} from '../types/search';
+import { ServerInfo } from '../types/index';
+import { logger } from '../utils/logger';
 
 // ============================================================================
 // Repository Search Service
@@ -396,7 +396,7 @@ export class RepositorySearchService extends SearchService {
       workspace?: string;
       language?: string;
       isPublic?: boolean;
-      sortBy?: 'name' | 'lastModified' | 'size' | 'language';
+      sortBy?: 'name' | 'lastModified' | 'size' | 'language' | 'forks';
       sortOrder?: 'asc' | 'desc';
       page?: number;
       limit?: number;

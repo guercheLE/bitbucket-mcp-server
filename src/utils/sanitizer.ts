@@ -3,7 +3,7 @@
  * Sanitizes sensitive data for logging and external communication
  */
 
-import { environment } from '../config/environment.js';
+import { environment } from '../config/environment';
 
 // ============================================================================
 // Sensitive Data Patterns

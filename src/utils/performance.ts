@@ -5,8 +5,8 @@
 
 import { performance } from 'perf_hooks';
 import { EventEmitter } from 'events';
-import { logger } from './logger.js';
-import { environment } from '../config/environment.js';
+import { logger } from './logger';
+import { environment } from '../config/environment';
 
 // ============================================================================
 // Performance Metrics Interface

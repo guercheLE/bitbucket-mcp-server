@@ -3,9 +3,9 @@
  * Comprehensive error handling with retry mechanisms and error classification
  */
 
-import { environment } from '../config/environment.js';
-import { logger } from '../utils/logger.js';
-import { rateLimitAndCircuitBreaker } from './rate-limiter.js';
+import { environment } from '../config/environment';
+import { logger } from '../utils/logger';
+import { rateLimitAndCircuitBreaker } from './rate-limiter';
 
 // ============================================================================
 // Error Types and Interfaces

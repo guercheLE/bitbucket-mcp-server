@@ -6,17 +6,17 @@
  */
 
 import { AxiosInstance } from 'axios';
-import { SearchService } from './search-service.js';
-import { Cache } from '../utils/cache.js';
+import { SearchService } from './search-service';
+import { Cache } from '../utils/cache';
 import {
   SearchQuery,
   SearchResult,
   CodeSearchResult,
   CodeMetadata,
   SearchConfiguration,
-} from '../types/search.js';
-import { ServerInfo } from '../types/index.js';
-import { logger } from '../utils/logger.js';
+} from '../types/search';
+import { ServerInfo } from '../types/index';
+import { logger } from '../utils/logger';
 
 // ============================================================================
 // Code Search Service
@@ -361,7 +361,6 @@ export class CodeSearchService extends SearchService {
       workspace: code.repository?.workspace?.slug,
       repositorySlug: code.repository?.name || code.repository?.slug,
       filePath: this.extractFilePath(code),
-      fileName: this.extractFileName(code),
       language: this.extractLanguage(code),
       fileExtension: this.extractFileExtension(code),
       fileSize: this.extractFileSize(code),
@@ -442,18 +441,14 @@ export class CodeSearchService extends SearchService {
   }
 
   /**
-   * Extracts code matches from result
+   * Extracts code matches count from result
    */
-  private extractMatches(code: any): Array<{ lineNumber: number; content: string; type: string }> | undefined {
+  private extractMatches(code: any): number | undefined {
     if (!code.matches || !Array.isArray(code.matches)) {
       return undefined;
     }
     
-    return code.matches.map((match: any) => ({
-      lineNumber: match.lineNumber || match.line || 0,
-      content: match.content || match.text || '',
-      type: match.type || 'match',
-    }));
+    return code.matches.length;
   }
 
   /**

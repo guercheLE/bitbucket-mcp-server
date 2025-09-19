@@ -6,8 +6,8 @@
  * and structured logging for monitoring and debugging
  */
 
-import { logger } from '../utils/logger.js';
-import { sanitizeObject, sanitizeString } from '../utils/sanitizer.js';
+import { logger } from '../utils/logger';
+import { sanitizeObject, sanitizeString } from '../utils/sanitizer';
 
 // Log levels for pull request operations
 export type PullRequestLogLevel = 'debug' | 'info' | 'warn' | 'error';

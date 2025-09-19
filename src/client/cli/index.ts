@@ -7,7 +7,7 @@
 
 import { Command } from 'commander';
 import { z } from 'zod';
-import { initializeI18n, t, translateCLI } from '../../config/i18n.js';
+import { initializeI18n, t, translateCLI } from '../../config/i18n';
 
 // URL validation schema
 const UrlSchema = z.string().url('Invalid URL format');

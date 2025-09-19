@@ -6,17 +6,17 @@
  */
 
 import { AxiosInstance } from 'axios';
-import { SearchService } from './search-service.js';
-import { Cache } from '../utils/cache.js';
+import { SearchService } from './search-service';
+import { Cache } from '../utils/cache';
 import {
   SearchQuery,
   SearchResult,
   PullRequestSearchResult,
   PullRequestMetadata,
   SearchConfiguration,
-} from '../types/search.js';
-import { ServerInfo } from '../types/index.js';
-import { logger } from '../utils/logger.js';
+} from '../types/search';
+import { ServerInfo } from '../types/index';
+import { logger } from '../utils/logger';
 
 // ============================================================================
 // Pull Request Search Service
@@ -374,7 +374,7 @@ export class PullRequestSearchService extends SearchService {
       workspace: pr.repository?.workspace?.slug || pr.source?.repository?.workspace?.slug,
       repositorySlug: pr.repository?.name || pr.repository?.slug || pr.source?.repository?.name,
       author: this.extractAuthor(pr),
-      reviewer: this.extractReviewer(pr),
+      reviewers: this.extractReviewers(pr),
       state: this.extractState(pr),
       sourceBranch: this.extractSourceBranch(pr),
       targetBranch: this.extractTargetBranch(pr),
@@ -409,23 +409,30 @@ export class PullRequestSearchService extends SearchService {
   }
 
   /**
-   * Extracts reviewer from pull request
+   * Extracts reviewers from pull request
    */
-  private extractReviewer(pr: any): string | undefined {
-    // Get first reviewer
-    if (pr.reviewers && Array.isArray(pr.reviewers) && pr.reviewers.length > 0) {
-      const reviewer = pr.reviewers[0];
-      return reviewer.user?.name || reviewer.name || reviewer.displayName || reviewer.username;
+  private extractReviewers(pr: any): string[] {
+    const reviewers: string[] = [];
+    
+    if (pr.reviewers && Array.isArray(pr.reviewers)) {
+      pr.reviewers.forEach((reviewer: any) => {
+        const name = reviewer.user?.name || reviewer.name || reviewer.displayName || reviewer.username;
+        if (name) reviewers.push(name);
+      });
     }
     
-    return undefined;
+    return reviewers;
   }
 
   /**
    * Extracts state from pull request
    */
-  private extractState(pr: any): string | undefined {
-    return pr.state || pr.status;
+  private extractState(pr: any): 'OPEN' | 'MERGED' | 'DECLINED' | 'SUPERSEDED' | undefined {
+    const state = pr.state || pr.status;
+    if (state && ['OPEN', 'MERGED', 'DECLINED', 'SUPERSEDED'].includes(state)) {
+      return state as 'OPEN' | 'MERGED' | 'DECLINED' | 'SUPERSEDED';
+    }
+    return undefined;
   }
 
   /**
@@ -566,7 +573,7 @@ export class PullRequestSearchService extends SearchService {
         repositorySlug: options.repositorySlug,
         author: options.author,
         reviewer: options.reviewer,
-        state: options.state,
+        state: options.state as 'OPEN' | 'MERGED' | 'DECLINED' | 'SUPERSEDED' | undefined,
         sourceBranch: options.sourceBranch,
         targetBranch: options.targetBranch,
         fromDate: options.fromDate,
