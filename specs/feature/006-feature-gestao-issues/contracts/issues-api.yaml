@@ -1,0 +1,955 @@
+openapi: 3.0.3
+info:
+  title: Bitbucket Cloud Issues API v2.0
+  description: API para gestão de issues no Bitbucket Cloud através do MCP server
+  version: 2.0.0
+  contact:
+    name: Bitbucket MCP Server
+    url: https://github.com/guercheLE/bitbucket-mcp-server
+servers:
+  - url: https://api.bitbucket.org/2.0
+    description: Bitbucket Cloud API
+paths:
+  /repositories/{workspace}/{repo_slug}/issues:
+    get:
+      summary: Listar issues
+      description: Lista todas as issues de um repositório com filtros e paginação
+      operationId: listIssues
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Nome do workspace
+        - name: repo_slug
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Slug do repositório
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Query de busca (título, descrição)
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [created_on, updated_on, priority, state, title]
+          description: Campo para ordenação
+        - name: state
+          in: query
+          schema:
+            type: string
+            enum: [new, open, resolved, on hold, invalid, duplicate, wontfix, closed]
+          description: Filtrar por estado
+        - name: kind
+          in: query
+          schema:
+            type: string
+            enum: [bug, enhancement, proposal, task]
+          description: Filtrar por tipo
+        - name: priority
+          in: query
+          schema:
+            type: string
+            enum: [trivial, minor, major, critical, blocker]
+          description: Filtrar por prioridade
+        - name: assignee
+          in: query
+          schema:
+            type: string
+          description: Filtrar por responsável
+        - name: reporter
+          in: query
+          schema:
+            type: string
+          description: Filtrar por reportador
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Número da página
+        - name: pagelen
+          in: query
+          schema:
+            type: integer
+            default: 25
+            maximum: 100
+          description: Itens por página
+      responses:
+        '200':
+          description: Lista de issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      summary: Criar issue
+      description: Cria uma nova issue no repositório
+      operationId: createIssue
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: repo_slug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateIssueRequest'
+      responses:
+        '201':
+          description: Issue criada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /repositories/{workspace}/{repo_slug}/issues/{issue_id}:
+    get:
+      summary: Obter issue
+      description: Obtém uma issue específica por ID
+      operationId: getIssue
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: repo_slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: issue_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Issue encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      summary: Atualizar issue
+      description: Atualiza uma issue existente
+      operationId: updateIssue
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: repo_slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: issue_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateIssueRequest'
+      responses:
+        '200':
+          description: Issue atualizada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      summary: Deletar issue
+      description: Remove uma issue do repositório
+      operationId: deleteIssue
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: repo_slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: issue_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Issue deletada com sucesso
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /repositories/{workspace}/{repo_slug}/issues/{issue_id}/comments:
+    get:
+      summary: Listar comentários
+      description: Lista todos os comentários de uma issue
+      operationId: listComments
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: repo_slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: issue_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: pagelen
+          in: query
+          schema:
+            type: integer
+            default: 25
+            maximum: 100
+      responses:
+        '200':
+          description: Lista de comentários
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      summary: Criar comentário
+      description: Adiciona um novo comentário à issue
+      operationId: createComment
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: repo_slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: issue_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCommentRequest'
+      responses:
+        '201':
+          description: Comentário criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /repositories/{workspace}/{repo_slug}/issues/{issue_id}/comments/{comment_id}:
+    get:
+      summary: Obter comentário
+      description: Obtém um comentário específico
+      operationId: getComment
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: repo_slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: issue_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: comment_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Comentário encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      summary: Atualizar comentário
+      description: Atualiza um comentário existente
+      operationId: updateComment
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: repo_slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: issue_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: comment_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCommentRequest'
+      responses:
+        '200':
+          description: Comentário atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      summary: Deletar comentário
+      description: Remove um comentário
+      operationId: deleteComment
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: repo_slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: issue_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: comment_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Comentário deletado com sucesso
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /repositories/{workspace}/{repo_slug}/issues/{issue_id}/transitions:
+    get:
+      summary: Listar transições
+      description: Lista transições disponíveis para uma issue
+      operationId: listTransitions
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: repo_slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: issue_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de transições disponíveis
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransitionListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      summary: Transicionar issue
+      description: Executa uma transição de estado na issue
+      operationId: transitionIssue
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: repo_slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: issue_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransitionRequest'
+      responses:
+        '200':
+          description: Transição executada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  schemas:
+    Issue:
+      type: object
+      required:
+        - id
+        - title
+        - kind
+        - priority
+        - state
+        - reporter
+        - created_on
+        - updated_on
+      properties:
+        id:
+          type: integer
+          description: ID único da issue
+        title:
+          type: string
+          minLength: 3
+          maxLength: 255
+          description: Título da issue
+        content:
+          $ref: '#/components/schemas/Content'
+        kind:
+          type: string
+          enum: [bug, enhancement, proposal, task]
+          description: Tipo da issue
+        priority:
+          type: string
+          enum: [trivial, minor, major, critical, blocker]
+          description: Prioridade da issue
+        state:
+          type: string
+          enum: [new, open, resolved, on hold, invalid, duplicate, wontfix, closed]
+          description: Estado atual da issue
+        reporter:
+          $ref: '#/components/schemas/User'
+        assignee:
+          $ref: '#/components/schemas/User'
+        component:
+          $ref: '#/components/schemas/Component'
+        milestone:
+          $ref: '#/components/schemas/Milestone'
+        version:
+          $ref: '#/components/schemas/Version'
+        watchers:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        votes:
+          type: integer
+          minimum: 0
+        voters:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        created_on:
+          type: string
+          format: date-time
+        updated_on:
+          type: string
+          format: date-time
+        edited_on:
+          type: string
+          format: date-time
+        links:
+          $ref: '#/components/schemas/IssueLinks'
+
+    Comment:
+      type: object
+      required:
+        - id
+        - content
+        - user
+        - created_on
+        - updated_on
+      properties:
+        id:
+          type: integer
+          description: ID único do comentário
+        content:
+          $ref: '#/components/schemas/Content'
+        user:
+          $ref: '#/components/schemas/User'
+        created_on:
+          type: string
+          format: date-time
+        updated_on:
+          type: string
+          format: date-time
+        edited_on:
+          type: string
+          format: date-time
+        parent:
+          $ref: '#/components/schemas/CommentRef'
+        links:
+          $ref: '#/components/schemas/CommentLinks'
+
+    User:
+      type: object
+      required:
+        - uuid
+        - display_name
+        - account_id
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        display_name:
+          type: string
+        account_id:
+          type: string
+        nickname:
+          type: string
+        links:
+          $ref: '#/components/schemas/UserLinks'
+
+    Content:
+      type: object
+      required:
+        - raw
+        - markup
+        - html
+      properties:
+        raw:
+          type: string
+          maxLength: 10000
+          description: Conteúdo bruto em Markdown
+        markup:
+          type: string
+          enum: [markdown]
+        html:
+          type: string
+          description: Conteúdo renderizado em HTML
+
+    Component:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+
+    Milestone:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+
+    Version:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+
+    IssueLinks:
+      type: object
+      properties:
+        self:
+          $ref: '#/components/schemas/Link'
+        html:
+          $ref: '#/components/schemas/Link'
+        comments:
+          $ref: '#/components/schemas/Link'
+        attachments:
+          $ref: '#/components/schemas/Link'
+        watch:
+          $ref: '#/components/schemas/Link'
+        vote:
+          $ref: '#/components/schemas/Link'
+
+    CommentLinks:
+      type: object
+      properties:
+        self:
+          $ref: '#/components/schemas/Link'
+        html:
+          $ref: '#/components/schemas/Link'
+
+    UserLinks:
+      type: object
+      properties:
+        self:
+          $ref: '#/components/schemas/Link'
+        html:
+          $ref: '#/components/schemas/Link'
+        avatar:
+          $ref: '#/components/schemas/Link'
+
+    Link:
+      type: object
+      required:
+        - href
+      properties:
+        href:
+          type: string
+          format: uri
+
+    CommentRef:
+      type: object
+      required:
+        - id
+        - title
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        links:
+          $ref: '#/components/schemas/CommentLinks'
+
+    IssueListResponse:
+      type: object
+      required:
+        - values
+        - size
+        - page
+        - pagelen
+      properties:
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/Issue'
+        size:
+          type: integer
+        page:
+          type: integer
+        pagelen:
+          type: integer
+        next:
+          type: string
+        previous:
+          type: string
+
+    CommentListResponse:
+      type: object
+      required:
+        - values
+        - size
+        - page
+        - pagelen
+      properties:
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/Comment'
+        size:
+          type: integer
+        page:
+          type: integer
+        pagelen:
+          type: integer
+        next:
+          type: string
+        previous:
+          type: string
+
+    CreateIssueRequest:
+      type: object
+      required:
+        - title
+        - kind
+        - priority
+      properties:
+        title:
+          type: string
+          minLength: 3
+          maxLength: 255
+        content:
+          $ref: '#/components/schemas/Content'
+        kind:
+          type: string
+          enum: [bug, enhancement, proposal, task]
+        priority:
+          type: string
+          enum: [trivial, minor, major, critical, blocker]
+        assignee:
+          type: string
+        component:
+          type: string
+        milestone:
+          type: string
+        version:
+          type: string
+
+    UpdateIssueRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 3
+          maxLength: 255
+        content:
+          $ref: '#/components/schemas/Content'
+        kind:
+          type: string
+          enum: [bug, enhancement, proposal, task]
+        priority:
+          type: string
+          enum: [trivial, minor, major, critical, blocker]
+        state:
+          type: string
+          enum: [new, open, resolved, on hold, invalid, duplicate, wontfix, closed]
+        assignee:
+          type: string
+        component:
+          type: string
+        milestone:
+          type: string
+        version:
+          type: string
+
+    CreateCommentRequest:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          $ref: '#/components/schemas/Content'
+        parent:
+          type: integer
+
+    UpdateCommentRequest:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          $ref: '#/components/schemas/Content'
+
+    Transition:
+      type: object
+      required:
+        - name
+        - to
+      properties:
+        name:
+          type: string
+        to:
+          type: string
+          enum: [new, open, resolved, on hold, invalid, duplicate, wontfix, closed]
+
+    TransitionListResponse:
+      type: object
+      required:
+        - values
+      properties:
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transition'
+
+    TransitionRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+
+    Error:
+      type: object
+      required:
+        - type
+        - error
+      properties:
+        type:
+          type: string
+        error:
+          type: object
+          properties:
+            message:
+              type: string
+            detail:
+              type: string
+            fields:
+              type: object
+
+  responses:
+    BadRequest:
+      description: Requisição inválida
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Não autorizado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: Acesso negado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Recurso não encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+security:
+  - OAuth2: []
+  - ApiKey: []
+
+securitySchemes:
+  OAuth2:
+    type: oauth2
+    flows:
+      authorizationCode:
+        authorizationUrl: https://bitbucket.org/site/oauth2/authorize
+        tokenUrl: https://bitbucket.org/site/oauth2/access_token
+        scopes:
+          repositories:read: Acesso de leitura aos repositórios
+          repositories:write: Acesso de escrita aos repositórios
+          issues:read: Acesso de leitura às issues
+          issues:write: Acesso de escrita às issues
+  ApiKey:
+    type: apiKey
+    in: header
+    name: Authorization
