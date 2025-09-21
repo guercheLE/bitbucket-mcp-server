@@ -20,7 +20,6 @@ fi
 
 REPO_ROOT=$(git rev-parse --show-toplevel)
 SPECS_DIR="$REPO_ROOT/specs"
-mkdir -p "$SPECS_DIR"
 
 # Check if feature description already contains numbering (e.g., "001-feature-name")
 if [[ "$FEATURE_DESCRIPTION" =~ ^[0-9]{3}- ]]; then
@@ -90,6 +89,9 @@ if git show-ref --verify --quiet "refs/heads/$BRANCH_NAME"; then
 else
     git checkout -b "$BRANCH_NAME"
 fi
+
+# Now that we're on the feature branch, create the specs directory
+mkdir -p "$SPECS_DIR"
 
 # Phase 2: Resolve folder naming conflicts AFTER checkout
 echo "[specify] Phase 2: Resolving folder naming conflicts..." >&2
