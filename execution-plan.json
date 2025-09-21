@@ -1,15 +1,15 @@
 {
   "project_description": "bitbucket-mcp-server",
   "project_type": "greenfield", 
-  "next_branch_number": 2,
-  "project_state": {"project_type":"greenfield","analysis_date":"2025-09-21 06:25:18","next_branch_number":2,"existing_specs":[
-  "001-basic-mcp-server"
+  "next_branch_number": 1,
+  "project_state": {"project_type":"greenfield","analysis_date":"2025-09-21 09:06:11","next_branch_number":1,"existing_specs":[
+  ""
 ],"completed_features":[
   ""
 ],"incomplete_features":[
   ""
 ],"missing_implementations":[
-  "001-basic-mcp-server"
+  ""
 ],"src_files":0,"test_files":0,"doc_files":0,"constitution_principles":[
   "I. MCP Protocol First",
   "II. Multi-Transport Protocol",
@@ -147,8 +147,8 @@
   "dependencies": {},
   "execution_order": [],
   "branch_tracking": {
-    "last_used_number": 1,
-    "next_available": 2,
+    "last_used_number": 0,
+    "next_available": 1,
     "format": "feature/{number:03d}-{name}"
   },
   "workflow_rules": {
