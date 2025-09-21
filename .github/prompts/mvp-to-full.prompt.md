@@ -65,6 +65,17 @@ This command analyzes your project (greenfield vs brownfield), identifies requir
 
 6. **Execute Workflow for Each Feature**:
    
+   **STRICT BRANCH WORKFLOW REQUIREMENTS**:
+   - Complete each spec fully (specify → plan → tasks) before moving to next
+   - **Branch Management**:
+     - Spec files: Create on feature branch (branch_name with 'feature/' prefix), commit before checkout to main
+     - Global files (execution-plan.json, mvp-plan.md, specify-request.txt): Create/commit on main branch only after ALL specs complete
+     - Always verify branch before file operations
+     - Commit pattern: git add . then git commit after each spec completion
+   - **Naming Convention**:
+     - feature_name: Numbered plain name without prefix (e.g., "001-authentication-system")
+     - branch_name: Prefixed with 'feature/' (e.g., "feature/001-authentication-system")
+   
    **Priority Order for Brownfield**:
    1. **Constitutional Compliance**: Fix gaps violating constitution.md first
    2. **Complete Incomplete**: Finish any incomplete_features 
@@ -73,13 +84,20 @@ This command analyzes your project (greenfield vs brownfield), identifies requir
    
    **Manual Approach - For each feature in dependency order**:
    - **Specify**: Run `/specify` command with feature description
+     - Verify on feature branch (branch_name) before file operations
+     - Commit spec files before proceeding
    - **Auto-clarify**: Use best judgment to fix clarification items in spec
    - **Plan**: Run `/plan` command to generate implementation plan
+     - Verify on feature branch (branch_name) before file operations
+     - Commit plan files after completion
    - **Tasks**: Run `/tasks` command to generate task breakdown
+     - Verify on feature branch (branch_name) before file operations
+     - Commit task files after completion
      - **If tasks >12**: Command will automatically split into tasks1.md, tasks2.md, etc.
      - **Task splitting**: Each file contains 10-12 tasks (2-6h each)
      - **Split dependencies**: tasks1.md must complete before tasks2.md starts
      - **Logical grouping**: Core functionality in tasks1.md, extensions in tasks2.md, etc.
+   - **Branch Management**: After completing all three phases for a spec, checkout to main before starting next spec
    
    **Automated Orchestration (Optional)**:
    For teams preferring automated workflow execution, use the orchestrated feature workflow scripts:
@@ -103,6 +121,12 @@ This command analyzes your project (greenfield vs brownfield), identifies requir
 - **Brownfield Priority**: Constitutional compliance gaps are CRITICAL and must be addressed first
 - **State Awareness**: Always account for existing implementation when planning new features
 - **Incremental Progress**: Build on existing work rather than replacing it
+- **Branch Workflow**: 
+  - Always verify branch before file operations
+  - Complete each spec fully before moving to next
+  - Commit pattern: git add . then git commit after each spec completion
+  - Global files only committed on main branch after ALL specs complete
+  - Use numbered feature_name vs branch_name (feature/ prefixed) consistently
 - Always create branches from develop/main/master (not from feature branches)
 - Include rebasing steps in tasks.md for features with dependencies
 - Mark parallel-executable tasks with [P] in the task descriptions
@@ -120,5 +144,6 @@ Report completion with:
 - Constitutional gaps identified and addressed (for brownfield)
 - Total features identified (existing + new)
 - Execution order with dependencies
-- Branch names for all created specs
+- Branch names (feature/ prefixed) for all created specs (e.g., "feature/001-auth", "feature/002-api")
+- Feature names (numbered, no prefix) for reference (e.g., "001-auth", "002-api")
 - Summary of parallel vs sequential tasks

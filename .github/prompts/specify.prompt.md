@@ -6,8 +6,15 @@ Given the feature description provided as an argument, do this:
 
 1. Run the script `.specify/scripts/bash/create-new-feature.sh --json "$ARGUMENTS"` from repo root and parse its JSON output for BRANCH_NAME and SPEC_FILE. All file paths must be absolute.
   **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
-2. Load `.specify/templates/spec-template.md` to understand required sections.
-3. Write the specification to SPEC_FILE using the template structure, replacing placeholders with concrete details derived from the feature description (arguments) while preserving section order and headings.
-4. Report completion with branch name, spec file path, and readiness for the next phase.
+  **NAMING CONVENTION**: 
+  - BRANCH_NAME will be prefixed with 'feature/' (e.g., "feature/001-authentication-system")
+  - feature_name is the numbered plain name without prefix (e.g., "001-authentication-system")
+2. **Branch Verification**: Verify you are on the feature branch (BRANCH_NAME with 'feature/' prefix) before proceeding with file operations.
+3. Load `.specify/templates/spec-template.md` to understand required sections.
+4. Write the specification to SPEC_FILE using the template structure, replacing placeholders with concrete details derived from the feature description (arguments) while preserving section order and headings.
+5. **Commit Spec Files**: After completing the specification, commit the changes:
+   - Run `git add .`
+   - Run `git commit -m "Complete specification for [feature_name]"` (use numbered feature_name, not branch_name)
+6. Report completion with branch name (feature/ prefixed), feature name (numbered), spec file path, and readiness for the next phase.
 
-Note: The script creates and checks out the new branch and initializes the spec file before writing.
+Note: The script creates and checks out the new feature branch (with 'feature/' prefix) and initializes the spec file before writing. Always verify branch and commit before proceeding to plan phase.
