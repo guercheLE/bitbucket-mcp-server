@@ -7,7 +7,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
 # Test git MCP availability at startup
-GIT_METHOD=$(test_git_mcp)
+GIT_METHOD=$(test_git_mcp) || true  # Don't fail on detection
 if [[ "$GIT_METHOD" != "git" ]]; then
     echo "[specify] Using git MCP integration: $GIT_METHOD" >&2
 else
