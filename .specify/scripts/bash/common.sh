@@ -18,7 +18,9 @@ get_feature_dir() { echo "$1/specs/$2"; }
 get_feature_paths() {
     local repo_root=$(get_repo_root)
     local current_branch=$(get_current_branch)
-    local feature_dir=$(get_feature_dir "$repo_root" "$current_branch")
+    # Strip 'feature/' prefix to get just the feature name for directory path
+    local feature_name=$(echo "$current_branch" | sed 's/^feature\///')
+    local feature_dir=$(get_feature_dir "$repo_root" "$feature_name")
     cat <<EOF
 REPO_ROOT='$repo_root'
 CURRENT_BRANCH='$current_branch'

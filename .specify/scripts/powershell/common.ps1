@@ -24,9 +24,9 @@ function Get-FeatureDir {
     # Extract feature directory name from branch (feature/001-name -> 001-name)
     if ($Branch -match '^feature/(.+)$') {
         $FeatureDirName = $matches[1]
-        Join-Path $RepoRoot ".specify/$FeatureDirName"
+        Join-Path $RepoRoot "specs/$FeatureDirName"
     } else {
-        Join-Path $RepoRoot ".specify/$Branch"
+        Join-Path $RepoRoot "specs/$Branch"
     }
 }
 
@@ -35,16 +35,16 @@ function Get-FeaturePathsEnv {
     $currentBranch = Get-CurrentBranch
     $featureDir = Get-FeatureDir -RepoRoot $repoRoot -Branch $currentBranch
     [PSCustomObject]@{
-        REPO_ROOT    = $repoRoot
-        CURRENT_BRANCH = $currentBranch
-        FEATURE_DIR  = $featureDir
-        SPECIFY_REQUEST = Join-Path $featureDir 'specify-request.txt'
-        MVP_PLAN     = Join-Path $featureDir 'mvp-plan.md'
-        EXECUTION_PLAN = Join-Path $featureDir 'execution-plan.json'
-        TASKS        = Join-Path $featureDir 'tasks.md'
-        RESEARCH     = Join-Path $featureDir 'research.md'
-        CONTEXT      = Join-Path $featureDir 'context.md'
-        CONTRACTS_DIR = Join-Path $featureDir 'contracts'
+        REPO_ROOT       = $repoRoot
+        CURRENT_BRANCH  = $currentBranch
+        FEATURE_DIR     = $featureDir
+        FEATURE_SPEC    = Join-Path $featureDir 'spec.md'
+        IMPL_PLAN       = Join-Path $featureDir 'plan.md'
+        TASKS           = Join-Path $featureDir 'tasks.md'
+        RESEARCH        = Join-Path $featureDir 'research.md'
+        DATA_MODEL      = Join-Path $featureDir 'data-model.md'
+        QUICKSTART      = Join-Path $featureDir 'quickstart.md'
+        CONTRACTS_DIR   = Join-Path $featureDir 'contracts'
     }
 }
 
