@@ -1,7 +1,28 @@
 #!/usr/bin/env bash
+# Enhanced agent context updater with improved detection and branch tracking
 set -e
+
 REPO_ROOT=$(git rev-parse --show-toplevel)
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+# Improved agent detection
+AGENT_TYPE="$1"
+if [ -z "$AGENT_TYPE" ]; then
+    # Auto-detect agent type
+    if [ -n "$ANTHROPIC_API_KEY" ] || [ -n "$CLAUDE_API_KEY" ]; then
+        AGENT_TYPE="CLAUDE"
+    elif [ -n "$GITHUB_TOKEN" ] && command -v gh >/dev/null 2>&1; then
+        AGENT_TYPE="COPILOT"
+    elif [ -n "$OPENAI_API_KEY" ]; then
+        AGENT_TYPE="OPENAI"
+    elif [ -n "$GEMINI_API_KEY" ] || [ -n "$GOOGLE_API_KEY" ]; then
+        AGENT_TYPE="GEMINI"
+    else
+        AGENT_TYPE="GENERIC"
+    fi
+fi
+
+echo "🤖 Detected/Using AI Agent: $AGENT_TYPE" >&2
 FEATURE_DIR="$REPO_ROOT/specs/$CURRENT_BRANCH"
 NEW_PLAN="$FEATURE_DIR/plan.md"
 CLAUDE_FILE="$REPO_ROOT/CLAUDE.md"; GEMINI_FILE="$REPO_ROOT/GEMINI.md"; COPILOT_FILE="$REPO_ROOT/.github/copilot-instructions.md"; CURSOR_FILE="$REPO_ROOT/.cursor/commands/specify-rules.md"; QWEN_FILE="$REPO_ROOT/QWEN.md"; AGENTS_FILE="$REPO_ROOT/AGENTS.md"; WINDSURF_FILE="$REPO_ROOT/.windsurf/rules/specify-rules.md"

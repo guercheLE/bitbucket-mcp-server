@@ -8,7 +8,11 @@ Given the implementation details provided as an argument, do this:
   **NAMING CONVENTION**: 
   - BRANCH will be the feature branch with 'feature/' prefix (e.g., "feature/001-authentication-system")
   - feature_name is the numbered plain name without prefix (e.g., "001-authentication-system")
-2. **Branch Verification**: Verify you are on the correct feature branch (BRANCH with 'feature/' prefix) before proceeding with file operations.
+2. **Branch Verification**: 
+   - CRITICAL: Verify you are on the correct feature branch (BRANCH with 'feature/' prefix) before proceeding with file operations
+   - Use `git branch --show-current` to verify current branch
+   - If not on feature branch, checkout: `git checkout {BRANCH}`
+   - NEVER create plan files on main branch
 3. Read and analyze the feature specification to understand:
    - The feature requirements and user stories
    - Functional and non-functional requirements
@@ -36,8 +40,10 @@ Given the implementation details provided as an argument, do this:
    - Confirm no ERROR states in execution
 
 7. **Commit Plan Files**: After completing the implementation plan, commit the changes:
+   - CRITICAL: Ensure you're still on feature branch before committing
    - Run `git add .`
    - Run `git commit -m "Complete implementation plan for [feature_name]"` (use numbered feature_name, not branch name)
+   - NEVER commit global files on feature branch
 
 8. Report results with branch name (feature/ prefixed), feature name (numbered), file paths, and generated artifacts.
 

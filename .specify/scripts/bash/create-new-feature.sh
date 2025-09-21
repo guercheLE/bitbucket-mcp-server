@@ -36,10 +36,23 @@ fi
 NEXT=$((HIGHEST + 1))
 FEATURE_NUM=$(printf "%03d" "$NEXT")
 
-BRANCH_NAME=$(echo "$FEATURE_DESCRIPTION" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-//' | sed 's/-$//')
-WORDS=$(echo "$BRANCH_NAME" | tr '-' '\n' | grep -v '^$' | head -3 | tr '\n' '-' | sed 's/-$//')
-FEATURE_DIR_NAME="${FEATURE_NUM}-${WORDS}"
-BRANCH_NAME="feature/${FEATURE_DIR_NAME}"
+# Phase 1: Resolve branch naming conflicts BEFORE checkout
+echo "[specify] Phase 1: Resolving branch naming conflicts..." >&2
+RESOLVED_BRANCH_NAME=$("$REPO_ROOT/.specify/scripts/bash/resolve-branch-conflicts.sh" "$FEATURE_DESCRIPTION" "$NEXT")
+
+if [ $? -eq 0 ] && [ -n "$RESOLVED_BRANCH_NAME" ]; then
+    BRANCH_NAME="$RESOLVED_BRANCH_NAME"
+    # Extract folder name from resolved branch name
+    FEATURE_DIR_NAME=$(echo "$BRANCH_NAME" | sed 's/^feature\///')
+    echo "[specify] Using resolved branch: $BRANCH_NAME" >&2
+else
+    # Fallback to original logic if conflict resolution fails
+    echo "[specify] Conflict resolution failed, using original logic..." >&2
+    BRANCH_NAME=$(echo "$FEATURE_DESCRIPTION" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-//' | sed 's/-$//')
+    WORDS=$(echo "$BRANCH_NAME" | tr '-' '\n' | grep -v '^$' | head -3 | tr '\n' '-' | sed 's/-$//')
+    FEATURE_DIR_NAME="${FEATURE_NUM}-${WORDS}"
+    BRANCH_NAME="feature/${FEATURE_DIR_NAME}"
+fi
 
 # Enhanced branching logic: prioritize develop > main > master > current
 function get_base_branch() {
@@ -65,10 +78,21 @@ else
     git checkout -b "$BRANCH_NAME"
 fi
 
-FEATURE_DIR="$SPECS_DIR/$FEATURE_DIR_NAME"
-mkdir -p "$FEATURE_DIR"
+# Phase 2: Resolve folder naming conflicts AFTER checkout
+echo "[specify] Phase 2: Resolving folder naming conflicts..." >&2
+RESOLVED_FEATURE_DIR=$("$REPO_ROOT/.specify/scripts/bash/resolve-folder-conflicts.sh" "$BRANCH_NAME")
 
-TEMPLATE="$REPO_ROOT/templates/spec-template.md"
+if [ $? -eq 0 ] && [ -n "$RESOLVED_FEATURE_DIR" ]; then
+    FEATURE_DIR="$RESOLVED_FEATURE_DIR"
+    echo "[specify] Using resolved folder: $FEATURE_DIR" >&2
+else
+    # Fallback to creating new directory
+    echo "[specify] Using standard folder creation..." >&2
+    FEATURE_DIR="$SPECS_DIR/$FEATURE_DIR_NAME"
+    mkdir -p "$FEATURE_DIR"
+fi
+
+TEMPLATE="$REPO_ROOT/.specify/templates/spec-template.md"
 SPEC_FILE="$FEATURE_DIR/spec.md"
 if [ -f "$TEMPLATE" ]; then cp "$TEMPLATE" "$SPEC_FILE"; else touch "$SPEC_FILE"; fi
 

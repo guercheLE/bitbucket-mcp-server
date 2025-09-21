@@ -2,6 +2,17 @@
 description: Execute the implementation plan by processing and executing all tasks defined in tasks.md
 ---
 
+**CRITICAL WORKFLOW RESTRICTION**: This command should ONLY be used for actual implementation work, NOT during the specification workflow.
+
+**WORKFLOW SEPARATION**:
+- **Specification Phase**: /specify → /plan → /tasks (NO implementation)
+- **Implementation Phase**: /implement (separate process, not part of spec workflow)
+
+**Branch Rules for Implementation**:
+- Implementation should occur on the same feature branch where tasks were created
+- Verify you're on correct feature branch before starting implementation
+- Follow the task breakdown exactly as specified in tasks.md
+
 Given the current feature context, do this:
 
 1. Run `.specify/scripts/bash/check-implementation-prerequisites.sh --json` from repo root and parse FEATURE_DIR and AVAILABLE_DOCS list. All paths must be absolute.

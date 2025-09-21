@@ -8,7 +8,11 @@ Given the context provided as an argument, do this:
   **NAMING CONVENTION**: 
   - branch_name has 'feature/' prefix (e.g., "feature/001-authentication-system")
   - feature_name is the numbered plain name without prefix (e.g., "001-authentication-system")
-2. **Branch Verification**: Verify you are on the correct feature branch (with 'feature/' prefix) before proceeding with file operations.
+2. **Branch Verification**: 
+   - CRITICAL: Verify you are on the correct feature branch (with 'feature/' prefix) before proceeding with file operations
+   - Use `git branch --show-current` to verify current branch  
+   - If not on feature branch, checkout: `git checkout feature/{number}-{name}`
+   - NEVER create task files on main branch
 3. Load and analyze available design documents:
    - Always read plan.md for tech stack and libraries
    - IF EXISTS: Read data-model.md for entities
@@ -58,10 +62,16 @@ Given the context provided as an argument, do this:
    - Parallel execution guidance
 
 9. **Final Commit**: After completing the tasks breakdown, commit the changes:
+   - CRITICAL: Ensure you're still on feature branch before committing
    - Run `git add .`
    - Run `git commit -m "Complete task breakdown for [feature_name]"` (use numbered feature_name, not branch name)
+   - NEVER commit global files on feature branch
 
-10. Report completion with branch name (feature/ prefixed), feature name (numbered), task file path, and spec completion status.
+10. **Workflow Completion**: 
+    - After completing all three phases (specify → plan → tasks), the spec is ready
+    - Agent should return to main branch: `git checkout main`
+    - Update global files (execution-plan.json, mvp-plan.md) on main if needed
+    - Proceed to next feature only after current spec is complete
 
 Context for task generation: $ARGUMENTS
 

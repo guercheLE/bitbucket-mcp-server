@@ -29,12 +29,24 @@
    → Tests before implementation (TDD)
 6. Number tasks sequentially (T001, T002...)
 7. Generate dependency graph
-8. Create parallel execution examples
-9. Validate task completeness:
-   → All contracts have tests?
-   → All entities have models?
-   → All endpoints implemented?
-10. Return: SUCCESS (tasks ready for execution)
+8. Create FEATURE_DIR/tasks.md with:
+   - Correct feature name (numbered, no prefix) from implementation plan
+   - Numbered tasks (T001, T002, etc.)
+   - Clear file paths for each task
+   - Dependency notes
+   - Parallel execution guidance
+
+10. **Final Commit**: After completing the tasks breakdown, commit the changes:
+   - CRITICAL: Ensure you're still on feature branch before committing
+   - Run `git add .`
+   - Run `git commit -m "Complete task breakdown for [feature_name]"` (use numbered feature_name, not branch name)
+   - NEVER commit global files on feature branch
+
+11. **Workflow Completion**: 
+    - After completing all three phases (specify → plan → tasks), the spec is ready
+    - Agent should return to main branch: `git checkout main`
+    - Update global files (execution-plan.json, mvp-plan.md) on main if needed
+    - Proceed to next feature only after current spec is complete
 ```
 
 ## Phase 0: Branch Management and Dependencies

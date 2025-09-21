@@ -33,7 +33,9 @@ mkdir -p "$SPECS_DIR"
 echo "🔍 Analyzing project state..." >&2
 PROJECT_STATE_RESULT=$("$REPO_ROOT/.specify/scripts/bash/analyze-project-state.sh" --json)
 PROJECT_TYPE=$(echo "$PROJECT_STATE_RESULT" | jq -r '.project_type')
+NEXT_BRANCH_NUMBER=$(echo "$PROJECT_STATE_RESULT" | jq -r '.next_branch_number')
 echo "📊 Project type detected: $PROJECT_TYPE" >&2
+echo "🔢 Next branch number: $NEXT_BRANCH_NUMBER" >&2
 
 # Create MVP plan file if it doesn't exist
 MVP_PLAN_FILE="$REPO_ROOT/mvp-plan.md"
@@ -81,22 +83,36 @@ cat > "$EXECUTION_PLAN" << EOF
 {
   "project_description": "$PROJECT_DESCRIPTION",
   "project_type": "$PROJECT_TYPE", 
+  "next_branch_number": $NEXT_BRANCH_NUMBER,
   "project_state": $PROJECT_STATE_RESULT,
   "mvp_plan_file": "$MVP_PLAN_FILE",
   "specs_directory": "$SPECS_DIR",
   "features": [],
   "dependencies": {},
   "execution_order": [],
+  "branch_tracking": {
+    "last_used_number": $((NEXT_BRANCH_NUMBER - 1)),
+    "next_available": $NEXT_BRANCH_NUMBER,
+    "format": "feature/{number:03d}-{name}"
+  },
+  "workflow_rules": {
+    "global_files_branch": "main",
+    "spec_files_branch": "feature/*",
+    "commit_pattern": "Complete {phase} for {feature_name}",
+    "no_implementation": true,
+    "complete_spec_before_next": true
+  },
   "status": "initialized"
 }
 EOF
 
 if $JSON_MODE; then
-    printf '{"MVP_PLAN_FILE":"%s","EXECUTION_PLAN":"%s","SPECS_DIR":"%s","PROJECT_TYPE":"%s","PROJECT_STATE":%s,"STATUS":"ready_for_analysis"}\n' "$MVP_PLAN_FILE" "$EXECUTION_PLAN" "$SPECS_DIR" "$PROJECT_TYPE" "$PROJECT_STATE_RESULT"
+    printf '{"MVP_PLAN_FILE":"%s","EXECUTION_PLAN":"%s","SPECS_DIR":"%s","PROJECT_TYPE":"%s","NEXT_BRANCH_NUMBER":%d,"PROJECT_STATE":%s,"STATUS":"ready_for_analysis"}\n' "$MVP_PLAN_FILE" "$EXECUTION_PLAN" "$SPECS_DIR" "$PROJECT_TYPE" "$NEXT_BRANCH_NUMBER" "$PROJECT_STATE_RESULT"
 else
     echo "MVP_PLAN_FILE: $MVP_PLAN_FILE"
     echo "EXECUTION_PLAN: $EXECUTION_PLAN"
     echo "SPECS_DIR: $SPECS_DIR"
     echo "PROJECT_TYPE: $PROJECT_TYPE"
+    echo "NEXT_BRANCH_NUMBER: $NEXT_BRANCH_NUMBER"
     echo "STATUS: ready_for_analysis"
 fi

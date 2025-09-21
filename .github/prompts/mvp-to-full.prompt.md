@@ -65,16 +65,40 @@ This command analyzes your project (greenfield vs brownfield), identifies requir
 
 6. **Execute Workflow for Each Feature**:
    
+   **CRITICAL WORKFLOW RULES - MUST BE ENFORCED**:
+   - **Branch Management**: 
+     - Always verify current branch before any file operations
+     - Global files (mvp-plan.md, execution-plan.json, specify-request.txt) ONLY on main branch
+     - Spec files (spec.md, plan.md, tasks.md) ONLY on feature branches
+     - Complete each spec fully (specify → plan → tasks) before moving to next
+     - Always return to main branch after completing a spec
+   - **Commit Pattern**: 
+     - Commit after each phase completion: "Complete {phase} for {feature_name}"
+     - Use numbered feature_name (e.g., "001-authentication") not branch_name
+   - **No Implementation**: 
+     - Workflow STOPS at tasks generation - implementation NEVER executed
+     - Focus on specification, planning, and task breakdown only
+   - **Branch Numbering**: 
+     - Use next_branch_number from project state analysis
+     - Format: feature/{number:03d}-{feature-name} (e.g., feature/001-auth-system)
+     - Track numbers in execution-plan.json to prevent conflicts
+   
    **STRICT BRANCH WORKFLOW REQUIREMENTS**:
    - Complete each spec fully (specify → plan → tasks) before moving to next
    - **Branch Management**:
-     - Spec files: Create on feature branch (branch_name with 'feature/' prefix), commit before checkout to main
-     - Global files (execution-plan.json, mvp-plan.md, specify-request.txt): Create/commit on main branch only after ALL specs complete
-     - Always verify branch before file operations
-     - Commit pattern: git add . then git commit after each spec completion
+     - GLOBAL FILES (execution-plan.json, mvp-plan.md, specify-request.txt): 
+       * ALWAYS create/update on main branch ONLY
+       * Commit on main after ALL specs complete
+     - SPEC FILES (spec.md, plan.md, tasks.md): 
+       * ALWAYS create on feature branch (branch_name with 'feature/' prefix)
+       * Commit on feature branch after each phase completion
+     - Always verify current branch before file operations using `git branch --show-current`
+     - Use `git checkout main` before working with global files
+     - Use `git checkout feature/{number}-{name}` before working with spec files
    - **Naming Convention**:
      - feature_name: Numbered plain name without prefix (e.g., "001-authentication-system")
      - branch_name: Prefixed with 'feature/' (e.g., "feature/001-authentication-system")
+     - Use next_branch_number from analyze-project-state.sh output
    
    **Priority Order for Brownfield**:
    1. **Constitutional Compliance**: Fix gaps violating constitution.md first
@@ -84,6 +108,9 @@ This command analyzes your project (greenfield vs brownfield), identifies requir
    
    **Manual Approach - For each feature in dependency order**:
    - **Specify**: Run `/specify` command with feature description
+     - Script automatically resolves branch/folder naming conflicts
+     - Phase 1: Resolves branch conflicts before checkout (renames existing branches)
+     - Phase 2: Resolves folder conflicts after checkout (merges existing spec folders)
      - Verify on feature branch (branch_name) before file operations
      - Commit spec files before proceeding
    - **Auto-clarify**: Use best judgment to fix clarification items in spec
