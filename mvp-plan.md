@@ -10,8 +10,8 @@
 - [x] **004-basic-testing-framework** - Test infrastructure (constitutional requirement) [DONE - Complete spec, plan, tasks] [P]
 
 ## Full Product Features (Priority 2) - Enhanced Functionality  
-- [ ] **005-issue-tracking** - Issue management and tracking [TODO]
-- [ ] **006-pull-request-management** - PR operations and reviews [TODO] [P]
+- [x] **005-issue-tracking** - Issue management and tracking [COMPLETED - Complete spec, plan, tasks]
+- [x] **006-pull-request-management** - PR operations and reviews [COMPLETED - Complete spec, plan, tasks] [P]
 - [ ] **007-pipeline-management** - CI/CD pipeline integration [TODO] [P] 
 - [ ] **008-webhook-support** - Event-driven notifications [TODO]
 
@@ -45,9 +45,9 @@
 - **Complete API Coverage**: Features 003, 005, 006, 007 provide comprehensive API coverage [TODO]
 
 ## Project State Analysis (Brownfield)
-- **Completed**: 001-mcp-server-infrastructure (full spec), 002-authentication-system (full spec), 003-repository-management (full spec), 004-basic-testing-framework (full spec)
+- **Completed**: 001-mcp-server-infrastructure (full spec), 002-authentication-system (full spec), 003-repository-management (full spec), 004-basic-testing-framework (full spec), 005-issue-tracking (full spec), 006-pull-request-management (full spec)
 - **Constitutional Gap**: RESOLVED - Test-First requirement addressed with comprehensive testing framework
-- **Next Branch Number**: 5
+- **Next Branch Number**: 7
 
 ## Execution Plan
 1. ✅ Project analysis completed (brownfield, next branch: 5)
@@ -56,7 +56,9 @@
 4. ✅ **COMPLETED**: Feature 002-authentication-system (spec, plan, tasks complete)
 5. ✅ **COMPLETED**: Feature 004-basic-testing-framework (spec, plan, tasks complete) - Constitutional gap resolved
 6. ✅ **COMPLETED**: Feature 003-repository-management (spec, plan, tasks complete) - Core repository operations with 5 MCP tools
-7. 🔄 **NEXT PRIORITY**: Feature 005-issue-tracking (issue management and tracking)
-8. 🔄 **FUTURE**: Continue with remaining MVP features (006, 007, then full product features)
+7. ✅ **COMPLETED**: Feature 005-issue-tracking (spec, plan, tasks complete) - Complete issue lifecycle management with 8 MCP tools
+8. ✅ **COMPLETED**: Feature 006-pull-request-management (spec, plan, tasks complete) - Complete PR lifecycle with review system, merge operations, 15 MCP tools
+9. 🔄 **NEXT PRIORITY**: Feature 007-pipeline-management (CI/CD pipeline integration)
+10. 🔄 **FUTURE**: Continue with remaining MVP features (008, then full product features)
 8. 🔄 Execute specify → plan → tasks workflow for features 003, 005-012 in dependency order
 9. 📋 Generate execution summary with parallel task identification
