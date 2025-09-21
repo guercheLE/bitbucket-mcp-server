@@ -99,6 +99,7 @@ This command analyzes your project (greenfield vs brownfield), identifies requir
    - Provide next steps for implementation
 
 **Important Notes**:
+- **NO IMPLEMENTATION**: This workflow stops at tasks generation - implementation should NEVER be executed
 - **Brownfield Priority**: Constitutional compliance gaps are CRITICAL and must be addressed first
 - **State Awareness**: Always account for existing implementation when planning new features
 - **Incremental Progress**: Build on existing work rather than replacing it
