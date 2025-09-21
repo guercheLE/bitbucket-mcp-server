@@ -1,11 +1,11 @@
 {
   "project_description": "bitbucket-mcp-server",
   "project_type": "brownfield",
-  "next_branch_number": 11,
+  "next_branch_number": 12,
   "project_state": {
     "project_type": "brownfield",
     "analysis_date": "2025-09-21 15:30:00",
-    "next_branch_number": 11,
+    "next_branch_number": 12,
     "existing_specs": [
       "specs/001-mcp-server-infrastructure/",
       "specs/002-authentication-system/",
@@ -16,7 +16,8 @@
       "specs/007-pipeline-management/",
       "specs/008-webhook-support/",
       "specs/009-advanced-search/",
-      "specs/010-analytics-dashboard/"
+      "specs/010-analytics-dashboard/",
+      "specs/011-multi-workspace-support/"
     ],
     "completed_features": [
       "001-mcp-server-infrastructure",
@@ -28,7 +29,8 @@
       "007-pipeline-management",
       "008-webhook-support",
       "009-advanced-search",
-      "010-analytics-dashboard"
+      "010-analytics-dashboard",
+      "011-multi-workspace-support"
     ],
     "incomplete_features": [
       ""
@@ -284,6 +286,20 @@
         "003-repository-management"
       ],
       "spec_complete": true
+    },
+    {
+      "id": "011-multi-workspace-support",
+      "name": "Multi-Workspace Support",
+      "status": "specified",
+      "branch": "feature/011-multi-workspace-support",
+      "dependencies": [
+        "001-mcp-server-infrastructure",
+        "002-authentication-system",
+        "003-repository-management",
+        "009-advanced-search",
+        "010-analytics-dashboard"
+      ],
+      "spec_complete": true
     }
   ],
   "dependencies": {
@@ -324,6 +340,13 @@
       "001-mcp-server-infrastructure",
       "002-authentication-system",
       "003-repository-management"
+    ],
+    "011-multi-workspace-support": [
+      "001-mcp-server-infrastructure",
+      "002-authentication-system",
+      "003-repository-management",
+      "009-advanced-search",
+      "010-analytics-dashboard"
     ]
   },
   "execution_order": [
@@ -336,7 +359,8 @@
     "007-pipeline-management",
     "008-webhook-support",
     "009-advanced-search",
-    "010-analytics-dashboard"
+    "010-analytics-dashboard",
+    "011-multi-workspace-support"
   ],
   "branch_tracking": {
     "last_used_number": 10,
