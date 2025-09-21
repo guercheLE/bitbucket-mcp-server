@@ -4,6 +4,37 @@
 get_repo_root() { git rev-parse --show-toplevel; }
 get_current_branch() { git rev-parse --abbrev-ref HEAD; }
 
+# Test if git MCP server is configured and working
+test_git_mcp() {
+    # Try a safe, read-only git MCP operation
+    if mcp git status --porcelain >/dev/null 2>&1; then
+        echo "mcp-git"
+        return 0
+    elif git-mcp status --porcelain >/dev/null 2>&1; then
+        echo "git-mcp"
+        return 0
+    else
+        echo "git"
+        return 1
+    fi
+}
+
+# Use git MCP if available, fallback to git
+smart_git() {
+    local git_cmd=$(test_git_mcp)
+    case "$git_cmd" in
+        "mcp-git")
+            mcp git "$@"
+            ;;
+        "git-mcp")
+            git-mcp "$@"
+            ;;
+        *)
+            git "$@"
+            ;;
+    esac
+}
+
 check_feature_branch() {
     local branch="$1"
     if [[ ! "$branch" =~ ^feature/[0-9]{3}- ]]; then
@@ -11,6 +42,57 @@ check_feature_branch() {
         echo "Feature branches should be named like: feature/001-feature-name" >&2
         return 1
     fi; return 0
+}
+
+# Enhanced branch verification with timing safety
+verify_branch_with_retry() {
+    local expected_branch="$1"
+    local max_attempts="${2:-5}"
+    local wait_time="${3:-0.3}"
+    local attempt=1
+    
+    while [ $attempt -le $max_attempts ]; do
+        local current_branch=$(get_current_branch)
+        if [[ "$current_branch" == "$expected_branch" ]]; then
+            # Additional filesystem stability wait
+            sleep "$wait_time"
+            echo "[common] Successfully verified branch: $expected_branch" >&2
+            return 0
+        fi
+        
+        echo "[common] Attempt $attempt: Expected '$expected_branch', got '$current_branch'. Retrying..." >&2
+        sleep 0.5
+        attempt=$((attempt + 1))
+    done
+    
+    echo "ERROR: Failed to verify branch after $max_attempts attempts" >&2
+    echo "Expected: '$expected_branch', Current: '$(get_current_branch)'" >&2
+    return 1
+}
+
+# Safe branch operations with git MCP fallback
+safe_checkout_branch() {
+    local branch="$1"
+    local create_new="${2:-false}"
+    
+    echo "[common] Checking out branch: $branch (create_new: $create_new)" >&2
+    
+    if [[ "$create_new" == "true" ]]; then
+        smart_git checkout -b "$branch" || {
+            echo "ERROR: Failed to create and checkout branch: $branch" >&2
+            return 1
+        }
+    else
+        smart_git checkout "$branch" || {
+            echo "ERROR: Failed to checkout existing branch: $branch" >&2
+            return 1
+        }
+    fi
+    
+    # Verify the checkout was successful
+    verify_branch_with_retry "$branch" 5 0.3 || return 1
+    
+    return 0
 }
 
 get_feature_dir() { echo "$1/specs/$2"; }

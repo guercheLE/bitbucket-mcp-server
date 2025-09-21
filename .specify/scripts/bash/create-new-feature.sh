@@ -2,6 +2,18 @@
 # (Moved to scripts/bash/) Create a new feature with branch, directory structure, and template
 set -e
 
+# Source common functions for git MCP and enhanced branch management
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/common.sh"
+
+# Test git MCP availability at startup
+GIT_METHOD=$(test_git_mcp)
+if [[ "$GIT_METHOD" != "git" ]]; then
+    echo "[specify] Using git MCP integration: $GIT_METHOD" >&2
+else
+    echo "[specify] Git MCP not configured, using standard git commands" >&2
+fi
+
 JSON_MODE=false
 ARGS=()
 for arg in "$@"; do
@@ -68,27 +80,47 @@ fi
 
 # Enhanced branching logic: prioritize develop > main > master > current
 function get_base_branch() {
-    if git show-ref --verify --quiet refs/heads/develop; then
+    if smart_git show-ref --verify --quiet refs/heads/develop; then
         echo "develop"
-    elif git show-ref --verify --quiet refs/heads/main; then
+    elif smart_git show-ref --verify --quiet refs/heads/main; then
         echo "main"
-    elif git show-ref --verify --quiet refs/heads/master; then
+    elif smart_git show-ref --verify --quiet refs/heads/master; then
         echo "master"
     else
-        git branch --show-current
+        get_current_branch
     fi
 }
 
 BASE_BRANCH=$(get_base_branch)
-git checkout "$BASE_BRANCH"
+echo "[specify] Switching to base branch: $BASE_BRANCH" >&2
+safe_checkout_branch "$BASE_BRANCH" false || {
+    echo "FATAL: Failed to checkout base branch: $BASE_BRANCH" >&2
+    exit 1
+}
 
 # Check if branch already exists (for resumption scenarios)
-if git show-ref --verify --quiet "refs/heads/$BRANCH_NAME"; then
+if smart_git show-ref --verify --quiet "refs/heads/$BRANCH_NAME"; then
     echo "[specify] Branch $BRANCH_NAME already exists, checking out..." >&2
-    git checkout "$BRANCH_NAME"
+    safe_checkout_branch "$BRANCH_NAME" false || {
+        echo "FATAL: Failed to checkout existing branch: $BRANCH_NAME" >&2
+        exit 1
+    }
 else
-    git checkout -b "$BRANCH_NAME"
+    echo "[specify] Creating new branch: $BRANCH_NAME" >&2
+    safe_checkout_branch "$BRANCH_NAME" true || {
+        echo "FATAL: Failed to create new branch: $BRANCH_NAME" >&2
+        exit 1
+    }
 fi
+
+# Final verification that we're on the correct branch
+CURRENT_BRANCH=$(get_current_branch)
+if [[ "$CURRENT_BRANCH" != "$BRANCH_NAME" ]]; then
+    echo "FATAL: Branch verification failed. Expected: $BRANCH_NAME, Got: $CURRENT_BRANCH" >&2
+    exit 1
+fi
+
+echo "[specify] Successfully on branch: $CURRENT_BRANCH" >&2
 
 # Now that we're on the feature branch, create the specs directory
 mkdir -p "$SPECS_DIR"
