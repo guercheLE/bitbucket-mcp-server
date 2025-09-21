@@ -45,6 +45,7 @@ Given the implementation details provided as an argument, do this:
    - CRITICAL: Ensure you're still on feature branch before committing
    - Run `git add .`
    - Run `git commit -m "Complete implementation plan for [feature_name]"` (use numbered feature_name, not branch name)
+   - **CRITICAL GIT FIX**: After commit, run `git status` to refresh Git working directory cache and prevent untracked file bug
    - NEVER commit global files on feature branch
 
 8. Report results with branch name (feature/ prefixed), feature name (numbered), file paths, and generated artifacts.

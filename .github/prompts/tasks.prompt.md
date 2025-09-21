@@ -67,12 +67,14 @@ Given the context provided as an argument, do this:
    - CRITICAL: Ensure you're still on feature branch before committing
    - Run `git add .`
    - Run `git commit -m "Complete task breakdown for [feature_name]"` (use numbered feature_name, not branch name)
+   - **CRITICAL GIT FIX**: After commit, run `git status` to refresh Git working directory cache and prevent untracked file bug
    - NEVER commit global files on feature branch
 
 10. **Workflow Completion**: 
     - After completing all three phases (specify → plan → tasks), the spec is ready
     - Agent should return to main branch: `git checkout main`
     - TIMING SAFETY: After checkout, wait 300ms for file system stability: `sleep 0.3`
+    - **CRITICAL GIT FIX**: After checkout, run `git status` to refresh Git working directory cache and prevent untracked file bug
     - Verify clean state: `git status --porcelain` (should be empty)
     - Update global files (execution-plan.json, mvp-plan.md) on main if needed
     - Proceed to next feature only after current spec is complete

@@ -135,7 +135,8 @@ safe_checkout() {
         local sleep_time=$(echo "scale=3; $timeout_ms / 1000" | bc)
         sleep "$sleep_time"
         
-        # Verify clean state
+        # CRITICAL: Force Git status refresh to prevent untracked file bug
+        echo "[common] Refreshing Git working directory status..." >&2
         local status_output
         status_output=$(git status --porcelain)
         
@@ -185,5 +186,43 @@ switch_to_branch() {
         return verify_branch "$target_branch"
     else
         return 1
+    fi
+}
+
+# Safe commit with Git status refresh to prevent untracked file bug
+safe_commit() {
+    local commit_message="$1"
+    local git_command="${2:-git}"  # Allow override for MCP git
+    
+    echo "[common] Committing changes: $commit_message" >&2
+    
+    # Add all changes
+    if $git_command add .; then
+        echo "[common] Changes staged successfully" >&2
+    else
+        echo "[common] ❌ Failed to stage changes" >&2
+        return 1
+    fi
+    
+    # Commit changes
+    if $git_command commit -m "$commit_message"; then
+        echo "[common] ✅ Commit successful" >&2
+    else
+        echo "[common] ❌ Failed to commit changes" >&2
+        return 1
+    fi
+    
+    # CRITICAL: Force Git status refresh after commit to prevent untracked file bug
+    echo "[common] Refreshing Git working directory status after commit..." >&2
+    local status_output
+    status_output=$($git_command status --porcelain)
+    
+    if [[ -z "$status_output" ]]; then
+        echo "[common] ✅ Working tree clean after commit" >&2
+        return 0
+    else
+        echo "[common] ⚠️ Warning: Working tree not clean after commit" >&2
+        echo "$status_output" >&2
+        return 0  # Don't fail on warnings, just inform
     fi
 }

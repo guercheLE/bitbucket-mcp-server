@@ -82,22 +82,19 @@ function Safe-Checkout {
         [int]$TimeoutMs = 300
     )
     
-    Write-Host "[common] Switching to branch: $BranchName" -ForegroundColor Yellow
+    Write-Host "[common] Switching to branch: $BranchName" -ForegroundColor Cyan
     
-    # Perform checkout
     try {
-        git checkout $BranchName
-        if ($LASTEXITCODE -ne 0) {
-            Write-Host "[common] ❌ Failed to checkout branch: $BranchName" -ForegroundColor Red
-            return $false
-        }
-        
-        # Wait for file system to stabilize (300ms default)
-        $sleepTime = $TimeoutMs / 1000.0
-        Start-Sleep -Seconds $sleepTime
-        
-        # Verify clean state
-        $statusOutput = git status --porcelain
+        # Perform checkout
+        $checkoutResult = git checkout $BranchName 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            # Wait for file system to stabilize
+            $sleepTime = $TimeoutMs / 1000.0
+            Start-Sleep -Seconds $sleepTime
+            
+            # CRITICAL: Force Git status refresh to prevent untracked file bug
+            Write-Host "[common] Refreshing Git working directory status..." -ForegroundColor Cyan
+            $statusOutput = git status --porcelain
         
         if ([string]::IsNullOrWhiteSpace($statusOutput)) {
             Write-Host "[common] ✅ Branch checkout successful, working tree clean" -ForegroundColor Green
@@ -111,7 +108,6 @@ function Safe-Checkout {
         Write-Host "[common] ❌ Exception during checkout: $_" -ForegroundColor Red
         return $false
     }
-}
 
 # Verify current branch matches expected
 function Verify-Branch {
@@ -156,6 +152,52 @@ function Switch-ToBranch {
         # Double-verify we're on the right branch
         return Verify-Branch -ExpectedBranch $TargetBranch
     } else {
+        return $false
+    }
+}
+
+# Safe commit with Git status refresh to prevent untracked file bug
+function Safe-Commit {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$CommitMessage
+    )
+    
+    Write-Host "[common] Committing changes: $CommitMessage" -ForegroundColor Cyan
+    
+    try {
+        # Add all changes
+        $addResult = git add .
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "[common] Changes staged successfully" -ForegroundColor Green
+        } else {
+            Write-Host "[common] ❌ Failed to stage changes" -ForegroundColor Red
+            return $false
+        }
+        
+        # Commit changes
+        $commitResult = git commit -m $CommitMessage
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "[common] ✅ Commit successful" -ForegroundColor Green
+        } else {
+            Write-Host "[common] ❌ Failed to commit changes" -ForegroundColor Red
+            return $false
+        }
+        
+        # CRITICAL: Force Git status refresh after commit to prevent untracked file bug
+        Write-Host "[common] Refreshing Git working directory status after commit..." -ForegroundColor Cyan
+        $statusOutput = git status --porcelain
+        
+        if ([string]::IsNullOrWhiteSpace($statusOutput)) {
+            Write-Host "[common] ✅ Working tree clean after commit" -ForegroundColor Green
+            return $true
+        } else {
+            Write-Host "[common] ⚠️ Warning: Working tree not clean after commit" -ForegroundColor Yellow
+            Write-Host $statusOutput
+            return $true  # Don't fail on warnings, just inform
+        }
+    } catch {
+        Write-Host "[common] ❌ Exception during commit: $_" -ForegroundColor Red
         return $false
     }
 }

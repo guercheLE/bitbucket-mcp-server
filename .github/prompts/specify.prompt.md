@@ -32,6 +32,7 @@ Given the feature description provided as an argument, do this:
    - CRITICAL: Ensure you're still on feature branch before committing
    - Use detected git method: `[git_command] add .` and `[git_command] commit -m "Complete specification for [feature_name]"`
    - Use numbered feature_name (e.g., "001-authentication-system"), not branch_name
+   - **CRITICAL GIT FIX**: After commit, run `[git_command] status` to refresh Git working directory cache and prevent untracked file bug
    - NEVER commit global files (mvp-plan.md, execution-plan.json, specify-request.txt) on feature branch
 7. Report completion with branch name (feature/ prefixed), feature name (numbered), spec file path, and readiness for the next phase.
 

@@ -75,6 +75,7 @@ This command analyzes your project (greenfield vs brownfield), identifies requir
    - **Commit Pattern**: 
      - Commit after each phase completion: "Complete {phase} for {feature_name}"
      - Use numbered feature_name (e.g., "001-authentication") not branch_name
+     - **CRITICAL GIT FIX**: After every commit, run `git status` to refresh Git working directory cache and prevent untracked file bug when switching branches
    - **No Implementation**: 
      - Workflow STOPS at tasks generation - implementation NEVER executed
      - Focus on specification, planning, and task breakdown only
@@ -95,6 +96,7 @@ This command analyzes your project (greenfield vs brownfield), identifies requir
      - Always verify current branch before file operations using `git branch --show-current`
      - Use `git checkout main` before working with global files
      - Use `git checkout feature/{number}-{name}` before working with spec files
+     - **CRITICAL GIT FIX**: After every checkout, run `git status` to refresh Git working directory cache and prevent untracked file bug
    - **Naming Convention**:
      - feature_name: Numbered plain name without prefix (e.g., "001-authentication-system")
      - branch_name: Prefixed with 'feature/' (e.g., "feature/001-authentication-system")
@@ -125,6 +127,7 @@ This command analyzes your project (greenfield vs brownfield), identifies requir
      - **Split dependencies**: tasks1.md must complete before tasks2.md starts
      - **Logical grouping**: Core functionality in tasks1.md, extensions in tasks2.md, etc.
    - **Branch Management**: After completing all three phases for a spec, checkout to main before starting next spec
+     - **CRITICAL GIT FIX**: After checkout to main, run `git status` to refresh Git working directory cache and prevent untracked file bug
    
    **Automated Orchestration (Optional)**:
    For teams preferring automated workflow execution, use the orchestrated feature workflow scripts:
