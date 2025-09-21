@@ -18,12 +18,20 @@ if [ $? -ne 0 ]; then
 fi
 
 # Generate the expected names
-BRANCH_NAME=$(echo "$FEATURE_DESCRIPTION" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-//' | sed 's/-$//')
-WORDS=$(echo "$BRANCH_NAME" | tr '-' '\n' | grep -v '^$' | head -3 | tr '\n' '-' | sed 's/-$//')
-
-NEW_FEATURE_NUMBER=$(printf "%03d" "$NEW_BRANCH_NUMBER")
-NEW_FEATURE_DIR_NAME="${NEW_FEATURE_NUMBER}-${WORDS}"
-NEW_BRANCH_NAME="feature/${NEW_FEATURE_DIR_NAME}"
+# Check if feature description already contains numbering (e.g., "001-feature-name")
+if [[ "$FEATURE_DESCRIPTION" =~ ^[0-9]{3}- ]]; then
+    # Use the provided numbering as-is
+    NEW_FEATURE_DIR_NAME="$FEATURE_DESCRIPTION"
+    NEW_BRANCH_NAME="feature/${NEW_FEATURE_DIR_NAME}"
+    WORDS=$(echo "$FEATURE_DESCRIPTION" | sed 's/^[0-9]\{3\}-//')
+else
+    # Generate numbering for unnumbered features
+    BRANCH_NAME=$(echo "$FEATURE_DESCRIPTION" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-//' | sed 's/-$//')
+    WORDS=$(echo "$BRANCH_NAME" | tr '-' '\n' | grep -v '^$' | head -3 | tr '\n' '-' | sed 's/-$//')
+    NEW_FEATURE_NUMBER=$(printf "%03d" "$NEW_BRANCH_NUMBER")
+    NEW_FEATURE_DIR_NAME="${NEW_FEATURE_NUMBER}-${WORDS}"
+    NEW_BRANCH_NAME="feature/${NEW_FEATURE_DIR_NAME}"
+fi
 
 echo "🔍 Phase 1: Checking for branch naming conflicts..." >&2
 echo "   Target branch: $NEW_BRANCH_NAME" >&2
