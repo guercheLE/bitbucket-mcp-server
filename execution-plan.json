@@ -1,7 +1,7 @@
 {
   "project_description": "bitbucket-mcp-server",
-  "project_type": "greenfield", 
-  "next_branch_number": 1,
+  "project_type": "brownfield", 
+  "next_branch_number": 3,
   "project_state": {"project_type":"greenfield","analysis_date":"2025-09-21 09:06:11","next_branch_number":1,"existing_specs":[
   ""
 ],"completed_features":[
