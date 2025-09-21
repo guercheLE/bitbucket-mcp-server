@@ -1,11 +1,11 @@
 # Feature Specification Request
 
-**Requested**: 2025-09-21 05:13:28
-**Branch Number**: 1 (format: feature/001-{feature-name})
+**Requested**: 2025-09-21 10:15:00
+**Branch Number**: 5 (format: feature/005-{feature-name})
 **Status**: Pending
 
 ## Feature Description
-001-mcp-server-infrastructure
+003-repository-management
 
 ## Workflow Rules
 - Global files (mvp-plan.md, execution-plan.json, specify-request.txt) committed on main branch
@@ -15,8 +15,8 @@
 - Each feature must be self-contained and complete
 
 ## Branch Tracking
-- Last used number: 0
-- Next available: 1
+- Last used number: 4
+- Next available: 5
 - Branch format: feature/{number:03d}-{name}
 
 ## Process
