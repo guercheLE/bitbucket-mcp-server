@@ -5,7 +5,7 @@
 
 ## MVP Features (Priority 1) - Core Functionality
 - [x] **001-mcp-server-infrastructure** - Basic MCP server setup with protocol compliance [DONE - Complete spec] [P]
-- [ ] **002-authentication-system** - Bitbucket authentication (OAuth, App passwords) [IN PROGRESS - Missing spec.md, tasks.md]
+- [x] **002-authentication-system** - Bitbucket authentication (OAuth, App passwords) [DONE - Complete spec, plan, tasks]
 - [ ] **003-repository-management** - Core repository operations (list, get, create) [TODO]
 - [ ] **004-basic-testing-framework** - Test infrastructure (constitutional requirement) [CRITICAL - Constitutional Gap] [P]
 
@@ -45,17 +45,16 @@
 - **Complete API Coverage**: Features 003, 005, 006, 007 provide comprehensive API coverage [TODO]
 
 ## Project State Analysis (Brownfield)
-- **Completed**: 001-mcp-server-infrastructure (full spec)
-- **Incomplete**: 002-authentication-system (missing spec.md, tasks.md)
-- **Constitutional Gap**: Missing test implementation (Test-First requirement)
+- **Completed**: 001-mcp-server-infrastructure (full spec), 002-authentication-system (full spec)
+- **Constitutional Gap**: Missing test implementation (Test-First requirement) 
 - **Next Branch Number**: 3
 
 ## Execution Plan
 1. ✅ Project analysis completed (brownfield, next branch: 3)
 2. ✅ Feature identification and dependency mapping completed  
 3. ✅ Feature 001-mcp-server-infrastructure: COMPLETE
-4. 🔄 **PRIORITY 1**: Complete feature 002-authentication-system (missing spec.md, tasks.md)
-5. 🔄 **PRIORITY 2**: Address constitutional gap - feature 004-basic-testing-framework
-6. 🔄 **PRIORITY 3**: Continue with remaining MVP features (003, then full product features)
+4. ✅ **COMPLETED**: Feature 002-authentication-system (spec, plan, tasks complete)
+5. 🔄 **NEXT PRIORITY**: Address constitutional gap - feature 004-basic-testing-framework  
+6. 🔄 **FUTURE**: Continue with remaining MVP features (003, then full product features)
 4. 🔄 Execute specify → plan → tasks workflow for features 002-012 in dependency order
 5. 📋 Generate execution summary with parallel task identification
