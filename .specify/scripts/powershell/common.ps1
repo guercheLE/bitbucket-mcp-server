@@ -69,3 +69,93 @@ function Test-DirHasFiles {
         return $false
     }
 }
+
+# Git timing safety functions (added to fix timing issues with file system)
+
+# Safe checkout with timing to prevent file system issues
+function Safe-Checkout {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$BranchName,
+        
+        [Parameter(Mandatory=$false)]
+        [int]$TimeoutMs = 300
+    )
+    
+    Write-Host "[common] Switching to branch: $BranchName" -ForegroundColor Yellow
+    
+    # Perform checkout
+    try {
+        git checkout $BranchName
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "[common] ❌ Failed to checkout branch: $BranchName" -ForegroundColor Red
+            return $false
+        }
+        
+        # Wait for file system to stabilize (300ms default)
+        $sleepTime = $TimeoutMs / 1000.0
+        Start-Sleep -Seconds $sleepTime
+        
+        # Verify clean state
+        $statusOutput = git status --porcelain
+        
+        if ([string]::IsNullOrWhiteSpace($statusOutput)) {
+            Write-Host "[common] ✅ Branch checkout successful, working tree clean" -ForegroundColor Green
+            return $true
+        } else {
+            Write-Host "[common] ⚠️ Warning: Working tree not clean after checkout" -ForegroundColor Yellow
+            Write-Host $statusOutput
+            return $false
+        }
+    } catch {
+        Write-Host "[common] ❌ Exception during checkout: $_" -ForegroundColor Red
+        return $false
+    }
+}
+
+# Verify current branch matches expected
+function Verify-Branch {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$ExpectedBranch
+    )
+    
+    try {
+        $currentBranch = Get-CurrentBranch
+        if ($currentBranch -eq $ExpectedBranch) {
+            Write-Host "[common] ✅ On correct branch: $currentBranch" -ForegroundColor Green
+            return $true
+        } else {
+            Write-Host "[common] ❌ Branch mismatch. Expected: $ExpectedBranch, Current: $currentBranch" -ForegroundColor Red
+            return $false
+        }
+    } catch {
+        Write-Host "[common] ❌ Exception during branch verification: $_" -ForegroundColor Red
+        return $false
+    }
+}
+
+# Safe branch switching with verification
+function Switch-ToBranch {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$TargetBranch,
+        
+        [Parameter(Mandatory=$false)]
+        [int]$TimingMs = 300
+    )
+    
+    # Check if already on target branch
+    if (Verify-Branch -ExpectedBranch $TargetBranch) {
+        Write-Host "[common] Already on target branch: $TargetBranch" -ForegroundColor Green
+        return $true
+    }
+    
+    # Perform safe checkout
+    if (Safe-Checkout -BranchName $TargetBranch -TimeoutMs $TimingMs) {
+        # Double-verify we're on the right branch
+        return Verify-Branch -ExpectedBranch $TargetBranch
+    } else {
+        return $false
+    }
+}

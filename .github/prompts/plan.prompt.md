@@ -12,6 +12,8 @@ Given the implementation details provided as an argument, do this:
    - CRITICAL: Verify you are on the correct feature branch (BRANCH with 'feature/' prefix) before proceeding with file operations
    - Use `git branch --show-current` to verify current branch
    - If not on feature branch, checkout: `git checkout {BRANCH}`
+   - TIMING SAFETY: After checkout, wait 300ms for file system stability: `sleep 0.3`
+   - Verify clean state: `git status --porcelain` (should be empty)
    - NEVER create plan files on main branch
 3. Read and analyze the feature specification to understand:
    - The feature requirements and user stories

@@ -12,6 +12,8 @@ Given the context provided as an argument, do this:
    - CRITICAL: Verify you are on the correct feature branch (with 'feature/' prefix) before proceeding with file operations
    - Use `git branch --show-current` to verify current branch  
    - If not on feature branch, checkout: `git checkout feature/{number}-{name}`
+   - TIMING SAFETY: After checkout, wait 300ms for file system stability: `sleep 0.3`
+   - Verify clean state: `git status --porcelain` (should be empty)
    - NEVER create task files on main branch
 3. Load and analyze available design documents:
    - Always read plan.md for tech stack and libraries
@@ -70,6 +72,8 @@ Given the context provided as an argument, do this:
 10. **Workflow Completion**: 
     - After completing all three phases (specify → plan → tasks), the spec is ready
     - Agent should return to main branch: `git checkout main`
+    - TIMING SAFETY: After checkout, wait 300ms for file system stability: `sleep 0.3`
+    - Verify clean state: `git status --porcelain` (should be empty)
     - Update global files (execution-plan.json, mvp-plan.md) on main if needed
     - Proceed to next feature only after current spec is complete
 
