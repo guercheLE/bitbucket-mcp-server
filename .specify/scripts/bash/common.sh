@@ -122,20 +122,20 @@ check_dir() { [[ -d "$1" && -n $(ls -A "$1" 2>/dev/null) ]] && echo "  ✓ $2" |
 
 # Git timing safety functions (added to fix timing issues with file system)
 
-# Safe checkout with timing to prevent file system issues
+# Safe checkout with Git status refresh (eliminates need for timing delays)
 safe_checkout() {
     local branch_name="$1"
-    local timeout_ms="${2:-300}"  # Default 300ms
+    local minimal_delay="${2:-50}"  # Reduced to 50ms minimum for filesystem consistency
     
     echo "[common] Switching to branch: $branch_name" >&2
     
     # Perform checkout
     if git checkout "$branch_name" 2>/dev/null; then
-        # Wait for file system to stabilize (300ms default)
-        local sleep_time=$(echo "scale=3; $timeout_ms / 1000" | bc)
+        # Minimal filesystem stability delay (reduced from 300ms)
+        local sleep_time=$(echo "scale=3; $minimal_delay / 1000" | bc)
         sleep "$sleep_time"
         
-        # CRITICAL: Force Git status refresh to prevent untracked file bug
+        # CRITICAL: Force Git status refresh - this is the real fix, not timing
         echo "[common] Refreshing Git working directory status..." >&2
         local status_output
         status_output=$(git status --porcelain)
@@ -189,7 +189,7 @@ switch_to_branch() {
     fi
 }
 
-# Safe commit with Git status refresh to prevent untracked file bug
+# Safe commit with Git status refresh (primary fix for untracked file bug)
 safe_commit() {
     local commit_message="$1"
     local git_command="${2:-git}"  # Allow override for MCP git
@@ -212,7 +212,7 @@ safe_commit() {
         return 1
     fi
     
-    # CRITICAL: Force Git status refresh after commit to prevent untracked file bug
+    # CRITICAL: Git status refresh is the real fix - forces cache synchronization
     echo "[common] Refreshing Git working directory status after commit..." >&2
     local status_output
     status_output=$($git_command status --porcelain)
