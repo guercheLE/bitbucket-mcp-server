@@ -1,17 +1,19 @@
 ---
-description: Orchestrate MVP to Full Product development by identifying features, dependencies, and executing complete workflow for each spec.
+description: Orchestrate complete project development by identifying features, dependencies, and executing full workflow for each specification.
 ---
 
-# MVP to Full Product Orchestrator
+# Project Development Orchestrator
 
-Given the project description provided as an argument, orchestrate the complete development workflow from MVP to Full Product.
+Given the project description provided as an argument, orchestrate the complete development workflow from concept to implementation-ready tasks.
 
 ## Overview
 
 This command analyzes your project (greenfield vs brownfield), identifies required features, creates dependency graphs, and executes the complete spec-driven workflow for each feature.
 
 **For Brownfield Projects**: Prioritizes constitutional compliance and completing existing work.  
-**For Greenfield Projects**: Focuses on MVP feature identification and dependency planning.
+**For Greenfield Projects**: Focuses on feature identification and dependency planning.
+
+**Alternative Names**: This command was formerly known as "MVP-to-Full" but now supports complete project orchestration beyond just MVP scenarios.
 
 ---
 
