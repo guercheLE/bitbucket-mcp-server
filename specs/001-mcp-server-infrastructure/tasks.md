@@ -58,7 +58,7 @@
 
 **CRITICAL: These tests MUST be written and MUST FAIL before ANY implementation**
 
-- [ ] T020 **[P] MCP initialize contract test**: Create `tests/contract/mcp-initialize.test.ts` testing MCP protocol initialization handshake
+- [x] T020 **[P] MCP initialize contract test**: Create `tests/contract/mcp-initialize.test.ts` testing MCP protocol initialization handshake
 - [ ] T021 **[P] MCP tools/list contract test**: Create `tests/contract/mcp-tools-list.test.ts` testing tool discovery protocol  
 - [ ] T022 **[P] MCP tools/call contract test**: Create `tests/contract/mcp-tools-call.test.ts` testing tool execution protocol
 - [ ] T023 **[P] Server lifecycle integration test**: Create `tests/integration/server-lifecycle.test.ts` testing startup/shutdown
