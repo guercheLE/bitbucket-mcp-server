@@ -61,7 +61,7 @@
 - [x] T020 **[P] MCP initialize contract test**: Create `tests/contract/mcp-initialize.test.ts` testing MCP protocol initialization handshake
 - [x] T021 **[P] MCP tools/list contract test**: Create `tests/contract/mcp-tools-list.test.ts` testing tool discovery protocol  
 - [x] T022 **[P] MCP tools/call contract test**: Create `tests/contract/mcp-tools-call.test.ts` testing tool execution protocol
-- [ ] T023 **[P] Server lifecycle integration test**: Create `tests/integration/server-lifecycle.test.ts` testing startup/shutdown
+- [x] T023 **[P] Server lifecycle integration test**: Create `tests/integration/server-lifecycle.test.ts` testing startup/shutdown
 - [ ] T024 **[P] Multi-client integration test**: Create `tests/integration/multi-client.test.ts` testing concurrent client connections
 - [ ] T025 **[P] Transport layer integration test**: Create `tests/integration/transport-layer.test.ts` testing stdio/HTTP/SSE transports
 
