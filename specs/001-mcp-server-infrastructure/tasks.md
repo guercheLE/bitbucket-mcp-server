@@ -51,7 +51,7 @@
 - [x] T011 **[P] Install MCP dependencies**: Add @modelcontextprotocol/sdk, zod to package.json dependencies 
 - [x] T012 **[P] Install dev dependencies**: Add @types/node, typescript, ts-node, jest, @types/jest to devDependencies
 - [x] T013 **[P] Configure TypeScript**: Create `tsconfig.json` with strict mode and constitutional requirements
-- [ ] T014 **[P] Configure Jest**: Create `jest.config.js` for TypeScript testing with >80% coverage requirement
+- [x] T014 **[P] Configure Jest**: Create `jest.config.js` for TypeScript testing with >80% coverage requirement
 - [ ] T015 **Create project structure**: Initialize `src/server/`, `src/types/`, `src/utils/`, `tests/contract/`, `tests/integration/`, `tests/unit/` directories
 
 ## Phase 2: Tests First (TDD) ⚠️ MUST COMPLETE BEFORE PHASE 3
