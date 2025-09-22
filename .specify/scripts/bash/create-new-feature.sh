@@ -139,7 +139,7 @@ else
     mkdir -p "$FEATURE_DIR"
 fi
 
-TEMPLATE="$REPO_ROOT/.specify/templates/spec-template.md"
+TEMPLATE="$REPO_ROOT/.specify/templates/specification-creation-template.md"
 SPEC_FILE="$FEATURE_DIR/spec.md"
 if [ -f "$TEMPLATE" ]; then cp "$TEMPLATE" "$SPEC_FILE"; else touch "$SPEC_FILE"; fi
 

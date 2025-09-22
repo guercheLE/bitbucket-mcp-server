@@ -8,8 +8,8 @@ TASKS_FILE="$1"
 FORCE_SPLIT="$2"
 
 if [ -z "$TASKS_FILE" ] || [ ! -f "$TASKS_FILE" ]; then
-    echo "Usage: $0 <tasks.md> [--force]" >&2
-    echo "Splits tasks.md into multiple files if >12 tasks detected AND splitting is enabled" >&2
+    echo "Usage: $0 <task-breakdown.md> [--force]" >&2
+    echo "Splits task-breakdown.md into multiple files if >12 tasks detected AND splitting is enabled" >&2
     echo "Keeps level 3 sections (###) together for logical grouping" >&2
     echo "Options:" >&2
     echo "  --force  : Force splitting even if SPLIT_TASKS=false" >&2
@@ -34,7 +34,7 @@ fi
 if [ "$SPLIT_TASKS" != "true" ] && [ "$FORCE_SPLIT" != "--force" ]; then
     echo "⚠️  Task count exceeds limit ($TASK_COUNT > 12) but splitting is DISABLED" >&2
     echo "💡 To enable splitting:" >&2
-    echo "   1. Set 'Allow Task Splitting: [true]' in the tasks.md header, OR" >&2
+    echo "   1. Set 'Allow Task Splitting: [true]' in the task-breakdown.md header, OR" >&2
     echo "   2. Use --force flag: $0 \"$TASKS_FILE\" --force" >&2
     echo "📝 Currently keeping all tasks in single file as requested" >&2
     exit 0

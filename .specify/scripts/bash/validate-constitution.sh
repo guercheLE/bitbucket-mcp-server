@@ -2,7 +2,10 @@
 # Constitutional compliance validator
 set -e
 
-REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
+REPO_ROOT=$(g                if [ -n "$FEATURE_DIR" ] && [ -f "$FEATURE_DIR/task-breakdown.md" ]; then
+                    # Check if Tests phase comes before Implementation phase
+                    TEST_PHASE_LINE=$(grep -n "Phase.*Test\|Tests First" "$FEATURE_DIR/task-breakdown.md" | head -1 | cut -d: -f1)
+                    IMPL_PHASE_LINE=$(grep -n "Phase.*Core\|Phase.*Implementation" "$FEATURE_DIR/task-breakdown.md" | head -1 | cut -d: -f1)ev-parse --show-toplevel 2>/dev/null)
 if [ $? -ne 0 ]; then
     echo "ERROR: Not in a git repository" >&2
     exit 1
@@ -53,9 +56,9 @@ case "$PHASE" in
         if [ -f "$CONSTITUTION_FILE" ]; then
             # Check Test-First requirement
             if grep -q -i "test.*first\|tdd\|NON-NEGOTIABLE" "$CONSTITUTION_FILE"; then
-                if [ -n "$FEATURE_DIR" ] && [ -f "$FEATURE_DIR/plan.md" ]; then
-                    if ! grep -q -i "test.*first\|tdd\|Phase 2.*Tests" "$FEATURE_DIR/plan.md"; then
-                        VIOLATIONS+=("Constitution requires Test-First, but plan.md doesn't emphasize testing")
+                if [ -n "$FEATURE_DIR" ] && [ -f "$FEATURE_DIR/feature-planning.md" ]; then
+                    if ! grep -q -i "test.*first\|tdd\|Phase 2.*Tests" "$FEATURE_DIR/feature-planning.md"; then
+                        VIOLATIONS+=("Constitution requires Test-First, but feature-planning.md doesn't emphasize testing")
                         COMPLIANCE_STATUS="NON_COMPLIANT"
                     fi
                 fi
@@ -63,8 +66,8 @@ case "$PHASE" in
             
             # Check for required architecture patterns
             if grep -q "Library-First" "$CONSTITUTION_FILE"; then
-                if [ -n "$FEATURE_DIR" ] && [ -f "$FEATURE_DIR/plan.md" ]; then
-                    if ! grep -q -i "library\|lib/" "$FEATURE_DIR/plan.md"; then
+                if [ -n "$FEATURE_DIR" ] && [ -f "$FEATURE_DIR/feature-planning.md" ]; then
+                    if ! grep -q -i "library\|lib/" "$FEATURE_DIR/feature-planning.md"; then
                         WARNINGS+=("Constitution emphasizes Library-First but plan may not reflect this")
                     fi
                 fi
@@ -93,8 +96,8 @@ case "$PHASE" in
         fi
         
         # Check task count limits
-        if [ -n "$FEATURE_DIR" ] && [ -f "$FEATURE_DIR/tasks.md" ]; then
-            TASK_COUNT=$(grep -c "^\- \[ \] T[0-9]" "$FEATURE_DIR/tasks.md" 2>/dev/null || echo "0")
+        if [ -n "$FEATURE_DIR" ] && [ -f "$FEATURE_DIR/task-breakdown.md" ]; then
+            TASK_COUNT=$(grep -c "^\- \[ \] T[0-9]" "$FEATURE_DIR/task-breakdown.md" 2>/dev/null || echo "0")
             if [ "$TASK_COUNT" -gt 12 ]; then
                 if [ ! -f "$FEATURE_DIR/tasks1.md" ]; then
                     VIOLATIONS+=("Task count ($TASK_COUNT) exceeds limit (12) but not split")

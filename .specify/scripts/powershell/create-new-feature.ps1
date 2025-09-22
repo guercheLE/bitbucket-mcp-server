@@ -161,7 +161,7 @@ if ($TemplateDir -and (Test-Path $TemplateDir)) {
 }
 
 # Create initial files
-$SpecifyFile = Join-Path $FeatureDir "specify-request.txt"
+$SpecifyFile = Join-Path $FeatureDir "specify-request.md"
 $InitialContent = @"
 # Feature Request: $FeatureDescription
 
@@ -182,7 +182,7 @@ Feature Number: $FeatureNumber
 "@
 
 Set-Content -Path $SpecifyFile -Value $InitialContent
-Write-Host "📝 Created initial specify-request.txt" -ForegroundColor Green
+Write-Host "📝 Created initial specify-request.md" -ForegroundColor Green
 
 # Output JSON for script chaining
 $ResultJson = @{

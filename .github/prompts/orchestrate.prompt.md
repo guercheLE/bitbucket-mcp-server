@@ -13,20 +13,20 @@ This command analyzes your project (greenfield vs brownfield), identifies requir
 **For Brownfield Projects**: Prioritizes constitutional compliance and completing existing work.  
 **For Greenfield Projects**: Focuses on feature identification and dependency planning.
 
-**Alternative Names**: This command was formerly known as "MVP-to-Full" but now supports complete project orchestration beyond just MVP scenarios.
+**Alternative Names**: This command was formerly known as "Product-to-Full" but now supports complete project orchestration beyond just Product scenarios.
 
 ---
 
 ## Execution Steps
 
-### 1. Initialize MVP Planning
-- Run `.specify/scripts/bash/mvp-to-full.sh --json "$ARGUMENTS"` from repo root
-- Parse JSON output for MVP_PLAN_FILE, EXECUTION_PLAN, SPECS_DIR, PROJECT_TYPE, PROJECT_STATE, STATUS
+### 1. Initialize Project Planning
+- Run `.specify/scripts/bash/orchestrate.sh --json "$ARGUMENTS"` from repo root
+- Parse JSON output for ORCHESTRATION_PLAN_FILE, EXECUTION_PLAN, SPECS_DIR, PROJECT_TYPE, PROJECT_STATE, STATUS
 - All file paths must be absolute
 
 ### 2. Analyze Project State
    - **Greenfield Projects**: No existing src/, tests/, or docs/ folders
-     - Proceed with standard MVP-to-Full planning
+     - Proceed with standard project orchestration planning
      - Create new features from scratch
    - **Brownfield Projects**: Existing implementation detected
      - Compare PROJECT_STATE against constitution.md requirements
@@ -43,7 +43,7 @@ This command analyzes your project (greenfield vs brownfield), identifies requir
 4. **Feature Planning Based on Project Type**:
    
    **For Greenfield Projects**:
-   - Identify MVP features (core functionality needed for basic product)
+   - Identify Product features (core functionality needed for basic product)
    - Identify Full Product features (enhancements for complete product)
    - Create feature dependency graph (which features depend on others)
    
@@ -51,17 +51,17 @@ This command analyzes your project (greenfield vs brownfield), identifies requir
    - Review existing specs from PROJECT_STATE.existing_specs
    - Complete any incomplete features first (PROJECT_STATE.incomplete_features)
    - Fill constitutional gaps (PROJECT_STATE.constitutional_gaps)
-   - Add missing MVP features not yet implemented
-   - Plan Full Product features on top of existing + MVP baseline
+   - Add missing Product features not yet implemented
+   - Plan Full Product features on top of existing + Product baseline
 
-5. **Update MVP Plan**:
-   - Load MVP_PLAN_FILE and replace placeholders with actual analysis
-   - **For Greenfield**: Organize new features by priority: MVP (P1) → Full Product (P2) → Advanced (P3)
+5. **Update Product Plan**:
+   - Load ORCHESTRATION_PLAN_FILE and replace placeholders with actual analysis
+   - **For Greenfield**: Organize new features by priority: Product (P1) → Full Product (P2) → Advanced (P3)
    - **For Brownfield**: 
      - Mark existing completed features as [DONE]
      - Mark incomplete features as [IN PROGRESS] with completion status
      - Mark constitutional gaps as [CRITICAL] - highest priority
-     - Add new MVP features as [TODO]
+     - Add new Product features as [TODO]
    - Define clear dependencies between features
    - Mark which features can be developed in parallel [P]
 
@@ -70,7 +70,7 @@ This command analyzes your project (greenfield vs brownfield), identifies requir
    **CRITICAL WORKFLOW RULES - MUST BE ENFORCED**:
    - **Branch Management**: 
      - Always verify current branch before any file operations
-     - Global files (mvp-plan.md, execution-plan.json, specify-request.txt) ONLY on main branch
+  - Global files (orchestration-plan.md, execution-plan.json, specify-request.md) ONLY on main branch
      - Spec files (spec.md, plan.md, tasks.md) ONLY on feature branches
      - Complete each spec fully (specify → plan → tasks) before moving to next
      - Always return to main branch after completing a spec
@@ -89,7 +89,7 @@ This command analyzes your project (greenfield vs brownfield), identifies requir
    **STRICT BRANCH WORKFLOW REQUIREMENTS**:
    - Complete each spec fully (specify → plan → tasks) before moving to next
    - **Branch Management**:
-     - GLOBAL FILES (execution-plan.json, mvp-plan.md, specify-request.txt): 
+  - GLOBAL FILES (execution-plan.json, orchestration-plan.md, specify-request.md): 
        * ALWAYS create/update on main branch ONLY
        * Commit on main after ALL specs complete
      - SPEC FILES (spec.md, plan.md, tasks.md): 
@@ -104,11 +104,37 @@ This command analyzes your project (greenfield vs brownfield), identifies requir
      - branch_name: Prefixed with 'feature/' (e.g., "feature/001-authentication-system")
      - Use next_branch_number from analyze-project-state.sh output
    
-   **Priority Order for Brownfield**:
-   1. **Constitutional Compliance**: Fix gaps violating constitution.md first
-   2. **Complete Incomplete**: Finish any incomplete_features 
-   3. **Missing MVP**: Add any missing MVP functionality
-   4. **Full Product**: Add enhancement features
+   **Priority Order - Breadth-First Level Completion Strategy**:
+   **For Brownfield**:
+   1. **Phase 0 (CRITICAL)**: Constitutional compliance gaps first
+   2. **Phase 1 (Complete)**: Finish incomplete_features 
+   3. **Level 1 (Foundation)**: Complete ALL Level 1 specs (001-XXX through 00N-XXX) to 100% before ANY Level 2 work
+   4. **Level 2 (Secondary)**: Complete ALL Level 2 specs to 100% before ANY Level 3 work 
+   5. **Level 3 (Advanced)**: Advanced/enhancement features
+   
+   **For Greenfield**:
+   1. **Level 1 (Foundation)**: Complete ALL Level 1 specs (001-XXX through 00N-XXX) to 100% before ANY Level 2 work
+   2. **Level 2 (Secondary)**: Complete ALL Level 2 specs to 100% before ANY Level 3 work
+   3. **Level 3 (Advanced)**: Advanced/enhancement features   **CRITICAL LEVEL GATE ENFORCEMENT**:
+   - **Level Gates**: System MUST validate 100% completion of current level before allowing next level work
+   - **No Level Jumping**: Cannot start any Level 2 spec until ALL Level 1 specs reach tasks completion
+   - **Parallel Development**: Multiple specs within SAME level can be worked simultaneously
+   - **Completion Verification**: Check all specs in current level have completed spec → plan → tasks phases
+   - **Auto-Level Detection**: System analyzes dependencies to assign appropriate level automatically
+   
+   **Level Assignment Examples**:
+   ```
+   Level 1 (Foundation): 001-user-auth, 002-core-api, 003-database-schema
+   Level 2 (Secondary): 004-user-profile, 005-payment-system, 006-order-management  
+   Level 3 (Advanced): 007-analytics, 008-ml-recommendations, 009-admin-dashboard
+   ```
+   
+   **Breadth-First Strategy Benefits**:
+   - **Architectural Stability**: Complete foundation before building complex features
+   - **Early Validation**: Test core functionality before investing in advanced features
+   - **Risk Reduction**: Stable base reduces technical debt and integration issues
+   - **Resource Efficiency**: Parallel development within levels, sequential between levels
+   - **Clear Milestones**: Each level completion provides clear product milestone
    
    **Manual Approach - For each feature in dependency order**:
    - **Specify**: Run `/specify` command with feature description
@@ -153,6 +179,7 @@ This command analyzes your project (greenfield vs brownfield), identifies requir
 - **Brownfield Priority**: Constitutional compliance gaps are CRITICAL and must be addressed first
 - **State Awareness**: Always account for existing implementation when planning new features
 - **Incremental Progress**: Build on existing work rather than replacing it
+- **Level-Based Progression**: Follow breadth-first completion - see `specs-numbering-dependencies.md` for detailed level assignment rules
 - **Branch Workflow**: 
   - Always verify branch before file operations
   - Complete each spec fully before moving to next

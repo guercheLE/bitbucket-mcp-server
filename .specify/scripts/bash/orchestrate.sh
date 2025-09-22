@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# MVP to Full Product Orchestrator
+# Project Development Orchestrator
 set -e
 
 JSON_MODE=false
@@ -9,7 +9,7 @@ for arg in "$@"; do
         --json) JSON_MODE=true ;;
         --help|-h) 
             echo "Usage: $0 [--json] <project_description>"
-            echo "Orchestrates MVP to Full Product development workflow"
+            echo "Orchestrates complete project development workflow"
             exit 0 ;;
         *) ARGS+=("$arg") ;;
     esac
@@ -37,36 +37,36 @@ NEXT_BRANCH_NUMBER=$(echo "$PROJECT_STATE_RESULT" | jq -r '.next_branch_number')
 echo "📊 Project type detected: $PROJECT_TYPE" >&2
 echo "🔢 Next branch number: $NEXT_BRANCH_NUMBER" >&2
 
-# Create MVP plan file if it doesn't exist
-MVP_PLAN_FILE="$REPO_ROOT/mvp-plan.md"
-if [ ! -f "$MVP_PLAN_FILE" ]; then
-    if [ -f "$REPO_ROOT/templates/mvp-plan-template.md" ]; then
-        cp "$REPO_ROOT/templates/mvp-plan-template.md" "$MVP_PLAN_FILE"
+# Create orchestration plan file if it doesn't exist
+ORCHESTRATION_PLAN_FILE="$REPO_ROOT/orchestration-plan.md"
+if [ ! -f "$ORCHESTRATION_PLAN_FILE" ]; then
+    if [ -f "$REPO_ROOT/.specify/templates/orchestration-plan-template.md" ]; then
+        cp "$REPO_ROOT/.specify/templates/orchestration-plan-template.md" "$ORCHESTRATION_PLAN_FILE"
     else
-        cat > "$MVP_PLAN_FILE" << 'EOF'
-# MVP to Full Product Plan
+        cat > "$ORCHESTRATION_PLAN_FILE" << 'EOF'
+# Project Orchestration Plan
 
 **Project**: [PROJECT_NAME]
 **Description**: $PROJECT_DESCRIPTION
 
-## MVP Features (Priority 1)
+## Product Features (Priority 1)
 - [ ] Core Feature 1
 - [ ] Core Feature 2
 - [ ] Basic Auth
 
-## Full Product Features (Priority 2)
+## Enhanced Product Features (Priority 2)
 - [ ] Advanced Feature 1
 - [ ] Analytics
 - [ ] Advanced Auth
 
-## Full Product Features (Priority 3)  
+## Enhanced Product Features (Priority 3)  
 - [ ] Premium Features
 - [ ] Integrations
 - [ ] Admin Panel
 
 ## Dependencies
 ```
-MVP Features -> Full Product P2 -> Full Product P3
+Product Features -> Enhanced Product P2 -> Enhanced Product P3
 ```
 
 ## Execution Plan
@@ -85,7 +85,7 @@ cat > "$EXECUTION_PLAN" << EOF
   "project_type": "$PROJECT_TYPE", 
   "next_branch_number": $NEXT_BRANCH_NUMBER,
   "project_state": $PROJECT_STATE_RESULT,
-  "mvp_plan_file": "$MVP_PLAN_FILE",
+  "orchestration_plan_file": "$ORCHESTRATION_PLAN_FILE",
   "specs_directory": "$SPECS_DIR",
   "features": [],
   "dependencies": {},
@@ -107,9 +107,9 @@ cat > "$EXECUTION_PLAN" << EOF
 EOF
 
 if $JSON_MODE; then
-    printf '{"MVP_PLAN_FILE":"%s","EXECUTION_PLAN":"%s","SPECS_DIR":"%s","PROJECT_TYPE":"%s","NEXT_BRANCH_NUMBER":%d,"PROJECT_STATE":%s,"STATUS":"ready_for_analysis"}\n' "$MVP_PLAN_FILE" "$EXECUTION_PLAN" "$SPECS_DIR" "$PROJECT_TYPE" "$NEXT_BRANCH_NUMBER" "$PROJECT_STATE_RESULT"
+    printf '{"ORCHESTRATION_PLAN_FILE":"%s","EXECUTION_PLAN":"%s","SPECS_DIR":"%s","PROJECT_TYPE":"%s","NEXT_BRANCH_NUMBER":%d,"PROJECT_STATE":%s,"STATUS":"ready_for_analysis"}\n' "$ORCHESTRATION_PLAN_FILE" "$EXECUTION_PLAN" "$SPECS_DIR" "$PROJECT_TYPE" "$NEXT_BRANCH_NUMBER" "$PROJECT_STATE_RESULT"
 else
-    echo "MVP_PLAN_FILE: $MVP_PLAN_FILE"
+    echo "ORCHESTRATION_PLAN_FILE: $ORCHESTRATION_PLAN_FILE"
     echo "EXECUTION_PLAN: $EXECUTION_PLAN"
     echo "SPECS_DIR: $SPECS_DIR"
     echo "PROJECT_TYPE: $PROJECT_TYPE"

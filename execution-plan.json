@@ -178,7 +178,7 @@
       ""
     ]
   },
-  "mvp_plan_file": "/Users/lucianoguerche/Documents/GitHub/bitbucket-mcp-server/mvp-plan.md",
+  "orchestration_plan_file": "/Users/lucianoguerche/Documents/GitHub/bitbucket-mcp-server/orchestration-plan.md",
   "specs_directory": "/Users/lucianoguerche/Documents/GitHub/bitbucket-mcp-server/specs",
   "features": [
     {
