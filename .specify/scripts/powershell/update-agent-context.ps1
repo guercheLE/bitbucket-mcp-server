@@ -6,8 +6,8 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = git rev-parse --show-toplevel
 $currentBranch = git rev-parse --abbrev-ref HEAD
 $featureDir = Join-Path $repoRoot "specs/$currentBranch"
-$newPlan = Join-Path $featureDir 'plan.md'
-if (-not (Test-Path $newPlan)) { Write-Error "ERROR: No plan.md found at $newPlan"; exit 1 }
+$newPlan = Join-Path $featureDir 'feature-planning.md'
+if (-not (Test-Path $newPlan)) { Write-Error "ERROR: No feature-planning.md found at $newPlan"; exit 1 }
 
 $claudeFile = Join-Path $repoRoot 'CLAUDE.md'
 $geminiFile = Join-Path $repoRoot 'GEMINI.md'
@@ -39,7 +39,7 @@ function Initialize-AgentFile($targetFile, $agentName) {
     $content = Get-Content $template -Raw
     $content = $content.Replace('[PROJECT NAME]', (Split-Path $repoRoot -Leaf))
     $content = $content.Replace('[DATE]', (Get-Date -Format 'yyyy-MM-dd'))
-    $content = $content.Replace('[EXTRACTED FROM ALL PLAN.MD FILES]', "- $newLang + $newFramework ($currentBranch)")
+    $content = $content.Replace('[EXTRACTED FROM ALL FEATURE-PLANNING.MD FILES]', "- $newLang + $newFramework ($currentBranch)")
     if ($newProjectType -match 'web') { $structure = "backend/`nfrontend/`ntests/" } else { $structure = "src/`ntests/" }
     $content = $content.Replace('[ACTUAL STRUCTURE FROM PLANS]', $structure)
     if ($newLang -match 'Python') { $commands = 'cd src && pytest && ruff check .' }

@@ -76,7 +76,7 @@ Given the context provided as an argument, do this:
     - **CRITICAL GIT FIX**: After checkout, run `git status` to refresh Git working directory cache (primary fix)
     - Optional: Brief delay for filesystem consistency: `sleep 0.05`
     - Verify clean state: `git status --porcelain` (should be empty)
-    - Update global files (execution-plan.json, mvp-plan.md) on main if needed
+    - Update global files (execution-plan.json, orchestration-plan.md) on main if needed
     - Proceed to next feature only after current spec is complete
 
 Context for task generation: $ARGUMENTS

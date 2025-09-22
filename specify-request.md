@@ -16,7 +16,7 @@
 007-pipeline-management (CI/CD pipeline integration)
 
 ## Workflow Rules
-- Global files (mvp-plan.md, execution-plan.json, specify-request.txt) committed on main branch
+- Global files (orchestration-plan.md, execution-plan.json, specify-request.md) committed on main branch
 - Spec files (spec.md, plan.md, tasks.md) committed on feature branch
 - Complete full spec (specify → plan → tasks) before moving to next feature
 - No implementation - only specification, planning, and task breakdown

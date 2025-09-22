@@ -24,10 +24,10 @@ fi
 
 echo "🤖 Detected/Using AI Agent: $AGENT_TYPE" >&2
 FEATURE_DIR="$REPO_ROOT/specs/$CURRENT_BRANCH"
-NEW_PLAN="$FEATURE_DIR/plan.md"
+NEW_PLAN="$FEATURE_DIR/feature-planning.md"
 CLAUDE_FILE="$REPO_ROOT/CLAUDE.md"; GEMINI_FILE="$REPO_ROOT/GEMINI.md"; COPILOT_FILE="$REPO_ROOT/.github/copilot-instructions.md"; CURSOR_FILE="$REPO_ROOT/.cursor/commands/specify-rules.md"; QWEN_FILE="$REPO_ROOT/QWEN.md"; AGENTS_FILE="$REPO_ROOT/AGENTS.md"; WINDSURF_FILE="$REPO_ROOT/.windsurf/rules/specify-rules.md"
 AGENT_TYPE="$1"
-[ -f "$NEW_PLAN" ] || { echo "ERROR: No plan.md found at $NEW_PLAN"; exit 1; }
+[ -f "$NEW_PLAN" ] || { echo "ERROR: No feature-planning.md found at $NEW_PLAN"; exit 1; }
 echo "=== Updating agent context files for feature $CURRENT_BRANCH ==="
 NEW_LANG=$(grep "^\*\*Language/Version\*\*: " "$NEW_PLAN" 2>/dev/null | head -1 | sed 's/^\*\*Language\/Version\*\*: //' | grep -v "NEEDS CLARIFICATION" || echo "")
 NEW_FRAMEWORK=$(grep "^\*\*Primary Dependencies\*\*: " "$NEW_PLAN" 2>/dev/null | head -1 | sed 's/^\*\*Primary Dependencies\*\*: //' | grep -v "NEEDS CLARIFICATION" || echo "")
@@ -35,7 +35,7 @@ NEW_DB=$(grep "^\*\*Storage\*\*: " "$NEW_PLAN" 2>/dev/null | head -1 | sed 's/^\
 NEW_PROJECT_TYPE=$(grep "^\*\*Project Type\*\*: " "$NEW_PLAN" 2>/dev/null | head -1 | sed 's/^\*\*Project Type\*\*: //' || echo "")
 update_agent_file() { local target_file="$1" agent_name="$2"; echo "Updating $agent_name context file: $target_file"; local temp_file=$(mktemp); if [ ! -f "$target_file" ]; then
   echo "Creating new $agent_name context file..."; if [ -f "$REPO_ROOT/.specify/templates/agent-file-template.md" ]; then cp "$REPO_ROOT/.specify/templates/agent-file-template.md" "$temp_file"; else echo "ERROR: Template not found"; return 1; fi;
-  sed -i.bak "s/\[PROJECT NAME\]/$(basename $REPO_ROOT)/" "$temp_file"; sed -i.bak "s/\[DATE\]/$(date +%Y-%m-%d)/" "$temp_file"; sed -i.bak "s/\[EXTRACTED FROM ALL PLAN.MD FILES\]/- $NEW_LANG + $NEW_FRAMEWORK ($CURRENT_BRANCH)/" "$temp_file";
+  sed -i.bak "s/\[PROJECT NAME\]/$(basename $REPO_ROOT)/" "$temp_file"; sed -i.bak "s/\[DATE\]/$(date +%Y-%m-%d)/" "$temp_file"; sed -i.bak "s/\[EXTRACTED FROM ALL FEATURE-PLANNING.MD FILES\]/- $NEW_LANG + $NEW_FRAMEWORK ($CURRENT_BRANCH)/" "$temp_file";
   if [[ "$NEW_PROJECT_TYPE" == *"web"* ]]; then sed -i.bak "s|\[ACTUAL STRUCTURE FROM PLANS\]|backend/\nfrontend/\ntests/|" "$temp_file"; else sed -i.bak "s|\[ACTUAL STRUCTURE FROM PLANS\]|src/\ntests/|" "$temp_file"; fi;
   if [[ "$NEW_LANG" == *"Python"* ]]; then COMMANDS="cd src && pytest && ruff check ."; elif [[ "$NEW_LANG" == *"Rust"* ]]; then COMMANDS="cargo test && cargo clippy"; elif [[ "$NEW_LANG" == *"JavaScript"* ]] || [[ "$NEW_LANG" == *"TypeScript"* ]]; then COMMANDS="npm test && npm run lint"; else COMMANDS="# Add commands for $NEW_LANG"; fi; sed -i.bak "s|\[ONLY COMMANDS FOR ACTIVE TECHNOLOGIES\]|$COMMANDS|" "$temp_file";
   sed -i.bak "s|\[LANGUAGE-SPECIFIC, ONLY FOR LANGUAGES IN USE\]|$NEW_LANG: Follow standard conventions|" "$temp_file"; sed -i.bak "s|\[LAST 3 FEATURES AND WHAT THEY ADDED\]|- $CURRENT_BRANCH: Added $NEW_LANG + $NEW_FRAMEWORK|" "$temp_file"; rm "$temp_file.bak";

@@ -70,7 +70,7 @@ Write-Output "✅ Plan file: $planFile"
 # 4. Generate tasks with dependencies
 Write-Output "📋 Step 4: Generating tasks with dependency management..."
 $featureDir = Split-Path -Parent $specFile
-$tasksFile = Join-Path $featureDir 'tasks.md'
+$tasksFile = Join-Path $featureDir 'task-breakdown.md'
 
 # Copy template and customize
 $templatePath = Join-Path $repoRoot 'templates/tasks-template.md'

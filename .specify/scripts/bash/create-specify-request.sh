@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Create specify-request.txt with branch tracking information
+# Create specify-request.md with branch tracking information
 set -e
 
 FEATURE_DESCRIPTION="$1"
@@ -18,8 +18,8 @@ fi
 PROJECT_STATE_RESULT=$("$REPO_ROOT/.specify/scripts/bash/analyze-project-state.sh" --json)
 NEXT_BRANCH_NUMBER=$(echo "$PROJECT_STATE_RESULT" | jq -r '.next_branch_number')
 
-# Create specify-request.txt
-SPECIFY_REQUEST="$REPO_ROOT/specify-request.txt"
+# Create specify-request.md
+SPECIFY_REQUEST="$REPO_ROOT/specify-request.md"
 cat > "$SPECIFY_REQUEST" << EOF
 # Feature Specification Request
 
@@ -31,7 +31,7 @@ cat > "$SPECIFY_REQUEST" << EOF
 $FEATURE_DESCRIPTION
 
 ## Workflow Rules
-- Global files (mvp-plan.md, execution-plan.json, specify-request.txt) committed on main branch
+- Global files (orchestration-plan.md, execution-plan.json, specify-request.md) committed on main branch
 - Spec files (spec.md, plan.md, tasks.md) committed on feature branch
 - Complete full spec (specify → plan → tasks) before moving to next feature
 - No implementation - only specification, planning, and task breakdown
