@@ -37,6 +37,7 @@ import {
   AuthenticationResponse,
   AuthenticationConfig
 } from '../../types/auth';
+import { BitbucketApiClient } from './bitbucket-api-client';
 
 /**
  * OAuth Manager Class
@@ -456,27 +457,60 @@ export class OAuthManager extends EventEmitter {
   }
 
   private async exchangeCodeWithBitbucket(application: OAuthApplication, code: string): Promise<any> {
-    // This would make an actual HTTP request to Bitbucket
-    // For now, we'll simulate the response
-    return {
-      access_token: this.generateAccessToken(),
-      token_type: 'Bearer',
-      expires_in: 3600,
-      refresh_token: this.generateRefreshToken(),
-      scope: application.scopes.join(' '),
-      user_id: 'user123'
-    };
+    const apiClient = new BitbucketApiClient(application.baseUrl, application.instanceType);
+    
+    try {
+      const response = await apiClient.exchangeCodeForToken(
+        application.clientId,
+        application.clientSecret,
+        code,
+        application.redirectUri
+      );
+      
+      return response;
+    } catch (error) {
+      // Re-throw authentication errors as-is
+      if (error instanceof AuthenticationError) {
+        throw error;
+      }
+      
+      // Wrap other errors
+      throw new AuthenticationError({
+        code: AuthenticationErrorCode.NETWORK_ERROR,
+        message: `Failed to exchange code with Bitbucket: ${error.message}`,
+        details: { originalError: error.message },
+        timestamp: new Date(),
+        isRecoverable: true
+      });
+    }
   }
 
   private async refreshTokenWithBitbucket(application: OAuthApplication, refreshToken: string): Promise<any> {
-    // This would make an actual HTTP request to Bitbucket
-    // For now, we'll simulate the response
-    return {
-      access_token: this.generateAccessToken(),
-      token_type: 'Bearer',
-      expires_in: 3600,
-      scope: application.scopes.join(' ')
-    };
+    const apiClient = new BitbucketApiClient(application.baseUrl, application.instanceType);
+    
+    try {
+      const response = await apiClient.refreshAccessToken(
+        application.clientId,
+        application.clientSecret,
+        refreshToken
+      );
+      
+      return response;
+    } catch (error) {
+      // Re-throw authentication errors as-is
+      if (error instanceof AuthenticationError) {
+        throw error;
+      }
+      
+      // Wrap other errors
+      throw new AuthenticationError({
+        code: AuthenticationErrorCode.NETWORK_ERROR,
+        message: `Failed to refresh token with Bitbucket: ${error.message}`,
+        details: { originalError: error.message },
+        timestamp: new Date(),
+        isRecoverable: true
+      });
+    }
   }
 
   private async getRefreshToken(tokenId: string): Promise<RefreshToken | null> {

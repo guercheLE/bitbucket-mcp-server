@@ -37,6 +37,7 @@ import {
 } from '../../types/auth';
 import { OAuthManager } from './oauth-manager';
 import { SessionManager } from './session-manager';
+import { BitbucketApiClient } from './bitbucket-api-client';
 
 /**
  * Authentication Manager Class
@@ -421,15 +422,44 @@ export class AuthenticationManager extends EventEmitter {
   }
 
   private async getUserInfo(accessToken: string): Promise<any> {
-    // This would make an actual API call to Bitbucket to get user info
-    // For now, return mock data
-    return {
-      id: 'user123',
-      name: 'Test User',
-      email: 'test@example.com',
-      userAgent: 'MCP-Client/1.0',
-      sourceIp: '127.0.0.1'
-    };
+    try {
+      // Get the current application to determine instance type and base URL
+      const currentApp = this.state.applications[0]; // For now, use first app
+      if (!currentApp) {
+        throw new AuthenticationError({
+          code: AuthenticationErrorCode.APPLICATION_NOT_FOUND,
+          message: 'No OAuth application configured',
+          timestamp: new Date(),
+          isRecoverable: false
+        });
+      }
+
+      const apiClient = new BitbucketApiClient(currentApp.baseUrl, currentApp.instanceType);
+      const userInfo = await apiClient.getUserInfo(accessToken);
+      
+      return {
+        id: userInfo.id,
+        name: userInfo.name,
+        email: userInfo.email,
+        username: userInfo.username,
+        avatar: userInfo.avatar,
+        accountId: userInfo.accountId,
+        userAgent: 'MCP-Client/1.0',
+        sourceIp: '127.0.0.1'
+      };
+    } catch (error) {
+      if (error instanceof AuthenticationError) {
+        throw error;
+      }
+      
+      throw new AuthenticationError({
+        code: AuthenticationErrorCode.NETWORK_ERROR,
+        message: `Failed to get user information: ${error.message}`,
+        details: { originalError: error.message },
+        timestamp: new Date(),
+        isRecoverable: true
+      });
+    }
   }
 
   private getApplicationIdFromState(state: string): string {
