@@ -28,6 +28,7 @@ import {
   MCPErrorCode
 } from '../types/index';
 import { MCPServerLogger, LogCategory } from './logger';
+import { ClientSession as ClientSessionImpl } from './client-session';
 import { createMCPError, handleTransportError } from './error-handler';
 
 /**
@@ -166,41 +167,13 @@ export class ConnectionManager extends EventEmitter {
     }
 
     const sessionId = this.generateSessionId(clientId);
-    const session: ClientSession = {
-      id: sessionId,
+    const session = new ClientSessionImpl(
+      sessionId,
       clientId,
-      state: ClientSessionState.CONNECTING,
       transport,
-      createdAt: new Date(),
-      lastActivity: new Date(),
-      metadata: {},
-      availableTools: new Set(),
-      timeout: this.config.defaultTimeout,
-      
-      updateActivity: () => {
-        session.lastActivity = new Date();
-      },
-      
-      isActive: () => {
-        return session.state === ClientSessionState.CONNECTED || 
-               session.state === ClientSessionState.AUTHENTICATED;
-      },
-      
-      isExpired: () => {
-        const now = new Date();
-        const timeSinceActivity = now.getTime() - session.lastActivity.getTime();
-        return timeSinceActivity > session.timeout;
-      },
-      
-      getStats: () => ({
-        duration: new Date().getTime() - session.createdAt.getTime(),
-        requestsProcessed: 0,
-        toolsCalled: 0,
-        averageProcessingTime: 0,
-        memoryUsage: 0,
-        lastRequest: session.lastActivity
-      })
-    };
+      this.config.defaultTimeout,
+      {}
+    );
 
     this.sessions.set(sessionId, session);
     this.updateStats();

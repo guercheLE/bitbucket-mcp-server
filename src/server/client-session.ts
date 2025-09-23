@@ -453,6 +453,20 @@ export class ClientSession extends EventEmitter implements IClientSession {
            `Requests[${stats.requestsProcessed}] Tools[${stats.toolsCalled}] ` +
            `Memory[${Math.round(stats.memoryUsage / 1024)}KB]`;
   }
+
+  /**
+   * Update metadata
+   */
+  updateMetadata(key: string, value: any): void {
+    this._metadata[key] = value;
+  }
+
+  /**
+   * Update state
+   */
+  updateState(state: ClientSessionState): void {
+    this._state = state;
+  }
 }
 
 /**

@@ -194,7 +194,7 @@ export enum ClientSessionState {
  * Client Session Information
  * Manages individual client connection state and metadata
  */
-export interface ClientSession {
+export interface ClientSession extends EventEmitter {
   /** Unique session identifier */
   readonly id: string;
   
@@ -263,6 +263,12 @@ export interface ClientSession {
   
   /** Get session summary for logging */
   getSummary(): string;
+  
+  /** Update metadata */
+  updateMetadata(key: string, value: any): void;
+  
+  /** Update state */
+  updateState(state: ClientSessionState): void;
 }
 
 /**
