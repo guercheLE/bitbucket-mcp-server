@@ -36,8 +36,9 @@ import {
   MCPErrorCode,
   ProtocolMessage,
   ServerEvents
-} from '../types/index.js';
-import { ClientSession as ClientSessionImpl, SessionManager } from './client-session.js';
+} from '../types/index';
+import { ClientSession as ClientSessionImpl, SessionManager } from './client-session';
+import { ToolRegistry } from './tool-registry';
 
 /**
  * MCP Server Implementation
@@ -48,7 +49,7 @@ export class MCPServer extends EventEmitter implements IMCPServer {
   private _isRunning: boolean = false;
   private _startTime: Date | null = null;
   private _sessions: Map<string, ClientSession> = new Map();
-  private _tools: Map<string, Tool> = new Map();
+  private _toolRegistry: ToolRegistry;
   private _transports: Map<TransportType, Transport> = new Map();
   private _cleanupInterval: NodeJS.Timeout | null = null;
   private _stats: {
@@ -69,6 +70,14 @@ export class MCPServer extends EventEmitter implements IMCPServer {
       totalResponseTime: 0
     };
 
+    // Initialize tool registry
+    this._toolRegistry = new ToolRegistry({
+      validateParameters: true,
+      trackStatistics: true,
+      allowOverwrite: false,
+      maxTools: 1000
+    });
+
     // Set up event handlers
     this._setupEventHandlers();
   }
@@ -86,7 +95,11 @@ export class MCPServer extends EventEmitter implements IMCPServer {
   }
 
   get tools(): Map<string, Tool> {
-    return new Map(this._tools);
+    return new Map(this._toolRegistry.getAvailableTools().map(tool => [tool.name, tool]));
+  }
+
+  get toolRegistry(): ToolRegistry {
+    return this._toolRegistry;
   }
 
   get sessions(): Map<string, ClientSession> {
@@ -308,24 +321,23 @@ export class MCPServer extends EventEmitter implements IMCPServer {
    * Register a tool
    */
   async registerTool(tool: Tool): Promise<void> {
-    if (this._tools.has(tool.name)) {
-      throw new Error(`Tool ${tool.name} is already registered`);
-    }
+    try {
+      // Use tool registry for registration
+      await this._toolRegistry.registerTool(tool);
+      
+      this.emit('tool:registered', tool);
+      this._log('info', `Tool registered: ${tool.name}`);
 
-    // Validate tool name (snake_case, no prefixes)
-    if (!this._validateToolName(tool.name)) {
-      throw new Error(`Invalid tool name: ${tool.name}. Must be snake_case with no prefixes`);
-    }
-
-    this._tools.set(tool.name, tool);
-    this.emit('tool:registered', tool);
-    this._log('info', `Tool registered: ${tool.name}`);
-
-    // Add tool to all active sessions
-    for (const session of this._sessions.values()) {
-      if (session.isActive()) {
-        session.addTool(tool.name);
+      // Add tool to all active sessions
+      for (const session of this._sessions.values()) {
+        if (session.isActive()) {
+          session.addTool(tool.name);
+        }
       }
+    } catch (error) {
+      this.emit('tool:registrationError', tool.name, error);
+      this._log('error', `Failed to register tool: ${tool.name}`, error);
+      throw error;
     }
   }
 
@@ -333,19 +345,25 @@ export class MCPServer extends EventEmitter implements IMCPServer {
    * Unregister a tool
    */
   async unregisterTool(toolName: string): Promise<void> {
-    if (!this._tools.has(toolName)) {
-      return; // Tool not found
-    }
+    try {
+      // Use tool registry for unregistration
+      const removed = await this._toolRegistry.unregisterTool(toolName);
+      
+      if (removed) {
+        this.emit('tool:unregistered', toolName);
+        this._log('info', `Tool unregistered: ${toolName}`);
 
-    this._tools.delete(toolName);
-    this.emit('tool:unregistered', toolName);
-    this._log('info', `Tool unregistered: ${toolName}`);
-
-    // Remove tool from all active sessions
-    for (const session of this._sessions.values()) {
-      if (session.isActive()) {
-        session.removeTool(toolName);
+        // Remove tool from all active sessions
+        for (const session of this._sessions.values()) {
+          if (session.isActive()) {
+            session.removeTool(toolName);
+          }
+        }
       }
+    } catch (error) {
+      this.emit('tool:unregistrationError', toolName, error);
+      this._log('error', `Failed to unregister tool: ${toolName}`, error);
+      throw error;
     }
   }
 
@@ -353,7 +371,56 @@ export class MCPServer extends EventEmitter implements IMCPServer {
    * Get available tools
    */
   getAvailableTools(): Tool[] {
-    return Array.from(this._tools.values()).filter(tool => tool.enabled);
+    return this._toolRegistry.getAvailableTools();
+  }
+
+  /**
+   * Get tool by name
+   */
+  getTool(toolName: string): Tool | undefined {
+    return this._toolRegistry.getTool(toolName);
+  }
+
+  /**
+   * Get tools by category
+   */
+  getToolsByCategory(category: string): Tool[] {
+    return this._toolRegistry.getToolsByCategory(category);
+  }
+
+  /**
+   * Search tools
+   */
+  searchTools(query: string): Tool[] {
+    return this._toolRegistry.searchTools(query);
+  }
+
+  /**
+   * Get tool statistics
+   */
+  getToolStats(toolName: string) {
+    return this._toolRegistry.getToolStats(toolName);
+  }
+
+  /**
+   * Get registry statistics
+   */
+  getRegistryStats() {
+    return this._toolRegistry.getRegistryStats();
+  }
+
+  /**
+   * Enable a tool
+   */
+  enableTool(toolName: string): boolean {
+    return this._toolRegistry.enableTool(toolName);
+  }
+
+  /**
+   * Disable a tool
+   */
+  disableTool(toolName: string): boolean {
+    return this._toolRegistry.disableTool(toolName);
   }
 
   /**
@@ -369,9 +436,9 @@ export class MCPServer extends EventEmitter implements IMCPServer {
         throw new Error(`Invalid or inactive session: ${sessionId}`);
       }
 
-      // Get tool
-      const tool = this._tools.get(toolName);
-      if (!tool || !tool.enabled) {
+      // Get tool from registry
+      const tool = this._toolRegistry.getTool(toolName);
+      if (!tool) {
         throw new Error(`Tool not found or disabled: ${toolName}`);
       }
 
@@ -384,8 +451,8 @@ export class MCPServer extends EventEmitter implements IMCPServer {
       this._stats.totalRequests++;
       session.recordRequest(0); // Will be updated after execution
 
-      // Execute tool
-      const result = await tool.execute(params, {
+      // Execute tool using registry
+      const result = await this._toolRegistry.executeTool(toolName, params, {
         session,
         server: this,
         request: {
@@ -486,7 +553,7 @@ export class MCPServer extends EventEmitter implements IMCPServer {
       components: {
         server: this._isRunning,
         transports: transportHealth,
-        tools: this._tools.size > 0,
+        tools: this._toolRegistry.getAvailableTools().length > 0,
         memory: memoryUsage < memoryLimit,
         sessions: activeSessions <= maxSessions
       },
@@ -698,16 +765,6 @@ export class MCPServer extends EventEmitter implements IMCPServer {
     return stats;
   }
 
-  /**
-   * Validate tool name
-   */
-  private _validateToolName(name: string): boolean {
-    // Must be snake_case with no prefixes (bitbucket_, mcp_, bb_)
-    const snakeCaseRegex = /^[a-z][a-z0-9_]*[a-z0-9]$/;
-    const hasPrefix = name.startsWith('bitbucket_') || name.startsWith('mcp_') || name.startsWith('bb_');
-    
-    return snakeCaseRegex.test(name) && !hasPrefix;
-  }
 
   /**
    * Log message

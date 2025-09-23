@@ -32,7 +32,7 @@ import {
   MCPServer,
   Tool,
   ApiResponse
-} from '../types/index.js';
+} from '../types/index';
 
 /**
  * Message Handler Statistics

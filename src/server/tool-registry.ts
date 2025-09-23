@@ -32,7 +32,7 @@ import {
   ToolExecutionContext,
   ToolResult,
   MCPErrorCode
-} from '../types/index.js';
+} from '../types/index';
 
 /**
  * Tool Registry Statistics
