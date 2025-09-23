@@ -94,6 +94,42 @@ export interface OAuthApplicationRequest {
 // ============================================================================
 
 /**
+ * Token Storage Configuration
+ * Configuration for token storage backends
+ */
+export interface TokenStorageConfig {
+  /** Storage backend type */
+  type: 'memory' | 'file' | 'database';
+  
+  /** Encryption key for token storage */
+  encryptionKey?: string;
+  
+  /** Storage-specific configuration */
+  options?: Record<string, any>;
+}
+
+/**
+ * Token Validation Result
+ * Result of token validation operation
+ */
+export interface TokenValidationResult {
+  /** Whether the token is valid */
+  isValid: boolean;
+  
+  /** Token expiration date */
+  expiresAt: Date;
+  
+  /** Time until expiration in milliseconds */
+  timeUntilExpiration: number;
+  
+  /** Whether token needs refresh */
+  needsRefresh: boolean;
+  
+  /** Validation timestamp */
+  validatedAt: Date;
+}
+
+/**
  * Access Token Information
  * Short-lived token used for API requests
  */
