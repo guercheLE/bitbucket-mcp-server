@@ -41,7 +41,14 @@ import {
   Tool as CustomTool,
   TransportType,
   MCPErrorCode
-} from '../types/index.js';
+} from '../types/index';
+import { 
+  MCPErrorHandler, 
+  createMCPError, 
+  handleToolError,
+  handleTransportError,
+  ErrorContext
+} from './error-handler.js';
 
 /**
  * MCP Server with Official SDK Integration
@@ -88,9 +95,19 @@ export class MCPServerSDK extends Server implements MCPServer {
     });
 
     this.setRequestHandler(CallToolRequestSchema, async (request) => {
+      const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       const tool = this.registeredTools.get(request.params.name);
       if (!tool) {
-        throw new Error(`Tool '${request.params.name}' not found`);
+        const errorResponse = createMCPError(
+          requestId,
+          MCPErrorCode.TOOL_NOT_FOUND,
+          `Tool '${request.params.name}' not found`,
+          {
+            operation: 'tool_call',
+            metadata: { toolName: request.params.name }
+          }
+        );
+        throw new Error(JSON.stringify(errorResponse));
       }
 
       try {
@@ -122,7 +139,7 @@ export class MCPServerSDK extends Server implements MCPServer {
           session: mockSession,
           server: this.customServer,
           request: {
-            id: request.id || 'sdk-request',
+            id: requestId,
             timestamp: new Date(),
             transport: 'stdio' as TransportType
           },
@@ -142,7 +159,19 @@ export class MCPServerSDK extends Server implements MCPServer {
           }]
         };
       } catch (error) {
-        throw new Error(`Tool execution failed: ${error.message}`);
+        const errorResponse = handleToolError(
+          requestId,
+          request.params.name,
+          error as Error,
+          {
+            operation: 'tool_execution',
+            metadata: { 
+              toolName: request.params.name,
+              arguments: request.params.arguments 
+            }
+          }
+        );
+        throw new Error(JSON.stringify(errorResponse));
       }
     });
 
@@ -153,9 +182,19 @@ export class MCPServerSDK extends Server implements MCPServer {
     });
 
     this.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+      const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       const resource = this.registeredResources.get(request.params.uri);
       if (!resource) {
-        throw new Error(`Resource '${request.params.uri}' not found`);
+        const errorResponse = createMCPError(
+          requestId,
+          MCPErrorCode.RESOURCE_NOT_FOUND,
+          `Resource '${request.params.uri}' not found`,
+          {
+            operation: 'resource_read',
+            metadata: { resourceUri: request.params.uri }
+          }
+        );
+        throw new Error(JSON.stringify(errorResponse));
       }
 
       return {
@@ -174,9 +213,19 @@ export class MCPServerSDK extends Server implements MCPServer {
     });
 
     this.setRequestHandler(GetPromptRequestSchema, async (request) => {
+      const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       const prompt = this.registeredPrompts.get(request.params.name);
       if (!prompt) {
-        throw new Error(`Prompt '${request.params.name}' not found`);
+        const errorResponse = createMCPError(
+          requestId,
+          MCPErrorCode.RESOURCE_NOT_FOUND,
+          `Prompt '${request.params.name}' not found`,
+          {
+            operation: 'prompt_get',
+            metadata: { promptName: request.params.name }
+          }
+        );
+        throw new Error(JSON.stringify(errorResponse));
       }
 
       return {
@@ -191,16 +240,29 @@ export class MCPServerSDK extends Server implements MCPServer {
    * Integrates custom tools with the official SDK
    */
   async registerTool(tool: CustomTool): Promise<void> {
-    // Validate tool name (snake_case, no prefixes)
-    this.validateToolName(tool.name);
-    
-    // Register with custom server
-    await this.customServer.registerTool(tool);
-    
-    // Register with SDK
-    this.registeredTools.set(tool.name, tool);
-    
-    console.log(`Tool registered with MCP SDK: ${tool.name}`);
+    try {
+      // Validate tool name (snake_case, no prefixes)
+      this.validateToolName(tool.name);
+      
+      // Register with custom server
+      await this.customServer.registerTool(tool);
+      
+      // Register with SDK
+      this.registeredTools.set(tool.name, tool);
+      
+      console.log(`Tool registered with MCP SDK: ${tool.name}`);
+    } catch (error) {
+      const errorResponse = createMCPError(
+        null,
+        MCPErrorCode.TOOL_EXECUTION_FAILED,
+        `Failed to register tool '${tool.name}': ${(error as Error).message}`,
+        {
+          operation: 'tool_registration',
+          metadata: { toolName: tool.name }
+        }
+      );
+      throw new Error(JSON.stringify(errorResponse));
+    }
   }
 
   /**
