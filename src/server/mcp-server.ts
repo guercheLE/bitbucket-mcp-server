@@ -39,6 +39,7 @@ import {
 } from '../types/index';
 import { ClientSession as ClientSessionImpl, SessionManager } from './client-session';
 import { ToolRegistry } from './tool-registry';
+import { PerformanceMonitor, PerformanceMonitorConfig, DEFAULT_PERFORMANCE_CONFIG } from './performance-monitor';
 
 /**
  * MCP Server Implementation
@@ -58,6 +59,7 @@ export class MCPServer extends EventEmitter implements IMCPServer {
     totalErrors: number;
     totalResponseTime: number;
   };
+  private _performanceMonitor: PerformanceMonitor;
 
   constructor(config: ServerConfig) {
     super();
@@ -77,6 +79,20 @@ export class MCPServer extends EventEmitter implements IMCPServer {
       allowOverwrite: false,
       maxTools: 1000
     });
+
+    // Initialize performance monitor
+    const performanceConfig: PerformanceMonitorConfig = {
+      ...DEFAULT_PERFORMANCE_CONFIG,
+      memoryLimit: config.memoryLimit,
+      responseTimeThreshold: 2000, // 2 seconds constitutional requirement
+      errorRateThreshold: 0.1, // 10% error rate threshold
+      sessionCountThreshold: config.maxClients,
+      enableDetailedLogging: config.logging.level === 'debug',
+      enableAlerts: true
+    };
+    
+    this._performanceMonitor = new PerformanceMonitor(performanceConfig);
+    this._setupPerformanceMonitorEvents();
 
     // Set up event handlers
     this._setupEventHandlers();
@@ -155,6 +171,9 @@ export class MCPServer extends EventEmitter implements IMCPServer {
       // Start cleanup monitoring
       this._startCleanupMonitoring();
 
+      // Start performance monitoring
+      this._performanceMonitor.start();
+
       this._isRunning = true;
       this._startTime = new Date();
       
@@ -180,6 +199,9 @@ export class MCPServer extends EventEmitter implements IMCPServer {
 
       // Stop cleanup monitoring
       this._stopCleanupMonitoring();
+
+      // Stop performance monitoring
+      this._performanceMonitor.stop();
 
       // Disconnect all client sessions
       await this._disconnectAllSessions();
@@ -569,6 +591,41 @@ export class MCPServer extends EventEmitter implements IMCPServer {
   }
 
   /**
+   * Get performance metrics
+   */
+  getPerformanceMetrics() {
+    return this._performanceMonitor.getCurrentMetrics();
+  }
+
+  /**
+   * Get performance alerts
+   */
+  getPerformanceAlerts() {
+    return this._performanceMonitor.getAlerts();
+  }
+
+  /**
+   * Get performance history
+   */
+  getPerformanceHistory(limit?: number) {
+    return this._performanceMonitor.getMetricsHistory(limit);
+  }
+
+  /**
+   * Check if server is constitutionally compliant
+   */
+  isConstitutionalCompliant(): boolean {
+    return this._performanceMonitor.isConstitutionalCompliant();
+  }
+
+  /**
+   * Get performance health status
+   */
+  getPerformanceHealthStatus() {
+    return this._performanceMonitor.getPerformanceHealthStatus();
+  }
+
+  /**
    * Validate server configuration
    */
   async validateConfig(): Promise<boolean> {
@@ -602,6 +659,20 @@ export class MCPServer extends EventEmitter implements IMCPServer {
   // ============================================================================
   // Private Methods
   // ============================================================================
+
+  /**
+   * Set up performance monitor event handlers
+   */
+  private _setupPerformanceMonitorEvents(): void {
+    this._performanceMonitor.on('alert:generated', (alert) => {
+      this.emit('performance:alert', alert);
+      this._log('warn', `Performance alert: ${alert.message}`, alert);
+    });
+
+    this._performanceMonitor.on('metrics:collected', (metrics) => {
+      this.emit('performance:metrics', metrics);
+    });
+  }
 
   /**
    * Set up event handlers
