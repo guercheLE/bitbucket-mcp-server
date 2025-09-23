@@ -78,6 +78,8 @@ tests/
 ### Core Tool Pattern
 The Bitbucket MCP server MUST implement a 3-tool semantic discovery pattern to efficiently manage 200+ Bitbucket API endpoints across both Data Center and Cloud versions:
 
+**CRITICAL ARCHITECTURE REQUIREMENT**: Only these 3 tools are registered as public MCP tools. All other Bitbucket functionality is accessed indirectly through these tools.
+
 #### 🔍 search-ids(query: string) → List[EndpointSummary]
 - **Purpose**: Semantic search across Bitbucket API operations and documentation
 - **Implementation**: Vector database (embedded solution for Node.js) for embedding search
@@ -125,11 +127,75 @@ The Bitbucket MCP server MUST implement a 3-tool semantic discovery pattern to e
 - **Rate Limiting Integration**: Built-in awareness of Bitbucket API rate limits per endpoint
 
 ### Integration with Bitbucket Operations
-- All Bitbucket capabilities (repository management, pull requests, user administration, etc.) MUST be accessible through the 3-tool pattern
-- Legacy direct API tools MAY be maintained for backward compatibility but are DEPRECATED
+- **ALL** Bitbucket capabilities (repository management, pull requests, user administration, etc.) MUST be accessible **EXCLUSIVELY** through the 3-tool pattern
+- **NO** direct tool registration for specific operations (repository management, pull requests, etc.)
+- Only `search-ids`, `get-id`, and `call-id` are registered as public MCP tools
+- Legacy direct tool access is **PROHIBITED** - all functionality goes through semantic discovery
 - Console client MUST support both direct commands and semantic discovery workflow
 - Documentation MUST include examples of semantic discovery for common Bitbucket administration tasks
 - Multi-version support MUST be maintained through the semantic discovery interface
+
+### MCP Tool Naming Conventions
+All MCP tools MUST follow standardized naming patterns for consistency and cross-platform compatibility:
+
+#### Universal Naming Rules
+- **Primary Pattern**: `kebab-case` for maximum cross-platform compatibility
+- **Namespace Pattern**: `namespace.action` for grouping related tools (e.g., `bitbucket.list-repos`, `bitbucket.create-pr`)
+- **Avoid**: PascalCase, camelCase, SCREAMING_CASE, or overly verbose names
+- **Language Neutral**: Tool names must work regardless of server implementation language
+
+#### Mandatory Tool Naming Examples
+```typescript
+// ✅ Semantic Discovery Pattern (REQUIRED)
+"search-ids"     // Find operations by natural language query
+"get-id"         // Get detailed operation schema
+"call-id"        // Execute operation with validation
+
+// ✅ Bitbucket API Operations (Namespaced)
+"bitbucket.list-repos"        // List repositories in project
+"bitbucket.create-pr"         // Create pull request
+"bitbucket.get-user"          // Get user information
+"bitbucket.manage-webhooks"   // Manage repository webhooks
+
+// ✅ Administrative Operations
+"admin.backup-config"         // Backup server configuration
+"admin.health-check"          // Server health monitoring
+"admin.user-management"       // User administration
+
+// ❌ Avoid These Patterns
+"BitbucketListRepos"          // PascalCase breaks convention
+"getUserData"                 // camelCase not MCP standard
+"do_bitbucket_operation"      // snake_case/verbose
+"API_CALL"                    // SCREAMING_CASE not readable
+```
+
+#### File Organization Standards
+File names MUST match operation names for internal organization (these are NOT registered as separate MCP tools):
+```
+tools/
+├── search-ids.ts              # Contains search-ids tool (PUBLIC MCP TOOL)
+├── get-id.ts                  # Contains get-id tool (PUBLIC MCP TOOL)
+├── call-id.ts                 # Contains call-id tool (PUBLIC MCP TOOL)
+├── operations/                # Internal operation implementations (NOT registered as tools)
+│   ├── bitbucket/
+│   │   ├── list-repos.ts          # Internal: bitbucket.list-repos operation
+│   │   ├── create-pr.ts           # Internal: bitbucket.create-pr operation
+│   │   └── get-user.ts            # Internal: bitbucket.get-user operation
+│   └── admin/
+│       ├── backup-config.ts       # Internal: admin.backup-config operation
+│       └── health-check.ts        # Internal: admin.health-check operation
+```
+
+#### Tool Registration Requirements
+- **ONLY** the semantic discovery pattern tools MUST be registered as public MCP tools:
+  - `search-ids` (semantic search for Bitbucket operations)
+  - `get-id` (get detailed operation schema)
+  - `call-id` (execute operation with validation)
+- **ALL OTHER** Bitbucket functionality (repository management, pull requests, user administration, etc.) MUST be accessible **INDIRECTLY** through the 3-tool pattern
+- Direct tool registration for specific operations (e.g., `bitbucket.list-repos`, `bitbucket.create-pr`, `admin.user-management`) is **PROHIBITED**
+- Tool descriptions MUST be concise but descriptive
+- Tool schemas MUST use Zod validation integrated with MCP SDK
+- Bitbucket operation schemas MUST include version compatibility metadata
 
 ## Quality and Testing
 
