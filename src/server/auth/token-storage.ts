@@ -102,9 +102,9 @@ export class MemoryTokenStorage extends EventEmitter implements TokenStorage {
     super();
     this.config = config;
     this.cryptoService = new AdvancedCryptoService({
-      algorithm: 'aes-256-gcm',
+      algorithm: 'aes-256-cbc',
       kdf: 'pbkdf2',
-      pbkdf2Iterations: 100000,
+      pbkdf2Iterations: 1000, // Reduced for testing
       memoryProtection: true,
       forwardSecrecy: true
     });

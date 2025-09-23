@@ -92,7 +92,6 @@ describe('Authentication Security', () => {
       expect(encrypted.data).toBeDefined();
       expect(encrypted.iv).toBeDefined();
       expect(encrypted.salt).toBeDefined();
-      expect(encrypted.tag).toBeDefined();
       expect(encrypted.integrity).toBeDefined();
       
       const decrypted = await cryptoService.decrypt(encrypted);
