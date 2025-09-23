@@ -19,6 +19,11 @@ export { MCPAuthIntegration } from './mcp-auth-integration';
 export { MCPAuthMiddleware } from './mcp-auth-middleware';
 export { MCPServerAuthIntegration } from './mcp-server-auth-integration';
 
+// Export Bitbucket API integration classes
+export { BitbucketAuthenticatedClient, BitbucketAPIConfig } from './bitbucket-authenticated-client';
+export { BitbucketAPIManager, BitbucketInstanceConfig } from './bitbucket-api-manager';
+export { BitbucketToolsIntegration } from './bitbucket-tools-integration';
+
 // Export authentication types
 export * from '../../types/auth';
 
