@@ -314,7 +314,9 @@ cmd_finalize_implementation() {
     sync_back_to_original
     
     echo "{\"status\": \"success\", \"feature_id\": \"$feature_id\"}"
-}# --- Main Command Router ---
+}
+
+# --- Main Command Router ---
 
 # Parse global options first
 remaining_args=$(parse_global_options "$@")
