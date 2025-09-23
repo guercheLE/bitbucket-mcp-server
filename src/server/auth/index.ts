@@ -35,6 +35,16 @@ export { AuthAuditLogger, AuditEvent, AuditEventType, AuditSeverity, AuditConfig
 export { RateLimiter, RateLimitRule, RateLimitResult, RateLimitConfig, RateLimitStats, RateLimitAlgorithm, RateLimitScope } from './rate-limiter';
 export { SecurityHeadersManager, SecurityHeadersConfig, CorsConfig, CspConfig, SecurityHeaderType } from './security-headers';
 
+// Export error handling classes
+export { 
+  AuthenticationErrorHandler, 
+  ErrorRecoveryStrategy, 
+  ErrorRecoveryConfig, 
+  ErrorRecoveryResult, 
+  UserFriendlyError, 
+  FallbackAuthMethod 
+} from './auth-error-handler';
+
 // Export authentication types
 export * from '../../types/auth';
 
