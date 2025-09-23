@@ -25,11 +25,11 @@
  * - Error handling and logging
  */
 
-import { MCPServerImpl } from './mcp-server.js';
+import { MCPServer } from './mcp-server.js';
 import { MCPServerSDK, createMCPServerWithSDK, createTransport } from './mcp-server-sdk.js';
 import { MCPServerLogger, createLoggerFromConfig, LogCategory } from './logger.js';
 import { ConnectionManager, createConnectionManager } from './connection-manager.js';
-import { ClientSessionManager } from './client-session.js';
+import { SessionManager } from './client-session.js';
 import { ToolRegistry } from './tool-registry.js';
 import { TransportFactory } from './transport-factory.js';
 import { ProtocolMessageHandler } from './protocol-handler.js';
@@ -47,11 +47,11 @@ import {
  * and provides the entry point for the MCP server.
  */
 export class MCPServerApplication {
-  private server: MCPServerImpl;
+  private server: MCPServer;
   private sdkServer: MCPServerSDK;
   private logger: MCPServerLogger;
   private connectionManager: ConnectionManager;
-  private sessionManager: ClientSessionManager;
+  private sessionManager: any; // SessionManager is static, will use directly
   private toolRegistry: ToolRegistry;
   private transportFactory: TransportFactory;
   private messageHandler: ProtocolMessageHandler;
@@ -69,10 +69,7 @@ export class MCPServerApplication {
     this.connectionManager = createConnectionManager(this.config, this.logger);
     
     // Initialize components
-    this.sessionManager = new ClientSessionManager(
-      this.config.maxClients,
-      this.config.clientTimeout
-    );
+    this.sessionManager = null; // SessionManager is static
     
     this.toolRegistry = new ToolRegistry({
       validateParameters: this.config.tools.validationEnabled,
@@ -97,7 +94,7 @@ export class MCPServerApplication {
       enableNotifications: true
     });
     
-    this.server = new MCPServerImpl(this.config);
+    this.server = new MCPServer(this.config);
     
     // Initialize SDK server (will be created in start method)
     this.sdkServer = null as any;
@@ -160,7 +157,7 @@ export class MCPServerApplication {
       console.log(`🛠️  Tools registered: ${this.toolRegistry.getAvailableTools().length}`);
       
     } catch (error) {
-      console.error('❌ Failed to start MCP server:', error.message);
+      console.error('❌ Failed to start MCP server:', error instanceof Error ? error.message : String(error));
       throw error;
     }
   }
@@ -187,7 +184,7 @@ export class MCPServerApplication {
       // Shutdown components
       await this.connectionManager.shutdown();
       await this.transportFactory.shutdown();
-      await this.sessionManager.shutdown();
+      // SessionManager is static, no shutdown needed
       
       // Mark as stopped
       this.isRunning = false;
@@ -195,7 +192,7 @@ export class MCPServerApplication {
       console.log('✅ Bitbucket MCP Server stopped successfully');
       
     } catch (error) {
-      console.error('❌ Error stopping MCP server:', error.message);
+      console.error('❌ Error stopping MCP server:', error instanceof Error ? error.message : String(error));
       throw error;
     }
   }
@@ -222,7 +219,7 @@ export class MCPServerApplication {
       },
       server: this.server.getHealthStatus(),
       connectionManager: this.connectionManager.getStats(),
-      sessionManager: this.sessionManager.getStats(),
+      sessionManager: { activeSessions: 0 }, // SessionManager is static
       toolRegistry: this.toolRegistry.getRegistryStats(),
       transportFactory: this.transportFactory.getStats(),
       messageHandler: this.messageHandler.getStats()
@@ -235,15 +232,11 @@ export class MCPServerApplication {
    */
   async createSession(clientId: string, transport: any): Promise<any> {
     try {
-      this.logger.logServerEvent('session_creation', {
-        clientId,
-        transportType: transport.type
+      this.logger.logServerEvent('start', {
+        serverName: this.config.name
       });
 
       const session = await this.connectionManager.createSession(clientId, transport);
-      
-      // Register session with session manager for backward compatibility
-      await this.sessionManager.createSession(session.id, clientId, transport);
       
       this.logger.logSessionEvent(session.id, 'created', {
         clientId,
@@ -253,7 +246,10 @@ export class MCPServerApplication {
       return session;
     } catch (error) {
       this.logger.logServerEvent('error', {
-        error: (error as Error).message,
+        error: {
+          code: MCPErrorCode.INTERNAL_ERROR,
+          message: error instanceof Error ? error.message : String(error)
+        },
         operation: 'session_creation',
         clientId
       });
@@ -274,7 +270,10 @@ export class MCPServerApplication {
       });
     } catch (error) {
       this.logger.logSessionEvent(sessionId, 'error', {
-        error: (error as Error).message,
+        error: {
+          code: MCPErrorCode.INTERNAL_ERROR,
+          message: error instanceof Error ? error.message : String(error)
+        },
         operation: 'authentication'
       });
       throw error;
@@ -293,15 +292,15 @@ export class MCPServerApplication {
 
       await this.connectionManager.disconnectSession(sessionId, reason);
       
-      // Remove from session manager for backward compatibility
-      await this.sessionManager.removeSession(sessionId);
-      
       this.logger.logSessionEvent(sessionId, 'disconnected', {
         reason
       });
     } catch (error) {
       this.logger.logSessionEvent(sessionId, 'error', {
-        error: (error as Error).message,
+        error: {
+          code: MCPErrorCode.INTERNAL_ERROR,
+          message: error instanceof Error ? error.message : String(error)
+        },
         operation: 'session_removal',
         reason
       });
@@ -338,7 +337,10 @@ export class MCPServerApplication {
       });
     } catch (error) {
       this.logger.logServerEvent('error', {
-        error: (error as Error).message,
+        error: {
+          code: MCPErrorCode.INTERNAL_ERROR,
+          message: error instanceof Error ? error.message : String(error)
+        },
         operation: 'health_check'
       });
       throw error;
@@ -369,7 +371,7 @@ export class MCPServerApplication {
         toolName: tool.name,
         error: {
           code: MCPErrorCode.TOOL_EXECUTION_FAILED,
-          message: error.message
+          message: error instanceof Error ? error.message : String(error)
         }
       });
       throw error;
@@ -429,25 +431,19 @@ export class MCPServerApplication {
   private setupComponentIntegration(): void {
     // Connect tool registry to server
     this.toolRegistry.on('toolRegistered', (tool) => {
-      this.server.registerTool(tool).catch(error => {
+      this.server.registerTool(tool).catch((error: any) => {
         console.error('Failed to register tool with server:', error.message);
       });
     });
     
     this.toolRegistry.on('toolUnregistered', (toolName) => {
-      this.server.unregisterTool(toolName).catch(error => {
+      this.server.unregisterTool(toolName).catch((error: any) => {
         console.error('Failed to unregister tool from server:', error.message);
       });
     });
     
-    // Connect session manager to server
-    this.sessionManager.on('sessionCreated', (session) => {
-      console.log(`Client session created: ${session.id}`);
-    });
-    
-    this.sessionManager.on('sessionRemoved', (sessionId) => {
-      console.log(`Client session removed: ${sessionId}`);
-    });
+    // Connect session manager to server (SessionManager is static)
+    // Event handling is done through connectionManager
     
     // Connect transport factory to server
     this.transportFactory.on('transportCreated', (transport) => {
@@ -518,7 +514,7 @@ export class MCPServerApplication {
         
         console.log(`✅ Transport initialized with MCP SDK: ${transportConfig.type}`);
       } catch (error) {
-        console.error(`❌ Failed to initialize transport ${transportConfig.type}:`, error.message);
+        console.error(`❌ Failed to initialize transport ${transportConfig.type}:`, error instanceof Error ? error.message : String(error));
         throw error;
       }
     }
@@ -687,7 +683,7 @@ Examples:
     process.stdin.resume();
     
   } catch (error) {
-    console.error('Failed to start MCP server:', error.message);
+    console.error('Failed to start MCP server:', error instanceof Error ? error.message : String(error));
     process.exit(1);
   }
 }

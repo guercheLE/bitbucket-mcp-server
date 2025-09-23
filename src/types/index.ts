@@ -233,6 +233,36 @@ export interface ClientSession {
   
   /** Get session statistics */
   getStats(): ClientSessionStats;
+  
+  /** Connect the session */
+  connect(): Promise<void>;
+  
+  /** Disconnect the session */
+  disconnect(reason?: string): Promise<void>;
+  
+  /** Destroy the session and clean up resources */
+  destroy(): Promise<void>;
+  
+  /** Add a tool to available tools */
+  addTool(toolName: string): void;
+  
+  /** Remove a tool from available tools */
+  removeTool(toolName: string): void;
+  
+  /** Check if a tool is available */
+  hasTool(toolName: string): boolean;
+  
+  /** Record a request being processed */
+  recordRequest(processingTime: number): void;
+  
+  /** Record a tool being called */
+  recordToolCall(): void;
+  
+  /** Update memory usage */
+  updateMemoryUsage(bytes: number): void;
+  
+  /** Get session summary for logging */
+  getSummary(): string;
 }
 
 /**
