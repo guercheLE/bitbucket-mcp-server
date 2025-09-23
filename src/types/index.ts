@@ -725,5 +725,4 @@ export function isClientSession(obj: any): obj is ClientSession {
 // ============================================================================
 // Export All Types
 // ============================================================================
-
-export * from './index';
+// All types are already exported above
