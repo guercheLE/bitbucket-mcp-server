@@ -23,7 +23,7 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
-import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
+// import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { 
   CallToolRequestSchema,
   ListToolsRequestSchema,
@@ -42,7 +42,7 @@ import {
   TransportType,
   MCPErrorCode,
   ToolExecutionContext
-} from '../types/index';
+} from '../types/index.js';
 import { 
   MCPErrorHandler, 
   createMCPError, 
@@ -425,7 +425,8 @@ export function createTransport(config: any) {
     case 'sse':
       return new SSEServerTransport(config.path || '/messages', config.response);
     case 'http':
-      return new StreamableHTTPServerTransport(config);
+      // return new StreamableHTTPServerTransport(config);
+      throw new Error('HTTP transport not yet implemented');
     default:
       throw new Error(`Unsupported transport type: ${config.type}`);
   }

@@ -5,9 +5,9 @@
  * and MCP protocol tool discovery methods.
  */
 
-import { MCPServer } from './mcp-server';
-import { ToolRegistry } from './tool-registry';
-import { Tool, ToolParameter, ToolExecutionContext, ToolResult } from '../types/index';
+import { MCPServer } from './mcp-server.js';
+import { ToolRegistry } from './tool-registry.js';
+import { Tool, ToolParameter, ToolExecutionContext, ToolResult } from '../types/index.js';
 
 // Mock tool for testing
 const mockTool: Tool = {

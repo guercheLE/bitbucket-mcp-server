@@ -1,153 +1,295 @@
-# Quickstart Guide: MCP Server Infrastructure
+# Quickstart Guide: Bitbucket MCP Server
 
-**Feature**: 001-mcp-server-infrastructure  
-**Last Updated**: 2025-09-21  
-**Prerequisites**: Node.js 18+, TypeScript
+Este guia fornece instruções rápidas para configurar e executar o servidor MCP do Bitbucket.
 
-## Quick Validation Steps
+## Pré-requisitos
 
-### 1. Server Initialization Test
+- Node.js 18+ 
+- npm ou yarn
+- Git
+
+## Instalação
+
+1. **Clone o repositório:**
 ```bash
-# Start the MCP server
+git clone <repository-url>
+cd bitbucket-mcp-server
+```
+
+2. **Instale as dependências:**
+```bash
+npm install
+```
+
+3. **Compile o projeto:**
+```bash
+npm run build
+```
+
+## Execução
+
+### Modo Desenvolvimento
+
+```bash
+npm run dev
+```
+
+### Modo Produção
+
+```bash
 npm start
-
-# Expected output:
-# ✅ MCP Server started on stdio transport
-# ✅ Protocol version: 2024-11-05
-# ✅ Server capabilities: tools, logging
-# ✅ Ready for client connections
 ```
 
-### 2. Client Connection Test
+### Com Transport HTTP
+
 ```bash
-# In separate terminal, test with basic MCP client
-echo '{"jsonrpc":"2.0","id":"1","method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{"tools":{}},"clientInfo":{"name":"test-client","version":"1.0.0"}}}' | npm start
-
-# Expected response:
-# {"jsonrpc":"2.0","id":"1","result":{"protocolVersion":"2024-11-05","capabilities":{"tools":{"listChanged":false},"logging":{}},"serverInfo":{"name":"bitbucket-mcp-server","version":"1.0.0"}}}
+npm start -- --port 8080 --host localhost
 ```
 
-### 3. Tool Discovery Test
+### Com Logging Debug
+
 ```bash
-# Request available tools list
-echo '{"jsonrpc":"2.0","id":"2","method":"tools/list","params":{}}' | npm start
-
-# Expected response:
-# {"jsonrpc":"2.0","id":"2","result":{"tools":[]}}
-# (Empty array since no Bitbucket tools registered yet - infrastructure only)
+npm start -- --log-level debug
 ```
 
-### 4. Health Check Test
+## Verificação de Funcionamento
+
+### 1. Teste de Conectividade
+
+Execute o comando ping para verificar se o servidor está respondendo:
+
 ```bash
-# Ping the server
-echo '{"jsonrpc":"2.0","id":"3","method":"ping","params":{}}' | npm start
-
-# Expected response:
-# {"jsonrpc":"2.0","id":"3","result":{}}
+echo '{"jsonrpc": "2.0", "id": 1, "method": "ping"}' | npm start
 ```
 
-## Integration Test Scenarios
+**Resultado esperado:**
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "pong": true,
+    "timestamp": "2025-09-23T17:15:00.000Z",
+    "serverTime": 1758647700000
+  }
+}
+```
 
-### Scenario 1: Complete Connection Lifecycle
+### 2. Listagem de Ferramentas
+
+Verifique as ferramentas disponíveis:
+
 ```bash
-# 1. Initialize connection
-# 2. Send initialized notification  
-# 3. List tools
-# 4. Ping health check
-# 5. Graceful shutdown
-
-# All steps should complete without errors
-# Server should log connection events
-# Memory usage should remain stable
+echo '{"jsonrpc": "2.0", "id": 2, "method": "tools/list"}' | npm start
 ```
 
-### Scenario 2: Multiple Concurrent Clients
+**Resultado esperado:**
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 2,
+  "result": {
+    "tools": [
+      {
+        "name": "ping",
+        "description": "Ping the server to check connectivity",
+        "parameters": []
+      },
+      {
+        "name": "health_check",
+        "description": "Check server health status",
+        "parameters": []
+      }
+    ]
+  }
+}
+```
+
+### 3. Verificação de Saúde
+
+Execute uma verificação de saúde do servidor:
+
 ```bash
-# Start 3 simultaneous clients
-# Each should receive unique session IDs
-# All should be able to list tools simultaneously
-# Server should handle concurrent requests without blocking
+echo '{"jsonrpc": "2.0", "id": 3, "method": "health_check"}' | npm start
 ```
 
-### Scenario 3: Error Handling
+**Resultado esperado:**
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 3,
+  "result": {
+    "status": "healthy",
+    "timestamp": "2025-09-23T17:15:00.000Z",
+    "components": {
+      "server": true,
+      "transports": {"stdio": true},
+      "tools": true,
+      "memory": true,
+      "sessions": true
+    },
+    "metrics": {
+      "memoryUsage": 52428800,
+      "memoryLimit": 536870912,
+      "activeSessions": 0,
+      "maxSessions": 100,
+      "errorRate": 0
+    },
+    "issues": []
+  }
+}
+```
+
+## Configuração
+
+### Variáveis de Ambiente
+
 ```bash
-# Send malformed JSON
-echo 'invalid-json' | npm start
-# Expected: Parse error response with code -32700
+# Limite de memória (em bytes)
+export MCP_MEMORY_LIMIT=536870912
 
-# Send invalid method
-echo '{"jsonrpc":"2.0","id":"1","method":"unknown","params":{}}' | npm start  
-# Expected: Method not found error with code -32601
+# Nível de log
+export MCP_LOG_LEVEL=info
 
-# Send request before initialization
-echo '{"jsonrpc":"2.0","id":"1","method":"tools/list","params":{}}' | npm start
-# Expected: Server error indicating initialization required
+# Máximo de clientes
+export MCP_MAX_CLIENTS=100
+
+# Timeout de cliente (em ms)
+export MCP_CLIENT_TIMEOUT=300000
 ```
 
-## Performance Validation
+### Arquivo de Configuração
 
-### Response Time Test
+Crie um arquivo `config.json`:
+
+```json
+{
+  "name": "Bitbucket MCP Server",
+  "version": "1.0.0",
+  "description": "Model Context Protocol server for Bitbucket integration",
+  "maxClients": 100,
+  "clientTimeout": 300000,
+  "memoryLimit": 536870912,
+  "logging": {
+    "level": "info",
+    "file": "logs/mcp-server.log",
+    "console": true
+  },
+  "transports": [
+    {
+      "type": "stdio",
+      "timeout": 30000
+    }
+  ],
+  "tools": {
+    "autoRegister": true,
+    "selectiveLoading": true,
+    "validationEnabled": true
+  }
+}
+```
+
+## Testes
+
+### Executar Todos os Testes
+
 ```bash
-# All MCP protocol operations should complete within 2 seconds
-time echo '{"jsonrpc":"2.0","id":"1","method":"ping","params":{}}' | npm start
-
-# Should show real time < 2.0s for 95% of requests
+npm test
 ```
 
-### Memory Usage Test
+### Executar Testes com Cobertura
+
 ```bash
-# Start server and monitor memory
-npm start &
-SERVER_PID=$!
-
-# Monitor memory usage
-ps -o pid,vsz,rss,comm $SERVER_PID
-
-# VSZ should be < 1GB as per constitutional requirement
-# RSS should be reasonable for Node.js application
+npm run test:coverage
 ```
 
-### Concurrent Connection Test
+### Executar Testes Específicos
+
 ```bash
-# Test constitutional requirement for multiple concurrent clients
-for i in {1..5}; do
-  echo '{"jsonrpc":"2.0","id":"'$i'","method":"ping","params":{}}' | npm start &
-done
-wait
+# Testes unitários
+npm test -- tests/unit/
 
-# All 5 clients should receive successful responses
-# Server should not crash or hang
+# Testes de integração
+npm test -- tests/integration/
+
+# Testes de conformidade
+npm test -- tests/compliance/
 ```
 
-## Success Criteria
+## Monitoramento
 
-- ✅ Server starts without errors
-- ✅ MCP protocol initialization works
-- ✅ Tool discovery returns empty list (expected for infrastructure-only)
-- ✅ Health checks respond successfully  
-- ✅ Error handling follows MCP specification
-- ✅ Multiple clients can connect simultaneously
-- ✅ Response times < 2s for 95% of operations
-- ✅ Memory usage < 1GB constitutional limit
-- ✅ Graceful shutdown preserves no critical state (stateless design)
+### Logs
 
-## Troubleshooting
+Os logs são salvos em `logs/mcp-server.log` por padrão. Para visualizar em tempo real:
 
-### Common Issues
-1. **Server won't start**: Check Node.js version (18+ required)
-2. **Connection refused**: Verify transport configuration
-3. **Parse errors**: Ensure JSON messages are properly formatted
-4. **Method not found**: Verify MCP protocol method names
-5. **High memory usage**: Check for client session leaks
-
-### Debug Mode
 ```bash
-DEBUG=mcp:* npm start
-# Enables detailed logging for all MCP operations
+tail -f logs/mcp-server.log
 ```
 
-## Next Steps
-After validating this infrastructure:
-1. Proceed to 002-authentication-system (depends on this foundation)
-2. Begin Bitbucket tool registration in 003-repository-management
-3. Implement testing framework in 004-basic-testing-framework
+### Métricas de Performance
+
+O servidor coleta automaticamente métricas de:
+- Uso de memória
+- Tempo de resposta
+- Taxa de erro
+- Sessões ativas
+- Ferramentas executadas
+
+### Health Check
+
+Execute periodicamente para monitorar a saúde do servidor:
+
+```bash
+curl -X POST http://localhost:8080/health \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc": "2.0", "id": 1, "method": "health_check"}'
+```
+
+## Solução de Problemas
+
+### Erro de Memória
+
+Se o servidor exceder o limite de memória:
+
+1. Verifique o uso atual: `npm start -- --log-level debug`
+2. Ajuste o limite: `export MCP_MEMORY_LIMIT=1073741824` (1GB)
+3. Reinicie o servidor
+
+### Erro de Conexão
+
+Se houver problemas de conexão:
+
+1. Verifique se a porta está disponível
+2. Confirme as configurações de transporte
+3. Verifique os logs para erros específicos
+
+### Erro de Ferramentas
+
+Se as ferramentas não estiverem funcionando:
+
+1. Verifique se estão registradas: `echo '{"jsonrpc": "2.0", "id": 1, "method": "tools/list"}' | npm start`
+2. Confirme a validação de parâmetros
+3. Verifique os logs de erro
+
+## Próximos Passos
+
+Após verificar que a infraestrutura está funcionando:
+
+1. **Implementar autenticação** (Feature 002)
+2. **Adicionar ferramentas do Bitbucket** (Feature 003)
+3. **Configurar testes avançados** (Feature 004)
+
+## Suporte
+
+Para problemas ou dúvidas:
+
+1. Verifique os logs do servidor
+2. Execute os testes para identificar problemas
+3. Consulte a documentação da API
+4. Abra uma issue no repositório
+
+---
+
+**Status da Infraestrutura:** ✅ Funcional
+**Última Verificação:** 2025-09-23
+**Versão:** 1.0.0

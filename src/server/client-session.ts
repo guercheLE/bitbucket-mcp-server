@@ -26,7 +26,7 @@ import {
   ClientSessionStats, 
   Transport,
   MCPErrorCode 
-} from '../types/index';
+} from '../types/index.js';
 
 /**
  * Client Session Implementation

@@ -29,7 +29,7 @@ import {
   ClientSession,
   ProtocolMessage,
   ToolExecutionContext
-} from '../types/index';
+} from '../types/index.js';
 
 // ============================================================================
 // Logging Configuration Types

@@ -24,7 +24,7 @@ import {
   ProtocolMessage, 
   ClientSession,
   ToolExecutionContext
-} from '../types/index';
+} from '../types/index.js';
 
 /**
  * MCP Error Response Structure

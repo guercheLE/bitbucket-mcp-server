@@ -36,10 +36,10 @@ import {
   MCPErrorCode,
   ProtocolMessage,
   ServerEvents
-} from '../types/index';
-import { ClientSession as ClientSessionImpl, SessionManager } from './client-session';
-import { ToolRegistry } from './tool-registry';
-import { PerformanceMonitor, PerformanceMonitorConfig, DEFAULT_PERFORMANCE_CONFIG } from './performance-monitor';
+} from '../types/index.js';
+import { ClientSession as ClientSessionImpl, SessionManager } from './client-session.js';
+import { ToolRegistry } from './tool-registry.js';
+import { PerformanceMonitor, PerformanceMonitorConfig, DEFAULT_PERFORMANCE_CONFIG } from './performance-monitor.js';
 
 /**
  * MCP Server Implementation

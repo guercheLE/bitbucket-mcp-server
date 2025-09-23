@@ -38,7 +38,7 @@ import {
   TransportConfig, 
   Tool,
   MCPErrorCode
-} from '../types/index';
+} from '../types/index.js';
 
 /**
  * Server Application Class
@@ -672,7 +672,6 @@ Examples:
   node src/server/index.js --log-level debug  # Start with debug logging
           `);
           process.exit(0);
-          break;
       }
     }
     
@@ -692,7 +691,7 @@ Examples:
 export { main as default };
 
 // Run main function if this file is executed directly
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   main().catch(error => {
     console.error('Unhandled error:', error);
     process.exit(1);

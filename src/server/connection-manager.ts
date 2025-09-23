@@ -26,10 +26,10 @@ import {
   TransportType,
   ServerConfig,
   MCPErrorCode
-} from '../types/index';
-import { MCPServerLogger, LogCategory } from './logger';
-import { ClientSession as ClientSessionImpl } from './client-session';
-import { createMCPError, handleTransportError } from './error-handler';
+} from '../types/index.js';
+import { MCPServerLogger, LogCategory } from './logger.js';
+import { ClientSession as ClientSessionImpl } from './client-session.js';
+import { createMCPError, handleTransportError } from './error-handler.js';
 
 /**
  * Connection Manager Events
