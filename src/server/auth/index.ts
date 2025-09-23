@@ -29,6 +29,12 @@ export { AdvancedSessionManager, SessionConfig, SessionStatistics } from './adva
 export { SessionPersistenceManager, SessionPersistenceConfig } from './session-persistence';
 export { ConcurrentSessionManager, ConcurrentSessionConfig } from './concurrent-session-manager';
 
+// Export security and audit classes
+export { AdvancedCryptoService, EncryptedData, CryptoConfig, KeyManager } from './advanced-crypto';
+export { AuthAuditLogger, AuditEvent, AuditEventType, AuditSeverity, AuditConfig, AuditStats } from './auth-audit-logger';
+export { RateLimiter, RateLimitRule, RateLimitResult, RateLimitConfig, RateLimitStats, RateLimitAlgorithm, RateLimitScope } from './rate-limiter';
+export { SecurityHeadersManager, SecurityHeadersConfig, CorsConfig, CspConfig, SecurityHeaderType } from './security-headers';
+
 // Export authentication types
 export * from '../../types/auth';
 
