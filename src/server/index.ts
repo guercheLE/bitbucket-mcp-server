@@ -26,6 +26,7 @@
  */
 
 import { MCPServerImpl } from './mcp-server.js';
+import { MCPServerSDK, createMCPServerWithSDK, createTransport } from './mcp-server-sdk.js';
 import { ClientSessionManager } from './client-session.js';
 import { ToolRegistry } from './tool-registry.js';
 import { TransportFactory } from './transport-factory.js';
@@ -45,6 +46,7 @@ import {
  */
 export class MCPServerApplication {
   private server: MCPServerImpl;
+  private sdkServer: MCPServerSDK;
   private sessionManager: ClientSessionManager;
   private toolRegistry: ToolRegistry;
   private transportFactory: TransportFactory;
@@ -87,6 +89,9 @@ export class MCPServerApplication {
     
     this.server = new MCPServerImpl(this.config);
     
+    // Initialize SDK server (will be created in start method)
+    this.sdkServer = null as any;
+    
     // Setup component integration
     this.setupComponentIntegration();
     
@@ -116,6 +121,9 @@ export class MCPServerApplication {
       
       // Start server
       await this.server.start();
+      
+      // Create SDK server with official MCP SDK integration
+      this.sdkServer = await createMCPServerWithSDK(this.config, this.server);
       
       // Initialize transports
       await this.initializeTransports();
@@ -209,6 +217,11 @@ export class MCPServerApplication {
   async registerTool(tool: Tool): Promise<void> {
     await this.toolRegistry.registerTool(tool);
     await this.server.registerTool(tool);
+    
+    // Register with SDK server if available
+    if (this.sdkServer) {
+      await this.sdkServer.registerTool(tool);
+    }
   }
 
   /**
@@ -338,13 +351,20 @@ export class MCPServerApplication {
 
   /**
    * Initialize transports
-   * Creates and configures all configured transports
+   * Creates and configures all configured transports using official MCP SDK
    */
   private async initializeTransports(): Promise<void> {
     for (const transportConfig of this.config.transports) {
       try {
-        const transport = await this.transportFactory.createTransport(transportConfig);
-        console.log(`✅ Transport initialized: ${transportConfig.type}`);
+        // Create transport using official MCP SDK
+        const transport = createTransport(transportConfig);
+        
+        // Connect the transport to the SDK server
+        if (this.sdkServer) {
+          await this.sdkServer.connect(transport);
+        }
+        
+        console.log(`✅ Transport initialized with MCP SDK: ${transportConfig.type}`);
       } catch (error) {
         console.error(`❌ Failed to initialize transport ${transportConfig.type}:`, error.message);
         throw error;

@@ -4,7 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "build": "tsc",
+    "start": "node dist/server/index.js",
+    "dev": "ts-node src/server/index.ts"
   },
   "repository": {
     "type": "git",
@@ -13,7 +18,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "engines": {
     "node": ">=18.0.0"
   },
@@ -25,6 +30,7 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^24.5.2",
     "jest": "^30.1.3",
+    "ts-jest": "^29.4.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2"
   },
