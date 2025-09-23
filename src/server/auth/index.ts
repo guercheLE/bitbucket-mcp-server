@@ -9,6 +9,8 @@
 export { AuthenticationManager } from './authentication-manager';
 export { OAuthManager } from './oauth-manager';
 export { SessionManager } from './session-manager';
+export { BitbucketApiClient } from './bitbucket-api-client';
+export { AuthenticationMiddleware } from './auth-middleware';
 
 // Export authentication types
 export * from '../../types/auth';
