@@ -34,6 +34,9 @@ TDD mandatory: Tests written → Project Lead approved → Tests fail → Then i
 - **CLI**: Commander.js
 - **Authentication**: OAuth 2.0, App Passwords, API Tokens, Basic Auth
 - **Security**: Helmet, CORS, rate limiting, circuit breakers
+- **Vector Database**: LanceDB or ChromaDB (JS client) for semantic search
+- **Embeddings**: OpenAI embeddings or local transformers.js for text embeddings
+- **Schema Management**: Dynamic Zod schema generation from Bitbucket OpenAPI specs
 
 ### Project Structure
 ```
@@ -70,6 +73,156 @@ tests/
 - **Supported Languages**: pt-BR, en-US, zh-CN, hi-IN, es-ES, fr-FR, ar-SA, bn-BD, ru-RU, pt-PT, id-ID, ur-PK, de-DE, ja-JP, mr-IN, te-IN, tr-TR, ta-IN, vi-VN, it-IT
 - **Localization**: i18next with fs-backend and http-middleware
 
+## Semantic Discovery & Tool Architecture
+
+### Core Tool Pattern
+The Bitbucket MCP server MUST implement a 3-tool semantic discovery pattern to efficiently manage 200+ Bitbucket API endpoints across both Data Center and Cloud versions:
+
+**CRITICAL ARCHITECTURE REQUIREMENT**: Only these 3 tools are registered as public MCP tools. All other Bitbucket functionality is accessed indirectly through these tools.
+
+#### 🔍 search-ids(query: string, pagination?: PaginationParams) → PaginatedResponse[EndpointSummary]
+- **Purpose**: Semantic search across Bitbucket API operations and documentation
+- **Implementation**: Vector database (embedded solution for Node.js) for embedding search with server type/version filtering
+- **Input**: Natural language query describing desired Bitbucket functionality + optional pagination parameters
+- **Output**: Paginated list of operation IDs with short descriptions, parameter hints, and version compatibility
+- **Performance**: Response time < 100ms for search queries per page
+- **Pagination**: Mandatory for all list operations to prevent performance degradation (default: 10 items per page, max: 25)
+- **Content**: Index API operations, repository management, pull requests, user management, and administrative tasks
+- **Version Awareness**: Search results MUST indicate compatibility with detected Bitbucket version and automatically filter incompatible operations
+
+#### 📋 get-id(endpoint_id: string) → EndpointDetails
+- **Purpose**: Retrieve detailed schema and documentation for specific Bitbucket API operation
+- **Input**: Operation ID from search-ids results
+- **Output**: Complete operation details including:
+  - Operation description and purpose
+  - Input schema (Zod-compatible JSON schema) with Bitbucket-specific types
+  - Output schema including response formats and pagination details
+  - Required vs optional parameters with Bitbucket data constraints
+  - Usage examples, authentication requirements, and rate limiting notes
+  - Version compatibility information (Data Center vs Cloud)
+- **Privacy**: Internal API implementation details (server URLs, internal tokens) MUST remain hidden
+- **Authentication Context**: Schema details MUST reflect current user permissions and access levels
+
+#### ⚡ call-id(endpoint_id: string, params: dict, pagination?: PaginationParams) → dict | PaginatedResponse
+- **Purpose**: Execute Bitbucket API operation with dynamic parameter validation and authentication
+- **Input Schema**: Generic schema with endpoint_id (string), params (Record<string, any>), and optional pagination
+- **Runtime Validation**: Dynamic schema validation using Zod with Bitbucket API constraints
+- **Authentication**: Automatic selection of appropriate auth method based on configuration priority
+- **Rate Limiting**: Built-in rate limiting compliance with Bitbucket API limits
+- **Performance**: Validation overhead < 10ms per operation call
+- **Error Handling**: Comprehensive error mapping from Bitbucket API responses to MCP error format
+- **Pagination**: For operations returning large datasets (repository lists, pull requests, etc.), automatically apply Bitbucket API pagination parameters
+
+### Vector Database Requirements
+- **Storage**: File-based embedded vector database optimized for Node.js (sqlite-vec recommended as the best Node.js option)
+- **Distribution**: Vector database files MUST be packaged with the application - no external database installations required
+- **File Location**: Vector database files stored in application's data directory (e.g., `./data/vectors/bitbucket.db`)
+- **Embeddings**: Pre-computed embeddings for all Bitbucket API operations, examples, and troubleshooting guides, stored in packaged database files
+- **Search Performance**: Sub-100ms semantic search response time per page from local file-based storage
+- **API Content**: Index Bitbucket API documentation, common use cases, error handling patterns in embedded database
+- **Multi-Version Support**: Separate embeddings for Data Center vs Cloud API differences with metadata filtering, stored in local database files
+- **Dynamic Updates**: Re-index capabilities when new API versions are detected, with incremental updates to local database files
+- **Server Type Filtering**: Vector database MUST support metadata filtering to return only compatible operations for detected server type (Data Center/Cloud) and version
+- **Pagination Support**: Vector search MUST support efficient pagination with relevance score preservation across pages using file-based indices
+- **Performance Optimization**: Two-tier architecture with lightweight search index for discovery and rich content storage for detailed API documentation, all stored in local database files
+- **Portability**: Database files must be portable across platforms and require no additional dependencies beyond the application runtime
+
+### Schema Management & API Integration
+- **Dynamic Validation**: Runtime schema validation with Bitbucket API type awareness
+- **Schema Generation**: Auto-generate Zod schemas from Bitbucket OpenAPI specifications
+- **Version Compatibility**: Schema validation MUST account for API version differences
+- **Authentication Integration**: Schema validation MUST consider current authentication context
+- **Rate Limiting Integration**: Built-in awareness of Bitbucket API rate limits per endpoint
+
+### Integration with Bitbucket Operations
+- **ALL** Bitbucket capabilities (repository management, pull requests, user administration, etc.) MUST be accessible **EXCLUSIVELY** through the 3-tool pattern
+- **NO** direct tool registration for specific operations (repository management, pull requests, etc.)
+- Only `search-ids`, `get-id`, and `call-id` are registered as public MCP tools
+- Legacy direct tool access is **PROHIBITED** - all functionality goes through semantic discovery
+- Console client MUST support both direct commands and semantic discovery workflow
+- Documentation MUST include examples of semantic discovery for common Bitbucket administration tasks
+- Multi-version support MUST be maintained through the semantic discovery interface
+
+### MCP Tool Naming Conventions
+All MCP tools MUST follow standardized naming patterns for consistency and cross-platform compatibility:
+
+#### Universal Naming Rules
+- **Primary Pattern**: `kebab-case` for maximum cross-platform compatibility
+- **Namespace Pattern**: `namespace.action` for grouping related tools (e.g., `bitbucket.list-repos`, `bitbucket.create-pr`)
+- **Avoid**: PascalCase, camelCase, SCREAMING_CASE, or overly verbose names
+- **Language Neutral**: Tool names must work regardless of server implementation language
+
+#### MCP Tool Names vs Internal Operation IDs
+
+**CRITICAL CLARIFICATION**: Only 3 tools are registered as public MCP tools. The namespaced examples below are **internal operation IDs** accessed through the `call-id` tool, NOT separate MCP tools.
+
+```typescript
+// ✅ PUBLIC MCP TOOLS (ONLY THESE 3 ARE REGISTERED)
+"search-ids"     // Find operations by natural language query
+"get-id"         // Get detailed operation schema
+"call-id"        // Execute operation with validation
+
+// ✅ INTERNAL OPERATION IDs (accessed via call-id tool)
+"bitbucket.list-repos"        // Internal operation ID for listing repositories
+"bitbucket.create-pr"         // Internal operation ID for creating pull requests
+"bitbucket.get-user"          // Internal operation ID for getting user information
+"bitbucket.manage-webhooks"   // Internal operation ID for managing webhooks
+
+// ✅ INTERNAL ADMINISTRATIVE OPERATION IDs
+"admin.backup-config"         // Internal operation ID for backup configuration
+"admin.health-check"          // Internal operation ID for health monitoring
+"admin.user-management"       // Internal operation ID for user administration
+
+// ❌ Avoid These Patterns (for operation IDs)
+"BitbucketListRepos"          // PascalCase breaks convention
+"getUserData"                 // camelCase not MCP standard
+"do_bitbucket_operation"      // snake_case/verbose
+"API_CALL"                    // SCREAMING_CASE not readable
+```
+
+**Usage Example**:
+```typescript
+// Client calls the call-id MCP tool with an internal operation ID
+await mcpClient.callTool("call-id", {
+  endpoint_id: "bitbucket.list-repos",  // This is an internal operation ID
+  params: { projectKey: "PROJ" }
+});
+```
+
+#### File Organization Standards
+File names SHOULD use language-specific conventions while maintaining clear mapping to tool names and operation IDs:
+
+```
+tools/
+├── search-ids.ts              # Contains search-ids MCP tool (PUBLIC)
+├── get-id.ts                  # Contains get-id MCP tool (PUBLIC)  
+├── call-id.ts                 # Contains call-id MCP tool (PUBLIC)
+├── operations/                # Internal operation implementations (NOT registered as MCP tools)
+│   ├── bitbucket/
+│   │   ├── list-repos.ts          # Internal: bitbucket.list-repos operation ID
+│   │   ├── create-pr.ts           # Internal: bitbucket.create-pr operation ID
+│   │   └── get-user.ts            # Internal: bitbucket.get-user operation ID
+│   └── admin/
+│       ├── backup-config.ts       # Internal: admin.backup-config operation ID
+│       └── health-check.ts        # Internal: admin.health-check operation ID
+```
+
+**Language-Specific File Naming**:
+- **TypeScript/Node.js**: Use kebab-case for files (e.g., `search-ids.ts`, `call-id.ts`)
+- **Python**: Use snake_case for files (e.g., `search_ids.py`, `call_id.py`) 
+- **Other Languages**: Follow language conventions while maintaining clear mapping
+
+#### Tool Registration Requirements
+- **ONLY** the semantic discovery pattern tools MUST be registered as public MCP tools:
+  - `search-ids` (semantic search for Bitbucket operations)
+  - `get-id` (get detailed operation schema)
+  - `call-id` (execute operation with validation)
+- **ALL OTHER** Bitbucket functionality (repository management, pull requests, user administration, etc.) MUST be accessible **INDIRECTLY** through the 3-tool pattern
+- Direct tool registration for specific operations (e.g., `bitbucket.list-repos`, `bitbucket.create-pr`, `admin.user-management`) is **PROHIBITED**
+- Tool descriptions MUST be concise but descriptive
+- Tool schemas MUST use Zod validation integrated with MCP SDK
+- Bitbucket operation schemas MUST include version compatibility metadata
+
 ## Quality and Testing
 
 ### Mandatory Tests
@@ -82,10 +235,12 @@ tests/
 ### Quality Metrics
 - Code coverage >80% (line coverage)
 - Zero security vulnerabilities
-- **API Operations**: Response time <2s for 95% of requests
+- **API Operations**: Response time <3s for 95% of requests (Git operations can be slower than database queries)
 - **Administrative Operations**: Response time <30s for 95% of requests (backup, upgrade, maintenance)
 - **Long-running Operations**: Response time <5min for 95% of requests (bulk operations, migrations)
 - **Memory Usage**: <1GB per instance, efficient resource management
+- **Semantic Search**: Sub-100ms response time for search-ids queries, <10ms validation overhead for call-id operations
+- **Vector Database**: <100MB memory footprint for embedded vector storage with 200+ API endpoints
 - Uptime >99.9%
 - Structured logs with sanitization
 
@@ -121,6 +276,44 @@ tests/
 - **Environment Variable**: `FORCE_HTTPS=true` (default: true)
 - **Fallback Strategy**: Set `FORCE_HTTPS=false` only in case of SSL configuration errors
 - HTTP fallback disabled by default for security
+
+## Pagination Requirements (MANDATORY)
+
+### Universal Pagination for List Operations
+- **Mandatory Pagination**: ALL operations returning lists MUST implement pagination to prevent performance degradation and constitutional compliance violations
+- **search-ids Pagination**: MUST support page-based pagination with configurable page size (default: 10, max: 50 items per page for API operations)
+- **call-id Pagination**: For Bitbucket API operations returning large datasets, MUST implement Bitbucket native pagination parameters (`start`, `limit`)
+- **Performance Compliance**: Pagination implementation MUST maintain constitutional performance requirements (<100ms for search-ids, <3s for API operations)
+
+### Pagination Implementation Standards
+- **Page-Based Pagination**: Standard offset/limit pagination for semantic search operations
+- **Cursor-Based Pagination**: For very large API result sets (>10,000 records) to improve deep pagination performance
+- **Bitbucket API Integration**: Use native Bitbucket pagination parameters (`start`, `limit`) and response metadata (`isLastPage`, `nextPageStart`)
+- **Metadata Response**: All paginated responses MUST include pagination metadata (current_page, total_pages, has_next, has_previous, total_count when available)
+- **Constitutional Monitoring**: Automatic performance monitoring with alerts when pagination operations exceed constitutional time limits
+
+### Pagination Schema Requirements
+```typescript
+// Mandatory pagination parameters for all list operations
+interface PaginationParams {
+    page?: number; // Page number (1-based), default: 1
+    limit?: number; // Items per page, default: 10, max: 50
+    start?: number; // Alternative Bitbucket-style start index
+}
+
+interface PaginatedResponse<T> {
+    items: T[];
+    pagination: PaginationMetadata;
+    total_count?: number;
+    has_more: boolean;
+}
+```
+
+### Bitbucket API Pagination Integration
+- **Native Parameter Mapping**: Automatically map MCP pagination parameters to Bitbucket API format (`start`, `limit`)
+- **Response Transformation**: Transform Bitbucket paginated responses to standard MCP pagination format
+- **Version Compatibility**: Handle pagination differences between Data Center and Cloud APIs
+- **Rate Limiting Integration**: Pagination MUST respect Bitbucket API rate limits and include appropriate delays when necessary
 
 ## Configuration Management
 
@@ -183,12 +376,30 @@ All code MUST be licensed under GNU Lesser General Public License (LGPL) v3.0; S
 
 ## Monitoring and Observability
 
-### Logging
-- Structured JSON logs
-- Levels: error, warn, info, debug
-- Automatic sensitive data sanitization
-- Configurable log rotation
-- Request correlation
+### Logging Configuration & Output Management
+- **Default Output**: File-based logging (most commonly used for enterprise applications)
+- **File Location**: `./logs/` directory with structured naming (`bitbucket-mcp-{date}.log`)
+- **Configurable Outputs**: Elasticsearch (most popular for log aggregation), Splunk, Fluentd, CloudWatch, Azure Monitor, or custom log shippers
+- **Log Format**: Structured JSON logs (industry standard for parsing and analysis)
+- **Log Levels**: error, warn, info, debug (standard enterprise logging levels)
+- **Automatic Sensitive Data Sanitization**: PII, credentials, tokens redacted before logging
+- **Request Correlation**: UUID-based correlation IDs for tracing requests across components
+
+### Log Rotation & Retention Policies
+- **File Rotation**: Daily rotation by default (most common enterprise practice)
+- **Size-Based Rotation**: Maximum 100MB per file (prevents large files from impacting performance)
+- **Retention Policy**: 30 days for info/debug logs, 90 days for error/warn logs (compliance-friendly defaults)
+- **Compression**: Automatic gzip compression for rotated logs (saves storage space)
+- **Cleanup**: Automatic deletion of logs exceeding retention periods
+- **Archive Options**: Optional archival to S3, Azure Blob, or other cloud storage for long-term retention
+
+### Enterprise Log Management Integration
+- **ELK Stack**: Native Elasticsearch, Logstash, Kibana integration (most popular open-source option)
+- **Splunk**: Enterprise log management integration (most popular commercial option)
+- **Cloud Native**: AWS CloudWatch, Azure Monitor, Google Cloud Logging support
+- **SIEM Integration**: Support for security information and event management systems
+- **Log Shipping**: Configurable log forwarding via syslog, HTTP endpoints, or message queues
+- **Real-time Streaming**: Optional real-time log streaming for monitoring dashboards
 
 ### Metrics
 - Response time per tool
@@ -986,8 +1197,8 @@ All code MUST be licensed under GNU Lesser General Public License (LGPL) v3.0; S
 - `DELETE /2.0/dashboards/{dashboard_id}` - Delete dashboard
 - `POST /2.0/dashboards/{dashboard_id}/clone` - Clone dashboard
 - `POST /2.0/dashboards/{dashboard_id}/widgets` - Add widget
-- `PUT /2.0/dashboards/{dashboard_id}/widgets/{widget_id}` - Update widget
-- `DELETE /2.0/dashboards/{dashboard_id}/widgets/{widget_id}` - Remove widget
+- `PUT /2.0/dashboards/{dashboard_id}/widgets/{widget-id}` - Update widget
+- `DELETE /2.0/dashboards/{dashboard_id}/widgets/{widget-id}` - Remove widget
 - `GET /2.0/dashboards/widgets/available` - List available widgets
 
 #### Add-ons (8 endpoints) - Available since API 2.0
@@ -1587,8 +1798,8 @@ CACHE_MAX_SIZE=100MB
 ## Detailed SLA Metrics
 
 ### Response Time Targets
-- **CRUD Operations**: < 500ms (95th percentile)
-- **Search Operations**: < 2s (95th percentile)
+- **CRUD Operations**: < 800ms (95th percentile) (Git operations require more time than simple API calls)
+- **Search Operations**: < 3s (95th percentile)
 - **Bulk Operations**: < 30s (95th percentile)
 - **Administrative Operations**: < 5min (95th percentile)
 - **Long-running Operations**: < 15min (95th percentile)

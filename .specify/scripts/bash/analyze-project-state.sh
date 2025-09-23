@@ -15,10 +15,17 @@ for arg in "$@"; do
     esac
 done
 
-REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
-if [ $? -ne 0 ]; then
-    echo "ERROR: Not in a git repository. Run this script from within a git repository." >&2
-    exit 1
+# Support both git repositories and temporary workspaces
+if [ -n "$ORCHESTRATE_REPO_ROOT" ]; then
+    # When called from orchestration script, use the provided root
+    REPO_ROOT="$ORCHESTRATE_REPO_ROOT"
+else
+    # Default behavior for git repositories
+    REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
+    if [ $? -ne 0 ]; then
+        echo "ERROR: Not in a git repository and ORCHESTRATE_REPO_ROOT not set." >&2
+        exit 1
+    fi
 fi
 
 CONSTITUTION_FILE="$REPO_ROOT/.specify/memory/constitution.md"

@@ -3,8 +3,97 @@
 set -e
 
 # --- Configuration ---
-REPO_ROOT=$(git rev-parse --show-toplevel)
+ORIGINAL_REPO_ROOT=$(git rev-parse --show-toplevel)
+TMP_WORKSPACE="/tmp/orchestrate-workspace-$$"
+REPO_ROOT="$TMP_WORKSPACE"
 EXECUTION_PLAN="$REPO_ROOT/execution-plan.json"
+
+# Default parameter values
+RUN_TASKS=false
+
+# --- Parameter Processing ---
+parse_global_options() {
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --run-tasks)
+                RUN_TASKS=true
+                shift
+                ;;
+            --no-run-tasks)
+                RUN_TASKS=false
+                shift
+                ;;
+            -*)
+                echo "Unknown option: $1" >&2
+                echo "Global options: --run-tasks, --no-run-tasks" >&2
+                exit 1
+                ;;
+            *)
+                # Not a global option, put it back and break
+                break
+                ;;
+        esac
+    done
+    
+    # Return remaining arguments
+    echo "$@"
+}
+
+# --- Setup Functions ---
+
+setup_temp_workspace() {
+    log "Setting up temporary workspace at $TMP_WORKSPACE..."
+    
+    # Create temp workspace
+    mkdir -p "$TMP_WORKSPACE"
+    
+    # Copy all necessary files and directories
+    log "Copying .specify directory..."
+    cp -r "$ORIGINAL_REPO_ROOT/.specify" "$TMP_WORKSPACE/"
+    
+    # Copy any existing execution-plan.json
+    if [ -f "$ORIGINAL_REPO_ROOT/execution-plan.json" ]; then
+        log "Copying existing execution-plan.json..."
+        cp "$ORIGINAL_REPO_ROOT/execution-plan.json" "$TMP_WORKSPACE/"
+    fi
+    
+    # Copy any existing specs directory
+    if [ -d "$ORIGINAL_REPO_ROOT/specs" ]; then
+        log "Copying existing specs directory..."
+        cp -r "$ORIGINAL_REPO_ROOT/specs" "$TMP_WORKSPACE/"
+    fi
+    
+    # Create necessary directories
+    mkdir -p "$TMP_WORKSPACE/specs"
+    
+    log "Temporary workspace setup complete."
+}
+
+cleanup_temp_workspace() {
+    if [ -d "$TMP_WORKSPACE" ]; then
+        log "Cleaning up temporary workspace..."
+        rm -rf "$TMP_WORKSPACE"
+    fi
+}
+
+sync_back_to_original() {
+    log "Syncing results back to original repository..."
+    
+    # Copy execution-plan.json back
+    if [ -f "$EXECUTION_PLAN" ]; then
+        cp "$EXECUTION_PLAN" "$ORIGINAL_REPO_ROOT/"
+    fi
+    
+    # Copy specs directory back
+    if [ -d "$TMP_WORKSPACE/specs" ]; then
+        cp -r "$TMP_WORKSPACE/specs" "$ORIGINAL_REPO_ROOT/"
+    fi
+    
+    log "Sync complete."
+}
+
+# Set trap to cleanup on exit
+trap cleanup_temp_workspace EXIT
 
 # --- Helper Functions ---
 
@@ -37,6 +126,10 @@ get_feature_branch() {
 
 cmd_init() {
     log "Initializing project..."
+    
+    # Setup temp workspace first
+    setup_temp_workspace
+    
     # This preserves the original script's init logic
     local project_description=$1
     if [ -z "$project_description" ]; then
@@ -49,6 +142,7 @@ cmd_init() {
 
     log "Analyzing project state..."
     local project_state_result
+    export ORCHESTRATE_REPO_ROOT="$REPO_ROOT"
     project_state_result=$("$REPO_ROOT/.specify/scripts/bash/analyze-project-state.sh" --json)
     local project_type
     project_type=$(echo "$project_state_result" | jq -r '.project_type')
@@ -69,10 +163,19 @@ cmd_init() {
 }
 EOF
     log "Initialization complete. execution-plan.json created."
+    
+    # Sync results back to original repo
+    sync_back_to_original
 }
 
 cmd_get_next_action() {
     log "Determining next action..."
+    
+    # Ensure temp workspace is set up if execution plan exists
+    if [ ! -d "$TMP_WORKSPACE" ]; then
+        setup_temp_workspace
+    fi
+    
     local execution_order
     execution_order=$(get_json_value '.execution_order[]')
     for id in $execution_order; do
@@ -92,6 +195,11 @@ cmd_get_next_action() {
 cmd_pre_implement_check() {
     local feature_id=$1
     log "Running pre-implementation checks for $feature_id..."
+    
+    # Ensure temp workspace is set up
+    if [ ! -d "$TMP_WORKSPACE" ]; then
+        setup_temp_workspace
+    fi
 
     # 1. Dependency Check
     log "Checking dependencies..."
@@ -109,33 +217,28 @@ cmd_pre_implement_check() {
     fi
     log "All dependencies are met."
 
-    # 2. Rebase from dependency branches
-    local feature_branch
-    feature_branch=$(get_feature_branch "$feature_id")
-    log "Checking out branch: $feature_branch"
-    git checkout "$feature_branch"
-    git status # CRITICAL GIT FIX
-
-    log "Rebasing from dependency branches..."
-    if [ -n "$dependencies" ]; then
-        for dep_id in $dependencies; do
-            local dep_branch
-            dep_branch=$(get_feature_branch "$dep_id")
-            log "Rebasing onto $dep_branch..."
-            if ! git rebase "$dep_branch"; then
-                log "ERROR: Rebase onto $dep_branch failed. Please resolve conflicts manually."
-                exit 1
-            fi
-            git status # CRITICAL GIT FIX
-        done
-    fi
-    log "Rebase successful."
+    # Note: Git operations would normally happen here, but since we're working
+    # outside git realms, we skip the rebase operations
+    log "Skipping git rebase operations (working outside git realms)."
     
     echo "{\"status\": \"success\", \"message\": \"Pre-implementation checks passed for $feature_id\"}"
 }
 
 cmd_get_task() {
     local feature_id=$1
+    
+    # Check if task execution is disabled
+    if [ "$RUN_TASKS" = "false" ]; then
+        log "Task execution is disabled (--run-tasks not specified)"
+        echo "{\"status\": \"disabled\", \"message\": \"Task execution disabled. Use --run-tasks to enable.\"}"
+        return
+    fi
+    
+    # Ensure temp workspace is set up
+    if [ ! -d "$TMP_WORKSPACE" ]; then
+        setup_temp_workspace
+    fi
+    
     local tasks_file="$REPO_ROOT/specs/$feature_id/tasks.md"
     if [ ! -f "$tasks_file" ]; then
         log "ERROR: tasks.md not found for $feature_id at $tasks_file"
@@ -161,6 +264,19 @@ cmd_get_task() {
 cmd_complete_task() {
     local feature_id=$1
     local task_number=$2
+    
+    # Check if task execution is disabled
+    if [ "$RUN_TASKS" = "false" ]; then
+        log "Task completion is disabled (--run-tasks not specified)"
+        echo "{\"status\": \"disabled\", \"message\": \"Task completion disabled. Use --run-tasks to enable.\"}"
+        return
+    fi
+    
+    # Ensure temp workspace is set up
+    if [ ! -d "$TMP_WORKSPACE" ]; then
+        setup_temp_workspace
+    fi
+    
     local tasks_file="$REPO_ROOT/specs/$feature_id/tasks.md"
     
     log "Marking task #$task_number as complete for $feature_id"
@@ -170,36 +286,42 @@ cmd_complete_task() {
     task_desc=$(sed -n "${task_number}p" "$tasks_file" | sed -e 's/.*- [x] //')
     local commit_message="feat($feature_id): Complete task $task_number - $task_desc"
 
-    log "Committing completion: $commit_message"
-    git add "$tasks_file"
-    git commit -m "$commit_message"
-    git status # CRITICAL GIT FIX
+    log "Task marked complete (git operations skipped in temp workspace)"
     
-    echo "{\"status\": \"success\", \"message\": \"Task $task_number completed and committed.\"}"
+    # Sync changes back to original repo
+    sync_back_to_original
+    
+    echo "{\"status\": \"success\", \"message\": \"Task $task_number completed and synced.\"}"
 }
 
 cmd_finalize_implementation() {
     local feature_id=$1
     log "Finalizing implementation for $feature_id..."
-    local feature_branch
-    feature_branch=$(get_feature_branch "$feature_id")
-
-    log "Checking out main and merging $feature_branch..."
-    git checkout main
-    git status # CRITICAL GIT FIX
-    git merge --no-ff "$feature_branch"
-    git status # CRITICAL GIT FIX
-
+    
+    # Ensure temp workspace is set up
+    if [ ! -d "$TMP_WORKSPACE" ]; then
+        setup_temp_workspace
+    fi
+    
     log "Updating execution plan..."
     local feature_index
     feature_index=$(get_json_value ".features | map(.id == \"$feature_id\") | index(true)")
     update_json ".features[$feature_index].status" "\"implemented\""
+
+    log "Feature $feature_id has been successfully implemented (git merge skipped in temp workspace)."
     
-    log "Feature $feature_id has been successfully implemented and merged to main."
+    # Sync changes back to original repo
+    sync_back_to_original
+    
     echo "{\"status\": \"success\", \"feature_id\": \"$feature_id\"}"
 }
 
 # --- Main Command Router ---
+
+# Parse global options first
+remaining_args=$(parse_global_options "$@")
+eval set -- "$remaining_args"
+
 COMMAND=$1
 shift || true
 
@@ -223,7 +345,11 @@ case "$COMMAND" in
         cmd_finalize_implementation "$@"
         ;;
     *)
-        echo "Usage: $0 <command> [options]"
+        echo "Usage: $0 [--run-tasks|--no-run-tasks] <command> [options]"
+        echo
+        echo "Global Options:"
+        echo "  --run-tasks        Enable task execution (default: false)"
+        echo "  --no-run-tasks     Disable task execution (default)"
         echo
         echo "Commands:"
         echo "  init <description>         Initializes the project and creates planning files."
@@ -235,3 +361,4 @@ case "$COMMAND" in
         exit 1
         ;;
 esac
+
