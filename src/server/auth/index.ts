@@ -24,6 +24,11 @@ export { BitbucketAuthenticatedClient, BitbucketAPIConfig } from './bitbucket-au
 export { BitbucketAPIManager, BitbucketInstanceConfig } from './bitbucket-api-manager';
 export { BitbucketToolsIntegration } from './bitbucket-tools-integration';
 
+// Export advanced session management classes
+export { AdvancedSessionManager, SessionConfig, SessionStatistics } from './advanced-session-manager';
+export { SessionPersistenceManager, SessionPersistenceConfig } from './session-persistence';
+export { ConcurrentSessionManager, ConcurrentSessionConfig } from './concurrent-session-manager';
+
 // Export authentication types
 export * from '../../types/auth';
 
