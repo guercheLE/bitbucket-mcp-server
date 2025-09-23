@@ -11,6 +11,8 @@ export { OAuthManager } from './oauth-manager';
 export { SessionManager } from './session-manager';
 export { BitbucketApiClient } from './bitbucket-api-client';
 export { AuthenticationMiddleware } from './auth-middleware';
+export { TokenManager } from './token-manager';
+export { TokenStorage, TokenStorageFactory, MemoryTokenStorage } from './token-storage';
 
 // Export authentication types
 export * from '../../types/auth';
