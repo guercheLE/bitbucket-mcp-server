@@ -14,6 +14,11 @@ export { AuthenticationMiddleware } from './auth-middleware';
 export { TokenManager } from './token-manager';
 export { TokenStorage, TokenStorageFactory, MemoryTokenStorage } from './token-storage';
 
+// Export MCP integration classes
+export { MCPAuthIntegration } from './mcp-auth-integration';
+export { MCPAuthMiddleware } from './mcp-auth-middleware';
+export { MCPServerAuthIntegration } from './mcp-server-auth-integration';
+
 // Export authentication types
 export * from '../../types/auth';
 
