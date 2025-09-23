@@ -1,7 +1,7 @@
 {
   "project_description": "A Model Context Protocol (MCP) server that provides tools for interacting with Bitbucket repositories, enabling AI agents to read repositories, list files, search code, manage issues, pull requests, and perform other Bitbucket operations through a standardized MCP interface.",
   "project_type": "greenfield",
-  "next_branch_number": 1,
+  "next_branch_number": 2,
   "project_state": {"project_type":"greenfield","analysis_date":"2025-09-22 23:48:41","next_branch_number":1,"existing_specs":[
   ""
 ],"completed_features":[
@@ -159,8 +159,16 @@
 ],"implementation_gaps":[
   ""
 ]},
-  "features": [],
+  "features": [
+    {
+      "id": "001-mcp-server-infrastructure",
+      "description": "Basic MCP server infrastructure with protocol compliance and multi-transport support",
+      "status": "specified",
+      "branch": "feature/001-mcp-server-infrastructure",
+      "spec_path": "specs/001-mcp-server-infrastructure/spec.md"
+    }
+  ],
   "dependencies": {},
-  "execution_order": [],
+  "execution_order": ["001-mcp-server-infrastructure"],
   "status": "initialized"
 }
