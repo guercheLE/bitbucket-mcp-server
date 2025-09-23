@@ -34,6 +34,9 @@ TDD mandatory: Tests written → Project Lead approved → Tests fail → Then i
 - **CLI**: Commander.js
 - **Authentication**: OAuth 2.0, App Passwords, API Tokens, Basic Auth
 - **Security**: Helmet, CORS, rate limiting, circuit breakers
+- **Vector Database**: LanceDB or ChromaDB (JS client) for semantic search
+- **Embeddings**: OpenAI embeddings or local transformers.js for text embeddings
+- **Schema Management**: Dynamic Zod schema generation from Bitbucket OpenAPI specs
 
 ### Project Structure
 ```
@@ -70,6 +73,64 @@ tests/
 - **Supported Languages**: pt-BR, en-US, zh-CN, hi-IN, es-ES, fr-FR, ar-SA, bn-BD, ru-RU, pt-PT, id-ID, ur-PK, de-DE, ja-JP, mr-IN, te-IN, tr-TR, ta-IN, vi-VN, it-IT
 - **Localization**: i18next with fs-backend and http-middleware
 
+## Semantic Discovery & Tool Architecture
+
+### Core Tool Pattern
+The Bitbucket MCP server MUST implement a 3-tool semantic discovery pattern to efficiently manage 200+ Bitbucket API endpoints across both Data Center and Cloud versions:
+
+#### 🔍 search-ids(query: string) → List[EndpointSummary]
+- **Purpose**: Semantic search across Bitbucket API operations and documentation
+- **Implementation**: Vector database (embedded solution for Node.js) for embedding search
+- **Input**: Natural language query describing desired Bitbucket functionality
+- **Output**: List of operation IDs with short descriptions, parameter hints, and version compatibility
+- **Performance**: Response time < 100ms for search queries
+- **Content**: Index API operations, repository management, pull requests, user management, and administrative tasks
+- **Version Awareness**: Search results MUST indicate compatibility with detected Bitbucket version
+
+#### 📋 get-id(endpoint_id: string) → EndpointDetails
+- **Purpose**: Retrieve detailed schema and documentation for specific Bitbucket API operation
+- **Input**: Operation ID from search-ids results
+- **Output**: Complete operation details including:
+  - Operation description and purpose
+  - Input schema (Zod-compatible JSON schema) with Bitbucket-specific types
+  - Output schema including response formats and pagination details
+  - Required vs optional parameters with Bitbucket data constraints
+  - Usage examples, authentication requirements, and rate limiting notes
+  - Version compatibility information (Data Center vs Cloud)
+- **Privacy**: Internal API implementation details (server URLs, internal tokens) MUST remain hidden
+- **Authentication Context**: Schema details MUST reflect current user permissions and access levels
+
+#### ⚡ call-id(endpoint_id: string, params: dict) → dict
+- **Purpose**: Execute Bitbucket API operation with dynamic parameter validation and authentication
+- **Input Schema**: Generic schema with endpoint_id (string) and params (Record<string, any>)
+- **Runtime Validation**: Dynamic schema validation using Zod with Bitbucket API constraints
+- **Authentication**: Automatic selection of appropriate auth method based on configuration priority
+- **Rate Limiting**: Built-in rate limiting compliance with Bitbucket API limits
+- **Performance**: Validation overhead < 10ms per operation call
+- **Error Handling**: Comprehensive error mapping from Bitbucket API responses to MCP error format
+
+### Vector Database Requirements
+- **Storage**: Embedded vector database compatible with Node.js (e.g., LanceDB, ChromaDB JS client)
+- **Embeddings**: Pre-computed embeddings for all Bitbucket API operations, examples, and troubleshooting guides
+- **Search Performance**: Sub-100ms semantic search response time
+- **API Content**: Index Bitbucket API documentation, common use cases, error handling patterns
+- **Multi-Version Support**: Separate embeddings for Data Center vs Cloud API differences
+- **Dynamic Updates**: Re-index capabilities when new API versions are detected
+
+### Schema Management & API Integration
+- **Dynamic Validation**: Runtime schema validation with Bitbucket API type awareness
+- **Schema Generation**: Auto-generate Zod schemas from Bitbucket OpenAPI specifications
+- **Version Compatibility**: Schema validation MUST account for API version differences
+- **Authentication Integration**: Schema validation MUST consider current authentication context
+- **Rate Limiting Integration**: Built-in awareness of Bitbucket API rate limits per endpoint
+
+### Integration with Bitbucket Operations
+- All Bitbucket capabilities (repository management, pull requests, user administration, etc.) MUST be accessible through the 3-tool pattern
+- Legacy direct API tools MAY be maintained for backward compatibility but are DEPRECATED
+- Console client MUST support both direct commands and semantic discovery workflow
+- Documentation MUST include examples of semantic discovery for common Bitbucket administration tasks
+- Multi-version support MUST be maintained through the semantic discovery interface
+
 ## Quality and Testing
 
 ### Mandatory Tests
@@ -86,6 +147,8 @@ tests/
 - **Administrative Operations**: Response time <30s for 95% of requests (backup, upgrade, maintenance)
 - **Long-running Operations**: Response time <5min for 95% of requests (bulk operations, migrations)
 - **Memory Usage**: <1GB per instance, efficient resource management
+- **Semantic Search**: Sub-100ms response time for search-ids queries, <10ms validation overhead for call-id operations
+- **Vector Database**: <100MB memory footprint for embedded vector storage with 200+ API endpoints
 - Uptime >99.9%
 - Structured logs with sanitization
 
@@ -986,8 +1049,8 @@ All code MUST be licensed under GNU Lesser General Public License (LGPL) v3.0; S
 - `DELETE /2.0/dashboards/{dashboard_id}` - Delete dashboard
 - `POST /2.0/dashboards/{dashboard_id}/clone` - Clone dashboard
 - `POST /2.0/dashboards/{dashboard_id}/widgets` - Add widget
-- `PUT /2.0/dashboards/{dashboard_id}/widgets/{widget_id}` - Update widget
-- `DELETE /2.0/dashboards/{dashboard_id}/widgets/{widget_id}` - Remove widget
+- `PUT /2.0/dashboards/{dashboard_id}/widgets/{widget-id}` - Update widget
+- `DELETE /2.0/dashboards/{dashboard_id}/widgets/{widget-id}` - Remove widget
 - `GET /2.0/dashboards/widgets/available` - List available widgets
 
 #### Add-ons (8 endpoints) - Available since API 2.0
