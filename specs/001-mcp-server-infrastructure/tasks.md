@@ -85,8 +85,8 @@
 
 ## Phase 5: Polish & Validation
 
-- [ ] T050 **[P] Server unit tests**: Create `tests/unit/mcp-server.test.ts` testing server class methods
-- [ ] T051 **[P] Tool registry unit tests**: Create `tests/unit/tool-registry.test.ts` testing tool registration logic and snake_case naming convention validation  
+- [x] T050 **[P] Server unit tests**: Create `tests/unit/mcp-server.test.ts` testing server class methods
+- [x] T051 **[P] Tool registry unit tests**: Create `tests/unit/tool-registry.test.ts` testing tool registration logic and snake_case naming convention validation  
 - [ ] T052 **Performance validation**: Verify <2s response times and <1GB memory usage per constitutional requirements
 - [ ] T053 **Quickstart verification**: Execute `quickstart.md` scenarios to validate infrastructure functionality
 - [ ] T054 **Protocol compliance audit**: Run MCP protocol validation against official test suite if available
