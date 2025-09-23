@@ -25,6 +25,10 @@ import {
   ClientSession,
   ToolExecutionContext
 } from '../types/index.js';
+import { 
+  AuthenticationError,
+  AuthenticationErrorCode
+} from '../types/auth.js';
 
 /**
  * MCP Error Response Structure
@@ -158,6 +162,32 @@ export class MCPErrorHandler {
     context?: ErrorContext
   ): MCPErrorResponse {
     return this.createErrorResponse(id, code, message, context);
+  }
+
+  /**
+   * Handle authentication errors
+   * Provides specific error handling for authentication-related failures
+   */
+  handleAuthenticationError(
+    id: string | number | null,
+    error: AuthenticationError,
+    context?: ErrorContext
+  ): MCPErrorResponse {
+    const mcpCode = this.mapAuthenticationErrorCode(error.code);
+    const message = this.getAuthenticationErrorMessage(error);
+    
+    const authContext: ErrorContext = {
+      ...context,
+      operation: 'authentication',
+      metadata: {
+        errorCode: error.code,
+        isRecoverable: error.isRecoverable,
+        timestamp: error.timestamp.toISOString(),
+        ...context?.metadata
+      }
+    };
+
+    return this.createErrorResponse(id, mcpCode, message, authContext);
   }
 
   /**
@@ -413,6 +443,84 @@ export class MCPErrorHandler {
   }
 
   /**
+   * Map authentication error codes to MCP error codes
+   */
+  private mapAuthenticationErrorCode(authCode: AuthenticationErrorCode): MCPErrorCode {
+    switch (authCode) {
+      case AuthenticationErrorCode.INVALID_CREDENTIALS:
+        return MCPErrorCode.AUTHENTICATION_FAILED;
+      case AuthenticationErrorCode.SESSION_EXPIRED:
+        return MCPErrorCode.SESSION_EXPIRED;
+      case AuthenticationErrorCode.INSUFFICIENT_PERMISSIONS:
+        return MCPErrorCode.AUTHORIZATION_FAILED;
+      case AuthenticationErrorCode.ACCOUNT_LOCKED:
+        return MCPErrorCode.AUTHENTICATION_FAILED;
+      case AuthenticationErrorCode.TOKEN_INVALID:
+        return MCPErrorCode.AUTHENTICATION_FAILED;
+      case AuthenticationErrorCode.TOKEN_EXPIRED:
+        return MCPErrorCode.SESSION_EXPIRED;
+      case AuthenticationErrorCode.REFRESH_TOKEN_INVALID:
+        return MCPErrorCode.AUTHENTICATION_FAILED;
+      case AuthenticationErrorCode.REFRESH_TOKEN_EXPIRED:
+        return MCPErrorCode.SESSION_EXPIRED;
+      case AuthenticationErrorCode.USER_NOT_FOUND:
+        return MCPErrorCode.AUTHENTICATION_FAILED;
+      case AuthenticationErrorCode.APPLICATION_NOT_FOUND:
+        return MCPErrorCode.AUTHENTICATION_FAILED;
+      case AuthenticationErrorCode.APPLICATION_DISABLED:
+        return MCPErrorCode.AUTHENTICATION_FAILED;
+      case AuthenticationErrorCode.RATE_LIMIT_EXCEEDED:
+        return MCPErrorCode.RATE_LIMIT_EXCEEDED;
+      case AuthenticationErrorCode.NETWORK_ERROR:
+        return MCPErrorCode.TRANSPORT_ERROR;
+      case AuthenticationErrorCode.SERVER_ERROR:
+        return MCPErrorCode.INTERNAL_ERROR;
+      case AuthenticationErrorCode.UNKNOWN_ERROR:
+      default:
+        return MCPErrorCode.INTERNAL_ERROR;
+    }
+  }
+
+  /**
+   * Get user-friendly error message for authentication errors
+   */
+  private getAuthenticationErrorMessage(error: AuthenticationError): string {
+    switch (error.code) {
+      case AuthenticationErrorCode.INVALID_CREDENTIALS:
+        return 'Invalid credentials provided';
+      case AuthenticationErrorCode.SESSION_EXPIRED:
+        return 'User session has expired';
+      case AuthenticationErrorCode.INSUFFICIENT_PERMISSIONS:
+        return 'Insufficient permissions for this operation';
+      case AuthenticationErrorCode.ACCOUNT_LOCKED:
+        return 'User account is locked';
+      case AuthenticationErrorCode.TOKEN_INVALID:
+        return 'Invalid access token';
+      case AuthenticationErrorCode.TOKEN_EXPIRED:
+        return 'Access token has expired';
+      case AuthenticationErrorCode.REFRESH_TOKEN_INVALID:
+        return 'Invalid refresh token';
+      case AuthenticationErrorCode.REFRESH_TOKEN_EXPIRED:
+        return 'Refresh token has expired';
+      case AuthenticationErrorCode.USER_NOT_FOUND:
+        return 'User not found';
+      case AuthenticationErrorCode.APPLICATION_NOT_FOUND:
+        return 'Application not found';
+      case AuthenticationErrorCode.APPLICATION_DISABLED:
+        return 'Application is disabled';
+      case AuthenticationErrorCode.RATE_LIMIT_EXCEEDED:
+        return 'Rate limit exceeded';
+      case AuthenticationErrorCode.NETWORK_ERROR:
+        return 'Network error during authentication';
+      case AuthenticationErrorCode.SERVER_ERROR:
+        return 'Authentication server error';
+      case AuthenticationErrorCode.UNKNOWN_ERROR:
+      default:
+        return 'Unknown authentication error';
+    }
+  }
+
+  /**
    * Get error severity based on error code
    */
   private getErrorSeverity(code: MCPErrorCode): ErrorSeverity {
@@ -541,6 +649,17 @@ export function handleTransportError(
   context?: ErrorContext
 ): MCPErrorResponse {
   return mcpErrorHandler.handleTransportError(id, transportType, error, context);
+}
+
+/**
+ * Utility function to handle authentication errors
+ */
+export function handleAuthenticationError(
+  id: string | number | null,
+  error: AuthenticationError,
+  context?: ErrorContext
+): MCPErrorResponse {
+  return mcpErrorHandler.handleAuthenticationError(id, error, context);
 }
 
 export default MCPErrorHandler;
