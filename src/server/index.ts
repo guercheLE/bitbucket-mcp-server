@@ -28,6 +28,7 @@
 import { MCPServerImpl } from './mcp-server.js';
 import { MCPServerSDK, createMCPServerWithSDK, createTransport } from './mcp-server-sdk.js';
 import { MCPServerLogger, createLoggerFromConfig, LogCategory } from './logger.js';
+import { ConnectionManager, createConnectionManager } from './connection-manager.js';
 import { ClientSessionManager } from './client-session.js';
 import { ToolRegistry } from './tool-registry.js';
 import { TransportFactory } from './transport-factory.js';
@@ -49,6 +50,7 @@ export class MCPServerApplication {
   private server: MCPServerImpl;
   private sdkServer: MCPServerSDK;
   private logger: MCPServerLogger;
+  private connectionManager: ConnectionManager;
   private sessionManager: ClientSessionManager;
   private toolRegistry: ToolRegistry;
   private transportFactory: TransportFactory;
@@ -62,6 +64,9 @@ export class MCPServerApplication {
     
     // Initialize logger first
     this.logger = createLoggerFromConfig(this.config);
+    
+    // Initialize connection manager
+    this.connectionManager = createConnectionManager(this.config, this.logger);
     
     // Initialize components
     this.sessionManager = new ClientSessionManager(
@@ -180,6 +185,7 @@ export class MCPServerApplication {
       await this.server.stop();
       
       // Shutdown components
+      await this.connectionManager.shutdown();
       await this.transportFactory.shutdown();
       await this.sessionManager.shutdown();
       
@@ -215,11 +221,128 @@ export class MCPServerApplication {
         uptime: this.isRunning ? Date.now() - this.server['_startTime']?.getTime() : 0
       },
       server: this.server.getHealthStatus(),
+      connectionManager: this.connectionManager.getStats(),
       sessionManager: this.sessionManager.getStats(),
       toolRegistry: this.toolRegistry.getRegistryStats(),
       transportFactory: this.transportFactory.getStats(),
       messageHandler: this.messageHandler.getStats()
     };
+  }
+
+  /**
+   * Create a new client session
+   * Establishes a new client connection with graceful handling
+   */
+  async createSession(clientId: string, transport: any): Promise<any> {
+    try {
+      this.logger.logServerEvent('session_creation', {
+        clientId,
+        transportType: transport.type
+      });
+
+      const session = await this.connectionManager.createSession(clientId, transport);
+      
+      // Register session with session manager for backward compatibility
+      await this.sessionManager.createSession(session.id, clientId, transport);
+      
+      this.logger.logSessionEvent(session.id, 'created', {
+        clientId,
+        transportType: transport.type
+      });
+
+      return session;
+    } catch (error) {
+      this.logger.logServerEvent('error', {
+        error: (error as Error).message,
+        operation: 'session_creation',
+        clientId
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Authenticate a client session
+   * Authenticates a client and updates session state
+   */
+  async authenticateSession(sessionId: string, authData?: any): Promise<void> {
+    try {
+      await this.connectionManager.authenticateSession(sessionId, authData);
+      
+      this.logger.logSessionEvent(sessionId, 'authenticated', {
+        authData: authData ? 'provided' : 'none'
+      });
+    } catch (error) {
+      this.logger.logSessionEvent(sessionId, 'error', {
+        error: (error as Error).message,
+        operation: 'authentication'
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Remove a client session
+   * Gracefully disconnects a client and cleans up resources
+   */
+  async removeSession(sessionId: string, reason: string = 'client_request'): Promise<void> {
+    try {
+      this.logger.logSessionEvent(sessionId, 'disconnecting', {
+        reason
+      });
+
+      await this.connectionManager.disconnectSession(sessionId, reason);
+      
+      // Remove from session manager for backward compatibility
+      await this.sessionManager.removeSession(sessionId);
+      
+      this.logger.logSessionEvent(sessionId, 'disconnected', {
+        reason
+      });
+    } catch (error) {
+      this.logger.logSessionEvent(sessionId, 'error', {
+        error: (error as Error).message,
+        operation: 'session_removal',
+        reason
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Get active sessions
+   * Returns all currently active client sessions
+   */
+  getActiveSessions(): any[] {
+    return this.connectionManager.getActiveSessions();
+  }
+
+  /**
+   * Get session by ID
+   * Retrieves a specific session by its identifier
+   */
+  getSession(sessionId: string): any | undefined {
+    return this.connectionManager.getSession(sessionId);
+  }
+
+  /**
+   * Perform connection health check
+   * Checks all connections and cleans up expired sessions
+   */
+  async performHealthCheck(): Promise<void> {
+    try {
+      await this.connectionManager.performHealthCheck();
+      
+      this.logger.logServerEvent('health_check', {
+        activeSessions: this.connectionManager.getActiveSessions().length
+      });
+    } catch (error) {
+      this.logger.logServerEvent('error', {
+        error: (error as Error).message,
+        operation: 'health_check'
+      });
+      throw error;
+    }
   }
 
   /**

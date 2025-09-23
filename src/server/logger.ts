@@ -177,13 +177,21 @@ export interface BaseLogEntry {
 export interface ServerLogEntry extends BaseLogEntry {
   category: LogCategory.SERVER;
   metadata: {
-    event: 'start' | 'stop' | 'restart' | 'error' | 'health_check';
+    event: 'start' | 'stop' | 'restart' | 'error' | 'health_check' | 'cleanup' | 'shutdown';
     uptime?: number;
     memoryUsage?: NodeJS.MemoryUsage;
     activeSessions?: number;
     serverName?: string;
     version?: string;
     description?: string;
+    maxConnections?: number;
+    expiredSessions?: number;
+    totalSessions?: number;
+    defaultTimeout?: number;
+    sessionsBefore?: number;
+    sessionsAfter?: number;
+    cleanedSessions?: number;
+    finalSessions?: number;
     error?: {
       code: MCPErrorCode;
       message: string;
@@ -200,11 +208,14 @@ export interface SessionLogEntry extends BaseLogEntry {
   category: LogCategory.SESSION;
   sessionId: string;
   metadata: {
-    event: 'created' | 'removed' | 'expired' | 'error' | 'activity';
+    event: 'created' | 'removed' | 'expired' | 'error' | 'activity' | 'authenticated' | 'disconnecting' | 'disconnected';
     clientId?: string;
     transportType?: string;
     duration?: number;
     requestsProcessed?: number;
+    sessionId?: string;
+    authData?: string;
+    reason?: string;
     error?: {
       code: MCPErrorCode;
       message: string;
@@ -247,6 +258,7 @@ export interface TransportLogEntry extends BaseLogEntry {
     messageSize?: number;
     responseTime?: number;
     headers?: Record<string, any>;
+    sessionId?: string;
     error?: {
       code: MCPErrorCode;
       message: string;
