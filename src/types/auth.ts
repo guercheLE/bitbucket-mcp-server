@@ -395,6 +395,28 @@ export interface AuthenticationError {
 }
 
 /**
+ * Authentication Error Class
+ * Class implementation for authentication errors
+ */
+export class AuthenticationError extends Error implements AuthenticationError {
+  public readonly code: AuthenticationErrorCode;
+  public readonly details?: any;
+  public readonly timestamp: Date;
+  public readonly sessionId?: string;
+  public readonly isRecoverable: boolean;
+
+  constructor(error: AuthenticationError) {
+    super(error.message);
+    this.name = 'AuthenticationError';
+    this.code = error.code;
+    this.details = error.details;
+    this.timestamp = error.timestamp;
+    this.sessionId = error.sessionId;
+    this.isRecoverable = error.isRecoverable;
+  }
+}
+
+/**
  * Authentication Error Codes
  * Standard error codes for authentication failures
  */

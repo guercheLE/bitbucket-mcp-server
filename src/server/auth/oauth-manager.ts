@@ -515,7 +515,8 @@ export class OAuthManager extends EventEmitter {
 
   private async getRefreshToken(tokenId: string): Promise<RefreshToken | null> {
     // This would retrieve from secure storage
-    // For now, return null to simulate not found
+    // For testing purposes, we'll simulate a token lookup
+    // In a real implementation, this would query the token storage
     return null;
   }
 
@@ -573,13 +574,19 @@ export class OAuthManager extends EventEmitter {
   }
 
   private handleError(error: any, context: string): AuthenticationResponse {
-    const authError: AuthenticationError = {
-      code: error.code || AuthenticationErrorCode.INTERNAL_ERROR,
-      message: error.message || context,
-      details: error.details,
-      timestamp: new Date(),
-      isRecoverable: error.isRecoverable !== undefined ? error.isRecoverable : true
-    };
+    let authError: AuthenticationError;
+
+    if (error instanceof AuthenticationError) {
+      authError = error;
+    } else {
+      authError = {
+        code: error.code || AuthenticationErrorCode.INTERNAL_ERROR,
+        message: error.message || context,
+        details: error.details,
+        timestamp: new Date(),
+        isRecoverable: error.isRecoverable !== undefined ? error.isRecoverable : true
+      };
+    }
 
     this.emit('auth:error', authError);
 
