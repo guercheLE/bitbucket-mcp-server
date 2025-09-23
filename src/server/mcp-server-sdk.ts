@@ -40,7 +40,8 @@ import {
   ServerConfig, 
   Tool as CustomTool,
   TransportType,
-  MCPErrorCode
+  MCPErrorCode,
+  ToolExecutionContext
 } from '../types/index';
 import { 
   MCPErrorHandler, 
@@ -56,7 +57,7 @@ import {
  * Wraps the official MCP SDK server with our custom functionality
  * and ensures full protocol compliance.
  */
-export class MCPServerSDK extends Server implements MCPServer {
+export class MCPServerSDK extends Server {
   private customServer: MCPServer;
   private registeredTools: Map<string, CustomTool> = new Map();
   private registeredResources: Map<string, Resource> = new Map();
@@ -135,8 +136,8 @@ export class MCPServerSDK extends Server implements MCPServer {
           })
         };
 
-        const context = {
-          session: mockSession,
+        const context: ToolExecutionContext = {
+          session: mockSession as any,
           server: this.customServer,
           request: {
             id: requestId,

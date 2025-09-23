@@ -99,7 +99,8 @@ class StdioTransport extends EventEmitter implements Transport {
     try {
       // Setup stdin/stdout for JSON-RPC communication
       this.inputStream.setEncoding('utf8');
-      this.outputStream.setDefaultEncoding('utf8');
+      // Note: setDefaultEncoding is not available on WritableStream in newer Node.js versions
+      // this.outputStream.setDefaultEncoding('utf8');
       
       this.isConnected = true;
       this.stats.uptime = Date.now();
@@ -109,7 +110,7 @@ class StdioTransport extends EventEmitter implements Transport {
       
     } catch (error) {
       this.emit('error', error);
-      throw new Error(`Failed to connect stdio transport: ${error.message}`);
+      throw new Error(`Failed to connect stdio transport: ${(error as any).message}`);
     }
   }
 
@@ -127,7 +128,7 @@ class StdioTransport extends EventEmitter implements Transport {
       
     } catch (error) {
       this.emit('error', error);
-      throw new Error(`Failed to disconnect stdio transport: ${error.message}`);
+      throw new Error(`Failed to disconnect stdio transport: ${(error as any).message}`);
     }
   }
 
@@ -146,7 +147,7 @@ class StdioTransport extends EventEmitter implements Transport {
       
     } catch (error) {
       this.emit('error', error);
-      throw new Error(`Failed to send message via stdio: ${error.message}`);
+      throw new Error(`Failed to send message via stdio: ${(error as any).message}`);
     }
   }
 
@@ -172,7 +173,7 @@ class StdioTransport extends EventEmitter implements Transport {
           
           resolve(message);
         } catch (error) {
-          reject(new Error(`Failed to parse stdio message: ${error.message}`));
+          reject(new Error(`Failed to parse stdio message: ${(error as any).message}`));
         }
       };
 
@@ -263,7 +264,7 @@ class HttpTransport extends EventEmitter implements Transport {
       
     } catch (error) {
       this.emit('error', error);
-      throw new Error(`Failed to connect HTTP transport: ${error.message}`);
+      throw new Error(`Failed to connect HTTP transport: ${(error as any).message}`);
     }
   }
 
@@ -288,7 +289,7 @@ class HttpTransport extends EventEmitter implements Transport {
       
     } catch (error) {
       this.emit('error', error);
-      throw new Error(`Failed to disconnect HTTP transport: ${error.message}`);
+      throw new Error(`Failed to disconnect HTTP transport: ${(error as any).message}`);
     }
   }
 
@@ -457,7 +458,7 @@ class SseTransport extends EventEmitter implements Transport {
       
     } catch (error) {
       this.emit('error', error);
-      throw new Error(`Failed to connect SSE transport: ${error.message}`);
+      throw new Error(`Failed to connect SSE transport: ${(error as any).message}`);
     }
   }
 
@@ -488,7 +489,7 @@ class SseTransport extends EventEmitter implements Transport {
       
     } catch (error) {
       this.emit('error', error);
-      throw new Error(`Failed to disconnect SSE transport: ${error.message}`);
+      throw new Error(`Failed to disconnect SSE transport: ${(error as any).message}`);
     }
   }
 
@@ -512,7 +513,7 @@ class SseTransport extends EventEmitter implements Transport {
       
     } catch (error) {
       this.emit('error', error);
-      throw new Error(`Failed to send SSE message: ${error.message}`);
+      throw new Error(`Failed to send SSE message: ${(error as any).message}`);
     }
   }
 
@@ -693,7 +694,7 @@ export class TransportFactory extends EventEmitter {
       
     } catch (error) {
       this.emit('transportCreationError', config, error);
-      throw new Error(`Failed to create transport: ${error.message}`);
+      throw new Error(`Failed to create transport: ${(error as any).message}`);
     }
   }
 
@@ -752,7 +753,7 @@ export class TransportFactory extends EventEmitter {
       
     } catch (error) {
       this.emit('transportRemovalError', transport, error);
-      throw new Error(`Failed to remove transport ${transportId}: ${error.message}`);
+      throw new Error(`Failed to remove transport ${transportId}: ${(error as any).message}`);
     }
   }
 

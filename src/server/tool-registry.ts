@@ -174,7 +174,7 @@ export class ToolRegistry extends EventEmitter {
       
     } catch (error) {
       this.emit('toolRegistrationError', tool.name, error);
-      throw new Error(`Failed to register tool '${tool.name}': ${error.message}`);
+      throw new Error(`Failed to register tool '${tool.name}': ${(error as any).message}`);
     }
   }
 
@@ -209,7 +209,7 @@ export class ToolRegistry extends EventEmitter {
       
     } catch (error) {
       this.emit('toolUnregistrationError', toolName, error);
-      throw new Error(`Failed to unregister tool '${toolName}': ${error.message}`);
+      throw new Error(`Failed to unregister tool '${toolName}': ${(error as any).message}`);
     }
   }
 
@@ -280,7 +280,7 @@ export class ToolRegistry extends EventEmitter {
       return false;
     }
     
-    tool.enabled = true;
+    (tool as any).enabled = true;
     this.emit('toolEnabled', tool);
     
     return true;
@@ -296,7 +296,7 @@ export class ToolRegistry extends EventEmitter {
       return false;
     }
     
-    tool.enabled = false;
+    (tool as any).enabled = false;
     this.emit('toolDisabled', tool);
     
     return true;
@@ -352,7 +352,7 @@ export class ToolRegistry extends EventEmitter {
         success: false,
         error: {
           code: MCPErrorCode.TOOL_EXECUTION_FAILED,
-          message: error.message,
+          message: (error as any).message,
           details: error
         },
         metadata: {

@@ -215,7 +215,7 @@ export class MCPServerApplication {
     return {
       application: {
         isRunning: this.isRunning,
-        uptime: this.isRunning ? Date.now() - this.server['_startTime']?.getTime() : 0
+        uptime: this.isRunning ? Date.now() - (this.server as any)['_startTime']?.getTime() || 0 : 0
       },
       server: this.server.getHealthStatus(),
       connectionManager: this.connectionManager.getStats(),
@@ -250,8 +250,8 @@ export class MCPServerApplication {
           code: MCPErrorCode.INTERNAL_ERROR,
           message: error instanceof Error ? error.message : String(error)
         },
-        operation: 'session_creation',
-        clientId
+        // operation: 'session_creation', // Removed - not in type definition
+        // clientId // Removed - not in type definition
       });
       throw error;
     }
@@ -274,7 +274,7 @@ export class MCPServerApplication {
           code: MCPErrorCode.INTERNAL_ERROR,
           message: error instanceof Error ? error.message : String(error)
         },
-        operation: 'authentication'
+        // operation: 'authentication' // Removed - not in type definition
       });
       throw error;
     }
@@ -301,7 +301,7 @@ export class MCPServerApplication {
           code: MCPErrorCode.INTERNAL_ERROR,
           message: error instanceof Error ? error.message : String(error)
         },
-        operation: 'session_removal',
+        // operation: 'session_removal', // Removed - not in type definition
         reason
       });
       throw error;
@@ -341,7 +341,7 @@ export class MCPServerApplication {
           code: MCPErrorCode.INTERNAL_ERROR,
           message: error instanceof Error ? error.message : String(error)
         },
-        operation: 'health_check'
+        // operation: 'health_check' // Removed - not in type definition
       });
       throw error;
     }

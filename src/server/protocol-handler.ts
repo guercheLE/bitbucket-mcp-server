@@ -133,9 +133,9 @@ export class ProtocolMessageHandler extends EventEmitter {
       
       // Return error response
       return this.createErrorResponse(
-        error.id || null,
-        error.code || MCPErrorCode.INTERNAL_ERROR,
-        error.message || 'Internal error'
+        (error as any).id || null,
+        (error as any).code || MCPErrorCode.INTERNAL_ERROR,
+        (error as any).message || 'Internal error'
       );
     }
   }
@@ -193,7 +193,7 @@ export class ProtocolMessageHandler extends EventEmitter {
     } catch (error) {
       throw this.createError(
         MCPErrorCode.INITIALIZATION_FAILED,
-        `Initialization failed: ${error.message}`
+        `Initialization failed: ${(error as any).message}`
       );
     }
   }
@@ -236,7 +236,7 @@ export class ProtocolMessageHandler extends EventEmitter {
     } catch (error) {
       throw this.createError(
         MCPErrorCode.INTERNAL_ERROR,
-        `Failed to list tools: ${error.message}`
+        `Failed to list tools: ${(error as any).message}`
       );
     }
   }
@@ -288,7 +288,7 @@ export class ProtocolMessageHandler extends EventEmitter {
     } catch (error) {
       throw this.createError(
         MCPErrorCode.TOOL_EXECUTION_FAILED,
-        `Tool execution failed: ${error.message}`
+        `Tool execution failed: ${(error as any).message}`
       );
     }
   }
@@ -347,7 +347,7 @@ export class ProtocolMessageHandler extends EventEmitter {
     } catch (error) {
       throw this.createError(
         MCPErrorCode.INTERNAL_ERROR,
-        `Shutdown failed: ${error.message}`
+        `Shutdown failed: ${(error as any).message}`
       );
     }
   }
@@ -400,7 +400,7 @@ export class ProtocolMessageHandler extends EventEmitter {
     } catch (error) {
       throw this.createError(
         MCPErrorCode.PARSE_ERROR,
-        `Failed to parse JSON: ${error.message}`
+        `Failed to parse JSON: ${(error as any).message}`
       );
     }
   }
@@ -478,7 +478,7 @@ export class ProtocolMessageHandler extends EventEmitter {
     }
     
     // Route request to appropriate handler
-    const handler = this.getMethodHandler(message.method);
+    const handler = this.getMethodHandler(message.method!);
     if (!handler) {
       throw this.createError(
         MCPErrorCode.METHOD_NOT_FOUND,
@@ -509,8 +509,8 @@ export class ProtocolMessageHandler extends EventEmitter {
         // Add error response for failed batch items
         responses.push(this.createErrorResponse(
           message.id,
-          error.code || MCPErrorCode.INTERNAL_ERROR,
-          error.message || 'Internal error'
+          (error as any).code || MCPErrorCode.INTERNAL_ERROR,
+          (error as any).message || 'Internal error'
         ));
       }
     }
@@ -654,8 +654,8 @@ export class ProtocolMessageHandler extends EventEmitter {
   private updateErrorStats(error: any, startTime: number): void {
     this.stats.failedMessages++;
     
-    const code = error.code || MCPErrorCode.INTERNAL_ERROR;
-    this.stats.errorCounts[code] = (this.stats.errorCounts[code] || 0) + 1;
+    const code = (error as any).code || MCPErrorCode.INTERNAL_ERROR;
+    this.stats.errorCounts[code as MCPErrorCode] = (this.stats.errorCounts[code as MCPErrorCode] || 0) + 1;
     
     const processingTime = Date.now() - startTime;
     this.stats.averageProcessingTime = 
