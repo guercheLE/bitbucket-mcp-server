@@ -71,9 +71,9 @@
 - [x] T031 **[P] MCP server class**: Create `src/server/mcp-server.ts` implementing MCPServer entity with protocol compliance
 - [x] T032 **[P] Client session manager**: Create `src/server/client-session.ts` implementing ClientSession lifecycle management
 - [x] T033 **[P] Tool registry**: Create `src/server/tool-registry.ts` implementing Tool registration and discovery system with snake_case naming validation (no bitbucket_, mcp_, bb_ prefixes)
-- [ ] T034 **Transport factory**: Create `src/server/transport-factory.ts` implementing multi-transport support (stdio, HTTP, SSE)
-- [ ] T035 **Protocol message handler**: Create `src/server/protocol-handler.ts` implementing MCP JSON-RPC 2.0 message processing
-- [ ] T036 **Server entry point**: Create `src/server/index.ts` implementing server initialization and startup logic
+- [x] T034 **Transport factory**: Create `src/server/transport-factory.ts` implementing multi-transport support (stdio, HTTP, SSE)
+- [x] T035 **Protocol message handler**: Create `src/server/protocol-handler.ts` implementing MCP JSON-RPC 2.0 message processing
+- [x] T036 **Server entry point**: Create `src/server/index.ts` implementing server initialization and startup logic
 
 ## Phase 4: Integration & Protocol Compliance
 
