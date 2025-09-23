@@ -510,13 +510,19 @@ export class AuthenticationManager extends EventEmitter {
   }
 
   private handleError(error: any, context: string): AuthenticationResponse {
-    const authError: AuthenticationError = {
-      code: error.code || AuthenticationErrorCode.INTERNAL_ERROR,
-      message: error.message || context,
-      details: error.details,
-      timestamp: new Date(),
-      isRecoverable: error.isRecoverable !== undefined ? error.isRecoverable : true
-    };
+    let authError: AuthenticationError;
+
+    if (error instanceof AuthenticationError) {
+      authError = error;
+    } else {
+      authError = {
+        code: error.code || AuthenticationErrorCode.INTERNAL_ERROR,
+        message: error.message || context,
+        details: error.details,
+        timestamp: new Date(),
+        isRecoverable: error.isRecoverable !== undefined ? error.isRecoverable : true
+      };
+    }
 
     this.state.errors.push(authError);
     this.emit('auth:error', authError);
