@@ -6,7 +6,23 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 
-$repoRoot = git rev-parse --show-toplevel
+# Support both git repositories and temporary workspaces
+if ($env:ORCHESTRATE_REPO_ROOT) {
+    # When called from orchestration script, use the provided root
+    $repoRoot = $env:ORCHESTRATE_REPO_ROOT
+} else {
+    # Default behavior for git repositories
+    try {
+        $repoRoot = git rev-parse --show-toplevel
+        if ($LASTEXITCODE -ne 0) {
+            throw "Not in git repository"
+        }
+    } catch {
+        Write-Error "ERROR: Not in a git repository and ORCHESTRATE_REPO_ROOT not set."
+        exit 1
+    }
+}
+
 $constitutionFile = Join-Path $repoRoot '.specify/memory/constitution.md'
 $srcDir = Join-Path $repoRoot 'src'
 $testsDir = Join-Path $repoRoot 'tests'
