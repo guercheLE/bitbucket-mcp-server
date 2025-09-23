@@ -570,12 +570,10 @@ export class RateLimiter extends EventEmitter {
         name: 'Per-IP Authentication Rate Limit',
         description: 'Rate limit authentication requests per IP address',
         config: {
-          algorithm: RateLimitAlgorithm.TOKEN_BUCKET,
+          algorithm: RateLimitAlgorithm.SLIDING_WINDOW,
           scope: RateLimitScope.PER_IP,
-          maxRequests: 10,
+          maxRequests: 5,
           windowMs: 60 * 1000, // 1 minute
-          burstSize: 5,
-          refillRate: 0.1, // 1 request per 10 seconds
           blockDurationMs: 15 * 60 * 1000, // 15 minutes
           adaptive: true,
           loadThreshold: 0.7,
