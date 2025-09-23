@@ -27,6 +27,7 @@
 
 import { MCPServerImpl } from './mcp-server.js';
 import { MCPServerSDK, createMCPServerWithSDK, createTransport } from './mcp-server-sdk.js';
+import { MCPServerLogger, createLoggerFromConfig, LogCategory } from './logger.js';
 import { ClientSessionManager } from './client-session.js';
 import { ToolRegistry } from './tool-registry.js';
 import { TransportFactory } from './transport-factory.js';
@@ -36,7 +37,7 @@ import {
   TransportConfig, 
   Tool,
   MCPErrorCode
-} from '../types/index.js';
+} from '../types/index';
 
 /**
  * Server Application Class
@@ -47,6 +48,7 @@ import {
 export class MCPServerApplication {
   private server: MCPServerImpl;
   private sdkServer: MCPServerSDK;
+  private logger: MCPServerLogger;
   private sessionManager: ClientSessionManager;
   private toolRegistry: ToolRegistry;
   private transportFactory: TransportFactory;
@@ -57,6 +59,9 @@ export class MCPServerApplication {
   constructor(config?: Partial<ServerConfig>) {
     // Initialize default configuration
     this.config = this.createDefaultConfig(config);
+    
+    // Initialize logger first
+    this.logger = createLoggerFromConfig(this.config);
     
     // Initialize components
     this.sessionManager = new ClientSessionManager(
@@ -109,6 +114,12 @@ export class MCPServerApplication {
     }
 
     try {
+      this.logger.logServerEvent('start', {
+        serverName: this.config.name,
+        version: this.config.version,
+        description: this.config.description
+      });
+      
       console.log('Starting Bitbucket MCP Server...');
       console.log(`Server: ${this.config.name} v${this.config.version}`);
       console.log(`Description: ${this.config.description || 'No description'}`);
@@ -159,6 +170,7 @@ export class MCPServerApplication {
     }
 
     try {
+      this.logger.logServerEvent('stop');
       console.log('Stopping Bitbucket MCP Server...');
       
       // Stop health monitoring
@@ -215,12 +227,29 @@ export class MCPServerApplication {
    * Adds a tool to the registry and makes it available
    */
   async registerTool(tool: Tool): Promise<void> {
-    await this.toolRegistry.registerTool(tool);
-    await this.server.registerTool(tool);
-    
-    // Register with SDK server if available
-    if (this.sdkServer) {
-      await this.sdkServer.registerTool(tool);
+    try {
+      await this.toolRegistry.registerTool(tool);
+      await this.server.registerTool(tool);
+      
+      // Register with SDK server if available
+      if (this.sdkServer) {
+        await this.sdkServer.registerTool(tool);
+      }
+      
+      this.logger.logToolEvent(tool.name, 'registered', {
+        toolName: tool.name,
+        description: tool.description,
+        parameters: tool.parameters.length
+      });
+    } catch (error) {
+      this.logger.logToolEvent(tool.name, 'error', {
+        toolName: tool.name,
+        error: {
+          code: MCPErrorCode.TOOL_EXECUTION_FAILED,
+          message: error.message
+        }
+      });
+      throw error;
     }
   }
 
