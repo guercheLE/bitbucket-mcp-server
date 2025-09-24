@@ -1,12 +1,12 @@
 export default {
-  preset: 'ts-jest/presets/default-esm',
-  extensionsToTreatAsEsm: ['.ts'],
-  globals: {
-    'ts-jest': {
-      useESM: true
-    }
-  },
+  preset: 'ts-jest',
   testEnvironment: 'node',
+  transform: {
+    '^.+\\.ts$': 'ts-jest'
+  },
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1'
+  },
   testMatch: [
     '**/tests/**/*.test.ts',
     '**/tests/**/*.spec.ts'
@@ -35,9 +35,6 @@ export default {
     }
   },
   setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
-  moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1'
-  },
   testTimeout: 30000, // Increased for MCP protocol tests
   verbose: true,
   // Enable parallel execution for performance

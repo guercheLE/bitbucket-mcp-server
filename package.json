@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "MCP Server for Bitbucket Data Center and Cloud APIs",
   "main": "dist/server/index.js",
-  "type": "module",
   "engines": {
     "node": ">=18.0.0"
   },
