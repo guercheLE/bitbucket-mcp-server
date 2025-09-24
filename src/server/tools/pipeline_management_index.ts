@@ -37,11 +37,17 @@
 
 export { createPipelineTool } from './create_pipeline.js';
 export { configurePipelineTool } from './configure_pipeline.js';
+export { executePipelineTool } from './execute_pipeline.js';
+export { monitorPipelineTool } from './monitor_pipeline.js';
+export { getPipelineStatusTool } from './get_pipeline_status.js';
 
 // Export all tools as an array for easy registration
 export const pipelineManagementTools = [
   createPipelineTool,
-  configurePipelineTool
+  configurePipelineTool,
+  executePipelineTool,
+  monitorPipelineTool,
+  getPipelineStatusTool
 ];
 
 export default pipelineManagementTools;
