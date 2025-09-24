@@ -8,6 +8,8 @@
 
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
+import { PipelineService } from '../services/pipeline-service.js';
+import { CreatePipelineRequest } from '../../types/pipeline.js';
 
 // Input validation schema
 const CreatePipelineSchema = z.object({
@@ -304,26 +306,112 @@ export async function executeCreatePipeline(input: CreatePipelineInput): Promise
       }
     }
 
-    // Simulate pipeline creation (replace with actual Bitbucket API call)
-    const pipelineId = `pipeline_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
-    const createdPipeline = {
-      id: pipelineId,
+    // Initialize pipeline service (in real implementation, this would be injected)
+    const pipelineService = new PipelineService({
+      apiBaseUrl: process.env.BITBUCKET_API_URL || 'https://api.bitbucket.org/2.0',
+      authToken: process.env.BITBUCKET_AUTH_TOKEN || '',
+      timeout: 30000,
+      maxRetries: 3,
+      retryDelay: 1000,
+      enableCaching: true,
+      cacheTtl: 300000, // 5 minutes
+      enableMonitoring: true,
+      monitoringInterval: 5000 // 5 seconds
+    });
+
+    // Build create pipeline request
+    const createRequest: CreatePipelineRequest = {
       name: sanitizedInput.name,
-      repository: sanitizedInput.repository,
-      status: 'active' as const,
-      created_at: new Date().toISOString(),
-      created_by: 'current_user', // Replace with actual user context
-      configuration: sanitizedInput.configuration,
-      permissions: sanitizedInput.permissions
+      description: sanitizedInput.description,
+      repositoryId: sanitizedInput.repository,
+      configuration: {
+        name: sanitizedInput.name,
+        description: sanitizedInput.description,
+        steps: sanitizedInput.configuration.steps?.map(step => ({
+          name: step.name,
+          type: step.type as any,
+          description: step.name,
+          script: step.script || step.command,
+          timeout: step.timeout,
+          required: true,
+          dependsOn: [],
+          config: {}
+        })) || [],
+        triggers: sanitizedInput.configuration.triggers?.map(trigger => ({
+          type: trigger as any,
+          branches: [],
+          paths: [],
+          enabled: true
+        })) || [],
+        environments: sanitizedInput.configuration.environment ? [{
+          name: sanitizedInput.configuration.environment,
+          variables: sanitizedInput.configuration.variables || {},
+          secrets: {},
+          settings: {}
+        }] : [],
+        variables: sanitizedInput.configuration.variables || {},
+        secrets: {},
+        enabled: true,
+        tags: []
+      },
+      permissions: sanitizedInput.permissions ? {
+        read: sanitizedInput.permissions.users || [],
+        write: sanitizedInput.permissions.users || [],
+        admin: sanitizedInput.permissions.users || [],
+        readGroups: sanitizedInput.permissions.groups || [],
+        writeGroups: sanitizedInput.permissions.groups || [],
+        adminGroups: sanitizedInput.permissions.groups || [],
+        public: sanitizedInput.permissions.public || false
+      } : undefined
     };
 
+    // Create pipeline using service
+    const createResponse = await pipelineService.createPipeline(createRequest);
+    
+    if (!createResponse.success || !createResponse.data) {
+      return {
+        success: false,
+        error: createResponse.error?.message || 'Failed to create pipeline'
+      };
+    }
+
+    const pipeline = createResponse.data;
+
     // Log pipeline creation
-    console.log(`Pipeline created: ${pipelineId} for repository: ${sanitizedInput.repository}`);
+    console.log(`Pipeline created: ${pipeline.id} for repository: ${sanitizedInput.repository}`);
 
     return {
       success: true,
-      pipeline: createdPipeline
+      pipeline: {
+        id: pipeline.id,
+        name: pipeline.name,
+        repository: sanitizedInput.repository,
+        status: pipeline.status,
+        created_at: pipeline.createdAt.toISOString(),
+        created_by: pipeline.createdBy.name,
+        configuration: {
+          triggers: pipeline.configuration.triggers.map(t => t.type),
+          environment: pipeline.configuration.environments[0]?.name,
+          variables: pipeline.configuration.variables,
+          steps: pipeline.configuration.steps.map(step => ({
+            name: step.name,
+            type: step.type,
+            command: step.script,
+            script: step.script,
+            timeout: step.timeout
+          })),
+          notifications: {
+            email: [],
+            webhook: '',
+            slack: ''
+          }
+        },
+        permissions: {
+          users: pipeline.permissions.read,
+          groups: pipeline.permissions.readGroups,
+          public: pipeline.permissions.public
+        }
+      }
     };
 
   } catch (error) {

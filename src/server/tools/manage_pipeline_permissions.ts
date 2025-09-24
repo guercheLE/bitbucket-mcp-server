@@ -7,6 +7,8 @@
 
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
+import { PipelineService } from '../services/pipeline-service.js';
+import { UpdatePipelineRequest } from '../../types/pipeline.js';
 
 // Input validation schema
 const ManagePipelinePermissionsSchema = z.object({
@@ -311,17 +313,76 @@ export async function executeManagePipelinePermissions(input: ManagePipelinePerm
       }
     }
 
-    // Simulate pipeline permissions management (replace with actual Bitbucket API call)
+    // Initialize pipeline service (in real implementation, this would be injected)
+    const pipelineService = new PipelineService({
+      apiBaseUrl: process.env.BITBUCKET_API_URL || 'https://api.bitbucket.org/2.0',
+      authToken: process.env.BITBUCKET_AUTH_TOKEN || '',
+      timeout: 30000,
+      maxRetries: 3,
+      retryDelay: 1000,
+      enableCaching: true,
+      cacheTtl: 300000, // 5 minutes
+      enableMonitoring: true,
+      monitoringInterval: 5000 // 5 seconds
+    });
+
     const currentTime = new Date();
-    
-    // Generate sample permissions based on action
     let resultPermissions: any[] = [];
     let auditLog: any[] = [];
     let summary: any = {};
 
+    // Get current pipeline to access existing permissions
+    const pipelineResponse = await pipelineService.getPipeline(sanitizedInput.pipeline_id);
+    if (!pipelineResponse.success || !pipelineResponse.data) {
+      return {
+        success: false,
+        error: pipelineResponse.error?.message || 'Pipeline not found'
+      };
+    }
+
+    const pipeline = pipelineResponse.data;
+
     switch (sanitizedInput.action) {
       case 'grant':
         if (sanitizedInput.permissions) {
+          // Update pipeline permissions
+          const updatedPermissions = { ...pipeline.permissions };
+          
+          for (const permission of sanitizedInput.permissions) {
+            if (permission.user) {
+              if (permission.role === 'admin') {
+                updatedPermissions.admin.push(permission.user);
+              } else if (permission.role === 'execute') {
+                updatedPermissions.write.push(permission.user);
+              } else {
+                updatedPermissions.read.push(permission.user);
+              }
+            }
+            
+            if (permission.group) {
+              if (permission.role === 'admin') {
+                updatedPermissions.adminGroups.push(permission.group);
+              } else if (permission.role === 'execute') {
+                updatedPermissions.writeGroups.push(permission.group);
+              } else {
+                updatedPermissions.readGroups.push(permission.group);
+              }
+            }
+          }
+
+          // Update pipeline with new permissions
+          const updateRequest: UpdatePipelineRequest = {
+            permissions: updatedPermissions
+          };
+
+          const updateResponse = await pipelineService.updatePipeline(sanitizedInput.pipeline_id, updateRequest);
+          if (!updateResponse.success) {
+            return {
+              success: false,
+              error: updateResponse.error?.message || 'Failed to update pipeline permissions'
+            };
+          }
+
           resultPermissions = sanitizedInput.permissions.map((permission, index) => ({
             id: `perm_${index + 1}_${Date.now()}`,
             user: permission.user,
@@ -347,61 +408,175 @@ export async function executeManagePipelinePermissions(input: ManagePipelinePerm
         break;
 
       case 'revoke':
-        if (sanitizedInput.options.audit_changes) {
-          auditLog = sanitizedInput.permissions!.map(permission => ({
-            action: 'revoke',
-            user: 'current_user',
-            timestamp: currentTime.toISOString(),
-            details: `Revoked ${permission.role} permission from ${permission.user || permission.group}`,
-            ip_address: '192.168.1.100'
-          }));
+        if (sanitizedInput.permissions) {
+          // Update pipeline permissions
+          const updatedPermissions = { ...pipeline.permissions };
+          
+          for (const permission of sanitizedInput.permissions) {
+            if (permission.user) {
+              if (permission.role === 'admin') {
+                updatedPermissions.admin = updatedPermissions.admin.filter(u => u !== permission.user);
+              } else if (permission.role === 'execute') {
+                updatedPermissions.write = updatedPermissions.write.filter(u => u !== permission.user);
+              } else {
+                updatedPermissions.read = updatedPermissions.read.filter(u => u !== permission.user);
+              }
+            }
+            
+            if (permission.group) {
+              if (permission.role === 'admin') {
+                updatedPermissions.adminGroups = updatedPermissions.adminGroups.filter(g => g !== permission.group);
+              } else if (permission.role === 'execute') {
+                updatedPermissions.writeGroups = updatedPermissions.writeGroups.filter(g => g !== permission.group);
+              } else {
+                updatedPermissions.readGroups = updatedPermissions.readGroups.filter(g => g !== permission.group);
+              }
+            }
+          }
+
+          // Update pipeline with new permissions
+          const updateRequest: UpdatePipelineRequest = {
+            permissions: updatedPermissions
+          };
+
+          const updateResponse = await pipelineService.updatePipeline(sanitizedInput.pipeline_id, updateRequest);
+          if (!updateResponse.success) {
+            return {
+              success: false,
+              error: updateResponse.error?.message || 'Failed to update pipeline permissions'
+            };
+          }
+
+          if (sanitizedInput.options.audit_changes) {
+            auditLog = sanitizedInput.permissions.map(permission => ({
+              action: 'revoke',
+              user: 'current_user',
+              timestamp: currentTime.toISOString(),
+              details: `Revoked ${permission.role} permission from ${permission.user || permission.group}`,
+              ip_address: '192.168.1.100'
+            }));
+          }
         }
         break;
 
       case 'list':
+        // Convert pipeline permissions to the expected format
         resultPermissions = [
-          {
-            id: 'perm_001',
-            user: 'admin@example.com',
+          ...pipeline.permissions.admin.map((user, index) => ({
+            id: `admin_${index + 1}`,
+            user: user,
             role: 'admin',
             scope: 'pipeline',
             conditions: {},
-            granted_at: new Date(currentTime.getTime() - 3600000).toISOString(),
-            granted_by: 'system',
+            granted_at: pipeline.createdAt.toISOString(),
+            granted_by: pipeline.createdBy.name,
             expires_at: undefined
-          },
-          {
-            id: 'perm_002',
-            group: 'developers',
+          })),
+          ...pipeline.permissions.write.map((user, index) => ({
+            id: `write_${index + 1}`,
+            user: user,
             role: 'execute',
             scope: 'pipeline',
-            conditions: {
-              branches: ['main', 'develop'],
-              time_restrictions: {
-                start_time: '09:00',
-                end_time: '17:00',
-                days: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday']
-              }
-            },
-            granted_at: new Date(currentTime.getTime() - 7200000).toISOString(),
-            granted_by: 'admin@example.com',
+            conditions: {},
+            granted_at: pipeline.createdAt.toISOString(),
+            granted_by: pipeline.createdBy.name,
             expires_at: undefined
-          },
-          {
-            id: 'perm_003',
-            user: 'viewer@example.com',
+          })),
+          ...pipeline.permissions.read.map((user, index) => ({
+            id: `read_${index + 1}`,
+            user: user,
             role: 'view',
             scope: 'pipeline',
             conditions: {},
-            granted_at: new Date(currentTime.getTime() - 10800000).toISOString(),
-            granted_by: 'admin@example.com',
+            granted_at: pipeline.createdAt.toISOString(),
+            granted_by: pipeline.createdBy.name,
             expires_at: undefined
-          }
+          })),
+          ...pipeline.permissions.adminGroups.map((group, index) => ({
+            id: `admin_group_${index + 1}`,
+            group: group,
+            role: 'admin',
+            scope: 'pipeline',
+            conditions: {},
+            granted_at: pipeline.createdAt.toISOString(),
+            granted_by: pipeline.createdBy.name,
+            expires_at: undefined
+          })),
+          ...pipeline.permissions.writeGroups.map((group, index) => ({
+            id: `write_group_${index + 1}`,
+            group: group,
+            role: 'execute',
+            scope: 'pipeline',
+            conditions: {},
+            granted_at: pipeline.createdAt.toISOString(),
+            granted_by: pipeline.createdBy.name,
+            expires_at: undefined
+          })),
+          ...pipeline.permissions.readGroups.map((group, index) => ({
+            id: `read_group_${index + 1}`,
+            group: group,
+            role: 'view',
+            scope: 'pipeline',
+            conditions: {},
+            granted_at: pipeline.createdAt.toISOString(),
+            granted_by: pipeline.createdBy.name,
+            expires_at: undefined
+          }))
         ];
         break;
 
       case 'update':
         if (sanitizedInput.permissions) {
+          // Update pipeline permissions
+          const updatedPermissions = { ...pipeline.permissions };
+          
+          for (const permission of sanitizedInput.permissions) {
+            if (permission.user) {
+              // Remove from all roles first
+              updatedPermissions.admin = updatedPermissions.admin.filter(u => u !== permission.user);
+              updatedPermissions.write = updatedPermissions.write.filter(u => u !== permission.user);
+              updatedPermissions.read = updatedPermissions.read.filter(u => u !== permission.user);
+              
+              // Add to new role
+              if (permission.role === 'admin') {
+                updatedPermissions.admin.push(permission.user);
+              } else if (permission.role === 'execute') {
+                updatedPermissions.write.push(permission.user);
+              } else {
+                updatedPermissions.read.push(permission.user);
+              }
+            }
+            
+            if (permission.group) {
+              // Remove from all roles first
+              updatedPermissions.adminGroups = updatedPermissions.adminGroups.filter(g => g !== permission.group);
+              updatedPermissions.writeGroups = updatedPermissions.writeGroups.filter(g => g !== permission.group);
+              updatedPermissions.readGroups = updatedPermissions.readGroups.filter(g => g !== permission.group);
+              
+              // Add to new role
+              if (permission.role === 'admin') {
+                updatedPermissions.adminGroups.push(permission.group);
+              } else if (permission.role === 'execute') {
+                updatedPermissions.writeGroups.push(permission.group);
+              } else {
+                updatedPermissions.readGroups.push(permission.group);
+              }
+            }
+          }
+
+          // Update pipeline with new permissions
+          const updateRequest: UpdatePipelineRequest = {
+            permissions: updatedPermissions
+          };
+
+          const updateResponse = await pipelineService.updatePipeline(sanitizedInput.pipeline_id, updateRequest);
+          if (!updateResponse.success) {
+            return {
+              success: false,
+              error: updateResponse.error?.message || 'Failed to update pipeline permissions'
+            };
+          }
+
           resultPermissions = sanitizedInput.permissions.map((permission, index) => ({
             id: `perm_${index + 1}_${Date.now()}`,
             user: permission.user,
@@ -427,6 +602,7 @@ export async function executeManagePipelinePermissions(input: ManagePipelinePerm
         break;
 
       case 'audit':
+        // In a real implementation, this would query an audit log system
         auditLog = [
           {
             action: 'grant',

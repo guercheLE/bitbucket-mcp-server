@@ -7,6 +7,8 @@
 
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
+import { PipelineService } from '../services/pipeline-service.js';
+import { UpdatePipelineRequest, PipelineTriggerType } from '../../types/pipeline.js';
 
 // Input validation schema
 const ConfigurePipelineWebhooksSchema = z.object({
@@ -416,9 +418,32 @@ export async function executeConfigurePipelineWebhooks(input: ConfigurePipelineW
       validationResults.warnings.push(`${httpWebhooks.length} webhooks use HTTP instead of HTTPS - consider using HTTPS for security`);
     }
 
-    // Simulate webhook configuration (replace with actual Bitbucket API call)
+    // Initialize pipeline service (in real implementation, this would be injected)
+    const pipelineService = new PipelineService({
+      apiBaseUrl: process.env.BITBUCKET_API_URL || 'https://api.bitbucket.org/2.0',
+      authToken: process.env.BITBUCKET_AUTH_TOKEN || '',
+      timeout: 30000,
+      maxRetries: 3,
+      retryDelay: 1000,
+      enableCaching: true,
+      cacheTtl: 300000, // 5 minutes
+      enableMonitoring: true,
+      monitoringInterval: 5000 // 5 seconds
+    });
+
+    // Get current pipeline to access existing configuration
+    const pipelineResponse = await pipelineService.getPipeline(sanitizedInput.pipeline_id);
+    if (!pipelineResponse.success || !pipelineResponse.data) {
+      return {
+        success: false,
+        error: pipelineResponse.error?.message || 'Pipeline not found'
+      };
+    }
+
+    const pipeline = pipelineResponse.data;
     const currentTime = new Date();
     
+    // Configure webhooks
     const configuredWebhooks = sanitizedInput.webhooks.map((webhook, index) => ({
       id: `webhook_${index + 1}_${Date.now()}`,
       name: webhook.name,
@@ -437,17 +462,153 @@ export async function executeConfigurePipelineWebhooks(input: ConfigurePipelineW
       created_by: 'current_user'
     }));
 
-    // Simulate webhook testing if requested
+    // Update pipeline configuration with webhook triggers
+    const updatedConfiguration = {
+      ...pipeline.configuration,
+      triggers: [
+        ...pipeline.configuration.triggers,
+        ...sanitizedInput.webhooks
+          .filter(webhook => webhook.enabled)
+          .map(webhook => ({
+            type: PipelineTriggerType.WEBHOOK,
+            branches: webhook.filters?.branches || [],
+            paths: [],
+            enabled: true,
+            webhook: {
+              url: webhook.url,
+              secret: webhook.security?.secret,
+              events: webhook.events.map(event => {
+                // Map webhook events to pipeline trigger events
+                switch (event) {
+                  case 'pipeline_started':
+                    return 'pipeline.start';
+                  case 'pipeline_completed':
+                    return 'pipeline.complete';
+                  case 'pipeline_failed':
+                    return 'pipeline.fail';
+                  case 'pipeline_cancelled':
+                    return 'pipeline.cancel';
+                  case 'step_started':
+                    return 'step.start';
+                  case 'step_completed':
+                    return 'step.complete';
+                  case 'step_failed':
+                    return 'step.fail';
+                  default:
+                    return event;
+                }
+              })
+            }
+          }))
+      ]
+    };
+
+    // Update pipeline with new webhook configuration
+    const updateRequest: UpdatePipelineRequest = {
+      configuration: updatedConfiguration
+    };
+
+    const updateResponse = await pipelineService.updatePipeline(sanitizedInput.pipeline_id, updateRequest);
+    if (!updateResponse.success) {
+      return {
+        success: false,
+        error: updateResponse.error?.message || 'Failed to update pipeline with webhook configuration'
+      };
+    }
+
+    // Test webhooks if requested
     let testResults: any[] = [];
     if (sanitizedInput.options.test_webhooks) {
-      testResults = configuredWebhooks.map(webhook => ({
-        webhook_id: webhook.id,
-        test_status: webhook.enabled ? 'success' : 'failed',
-        response_code: webhook.enabled ? 200 : undefined,
-        response_time: webhook.enabled ? Math.floor(Math.random() * 1000) + 100 : undefined,
-        message: webhook.enabled ? `Webhook "${webhook.name}" tested successfully` : 'Webhook is disabled',
-        timestamp: currentTime.toISOString()
-      }));
+      testResults = await Promise.all(
+        configuredWebhooks.map(async (webhook) => {
+          if (!webhook.enabled) {
+            return {
+              webhook_id: webhook.id,
+              test_status: 'failed' as const,
+              message: 'Webhook is disabled',
+              timestamp: currentTime.toISOString()
+            };
+          }
+
+          try {
+            // Send test webhook payload
+            const testPayload = {
+              event: 'webhook.test',
+              pipeline_id: sanitizedInput.pipeline_id,
+              repository: sanitizedInput.repository,
+              timestamp: currentTime.toISOString(),
+              webhook_id: webhook.id
+            };
+
+            const headers: Record<string, string> = {
+              'Content-Type': 'application/json',
+              'User-Agent': 'Bitbucket-MCP-Server/1.0'
+            };
+
+            // Add authentication if configured
+            if (webhook.security?.authentication) {
+              const auth = webhook.security.authentication;
+              switch (auth.type) {
+                case 'basic':
+                  if (auth.username && auth.password) {
+                    const credentials = Buffer.from(`${auth.username}:${auth.password}`).toString('base64');
+                    headers['Authorization'] = `Basic ${credentials}`;
+                  }
+                  break;
+                case 'bearer':
+                  if (auth.token) {
+                    headers['Authorization'] = `Bearer ${auth.token}`;
+                  }
+                  break;
+                case 'api_key':
+                  if (auth.api_key && auth.api_key_header) {
+                    headers[auth.api_key_header] = auth.api_key;
+                  }
+                  break;
+              }
+            }
+
+            // Add signature if secret is configured
+            if (webhook.security?.secret) {
+              const crypto = await import('crypto');
+              const signature = crypto
+                .createHmac('sha256', webhook.security.secret)
+                .update(JSON.stringify(testPayload))
+                .digest('hex');
+              headers[webhook.security.signature_header || 'X-Hub-Signature-256'] = `sha256=${signature}`;
+            }
+
+            const startTime = Date.now();
+            const response = await fetch(webhook.url, {
+              method: 'POST',
+              headers,
+              body: JSON.stringify(testPayload),
+              signal: AbortSignal.timeout((webhook.retry_policy?.timeout || 30) * 1000)
+            });
+
+            const responseTime = Date.now() - startTime;
+
+            return {
+              webhook_id: webhook.id,
+              test_status: response.ok ? 'success' as const : 'failed' as const,
+              response_code: response.status,
+              response_time: responseTime,
+              message: response.ok 
+                ? `Webhook "${webhook.name}" tested successfully` 
+                : `Webhook test failed with status ${response.status}`,
+              timestamp: currentTime.toISOString()
+            };
+
+          } catch (error) {
+            return {
+              webhook_id: webhook.id,
+              test_status: 'timeout' as const,
+              message: `Webhook test failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+              timestamp: currentTime.toISOString()
+            };
+          }
+        })
+      );
     }
 
     const configuration = {

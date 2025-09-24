@@ -8,6 +8,8 @@
 
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
+import { PipelineService } from '../services/pipeline-service.js';
+import { RunPipelineRequest, PipelineTriggerType } from '../../types/pipeline.js';
 
 // Input validation schema
 const ExecutePipelineSchema = z.object({
@@ -203,59 +205,131 @@ export async function executeExecutePipeline(input: ExecutePipelineInput): Promi
       }
     }
 
-    // Simulate pipeline execution (replace with actual Bitbucket API call)
-    const executionId = `exec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
-    // Determine initial status based on action
-    let initialStatus: 'queued' | 'running' | 'completed' | 'failed' | 'cancelled' | 'stopped';
-    let estimatedDuration: number | undefined;
-    let progress: any = undefined;
+    // Initialize pipeline service (in real implementation, this would be injected)
+    const pipelineService = new PipelineService({
+      apiBaseUrl: process.env.BITBUCKET_API_URL || 'https://api.bitbucket.org/2.0',
+      authToken: process.env.BITBUCKET_AUTH_TOKEN || '',
+      timeout: 30000,
+      maxRetries: 3,
+      retryDelay: 1000,
+      enableCaching: true,
+      cacheTtl: 300000, // 5 minutes
+      enableMonitoring: true,
+      monitoringInterval: 5000 // 5 seconds
+    });
 
+    let result: any;
+
+    // Execute action based on input
     switch (sanitizedInput.action) {
       case 'start':
-        initialStatus = 'queued';
-        estimatedDuration = sanitizedInput.parameters?.timeout || 1800; // Default 30 minutes
-        progress = {
-          current_step: 'Initializing',
-          completed_steps: 0,
-          total_steps: 5, // Default number of steps
-          percentage: 0
+        const runRequest: RunPipelineRequest = {
+          pipelineId: sanitizedInput.pipeline_id,
+          environment: sanitizedInput.parameters?.environment,
+          variables: sanitizedInput.parameters?.variables,
+          triggerType: PipelineTriggerType.MANUAL,
+          branch: sanitizedInput.parameters?.branch,
+          commit: sanitizedInput.parameters?.commit
+        };
+        
+        const runResponse = await pipelineService.runPipeline(runRequest);
+        
+        if (!runResponse.success || !runResponse.data) {
+          return {
+            success: false,
+            error: runResponse.error?.message || 'Failed to start pipeline'
+          };
+        }
+
+        result = {
+          id: runResponse.data.id,
+          pipeline_id: sanitizedInput.pipeline_id,
+          repository: sanitizedInput.repository,
+          action: sanitizedInput.action,
+          status: runResponse.data.status,
+          started_at: runResponse.data.startTime.toISOString(),
+          started_by: 'current_user', // Replace with actual user context
+          parameters: sanitizedInput.parameters,
+          estimated_duration: sanitizedInput.parameters?.timeout || 1800,
+          progress: {
+            current_step: runResponse.data.steps[0]?.name || 'Initializing',
+            completed_steps: 0,
+            total_steps: runResponse.data.steps.length,
+            percentage: 0
+          }
         };
         break;
+
       case 'stop':
-        initialStatus = 'stopped';
+        const stopResponse = await pipelineService.stopPipelineRun(sanitizedInput.pipeline_id);
+        
+        if (!stopResponse.success || !stopResponse.data) {
+          return {
+            success: false,
+            error: stopResponse.error?.message || 'Failed to stop pipeline'
+          };
+        }
+
+        result = {
+          id: stopResponse.data.id,
+          pipeline_id: sanitizedInput.pipeline_id,
+          repository: sanitizedInput.repository,
+          action: sanitizedInput.action,
+          status: stopResponse.data.status,
+          started_at: stopResponse.data.startTime.toISOString(),
+          started_by: 'current_user',
+          parameters: sanitizedInput.parameters
+        };
         break;
+
       case 'restart':
-        initialStatus = 'queued';
-        estimatedDuration = sanitizedInput.parameters?.timeout || 1800;
-        progress = {
-          current_step: 'Restarting',
-          completed_steps: 0,
-          total_steps: 5,
-          percentage: 0
+        // First stop the current run, then start a new one
+        await pipelineService.stopPipelineRun(sanitizedInput.pipeline_id);
+        
+        const restartRequest: RunPipelineRequest = {
+          pipelineId: sanitizedInput.pipeline_id,
+          environment: sanitizedInput.parameters?.environment,
+          variables: sanitizedInput.parameters?.variables,
+          triggerType: PipelineTriggerType.MANUAL,
+          branch: sanitizedInput.parameters?.branch,
+          commit: sanitizedInput.parameters?.commit
+        };
+        
+        const restartResponse = await pipelineService.runPipeline(restartRequest);
+        
+        if (!restartResponse.success || !restartResponse.data) {
+          return {
+            success: false,
+            error: restartResponse.error?.message || 'Failed to restart pipeline'
+          };
+        }
+
+        result = {
+          id: restartResponse.data.id,
+          pipeline_id: sanitizedInput.pipeline_id,
+          repository: sanitizedInput.repository,
+          action: sanitizedInput.action,
+          status: restartResponse.data.status,
+          started_at: restartResponse.data.startTime.toISOString(),
+          started_by: 'current_user',
+          parameters: sanitizedInput.parameters,
+          estimated_duration: sanitizedInput.parameters?.timeout || 1800,
+          progress: {
+            current_step: 'Restarting',
+            completed_steps: 0,
+            total_steps: restartResponse.data.steps.length,
+            percentage: 0
+          }
         };
         break;
     }
 
-    const execution = {
-      id: executionId,
-      pipeline_id: sanitizedInput.pipeline_id,
-      repository: sanitizedInput.repository,
-      action: sanitizedInput.action,
-      status: initialStatus,
-      started_at: new Date().toISOString(),
-      started_by: 'current_user', // Replace with actual user context
-      parameters: sanitizedInput.parameters,
-      estimated_duration: estimatedDuration,
-      progress: progress
-    };
-
     // Log pipeline execution
-    console.log(`Pipeline ${sanitizedInput.action}: ${executionId} for pipeline: ${sanitizedInput.pipeline_id}`);
+    console.log(`Pipeline ${sanitizedInput.action}: ${result.id} for pipeline: ${sanitizedInput.pipeline_id}`);
 
     return {
       success: true,
-      execution: execution
+      execution: result
     };
 
   } catch (error) {

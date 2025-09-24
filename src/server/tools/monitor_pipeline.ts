@@ -7,6 +7,8 @@
 
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
+import { PipelineService } from '../services/pipeline-service.js';
+import { PipelineRunStatus } from '../../types/pipeline.js';
 
 // Input validation schema
 const MonitorPipelineSchema = z.object({
@@ -167,91 +169,119 @@ export async function executeMonitorPipeline(input: MonitorPipelineInput): Promi
       };
     }
 
-    // Simulate pipeline monitoring (replace with actual Bitbucket API call)
-    const executionId = sanitizedInput.execution_id || `exec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    // Initialize pipeline service (in real implementation, this would be injected)
+    const pipelineService = new PipelineService({
+      apiBaseUrl: process.env.BITBUCKET_API_URL || 'https://api.bitbucket.org/2.0',
+      authToken: process.env.BITBUCKET_AUTH_TOKEN || '',
+      timeout: 30000,
+      maxRetries: 3,
+      retryDelay: 1000,
+      enableCaching: true,
+      cacheTtl: 300000, // 5 minutes
+      enableMonitoring: true,
+      monitoringInterval: sanitizedInput.poll_interval * 1000 // Convert to milliseconds
+    });
+
+    let pipelineRun;
+
+    // Get pipeline run data
+    if (sanitizedInput.execution_id) {
+      // Monitor specific execution
+      const runResponse = await pipelineService.getPipelineRun(sanitizedInput.execution_id);
+      if (!runResponse.success || !runResponse.data) {
+        return {
+          success: false,
+          error: runResponse.error?.message || 'Failed to get pipeline run'
+        };
+      }
+      pipelineRun = runResponse.data;
+    } else {
+      // Get latest run for the pipeline
+      const runsResponse = await pipelineService.listPipelineRuns({
+        pipelineId: sanitizedInput.pipeline_id,
+        pagination: { page: 1, limit: 1 }
+      });
+      
+      if (!runsResponse.success || !runsResponse.data || runsResponse.data.length === 0) {
+        return {
+          success: false,
+          error: 'No pipeline runs found'
+        };
+      }
+      
+      pipelineRun = runsResponse.data[0];
+    }
+
+    // Calculate progress
+    const completedSteps = pipelineRun.steps.filter(step => 
+      step.status === 'success' || step.status === 'failed' || step.status === 'cancelled'
+    ).length;
     
-    // Simulate current status and progress
+    const totalSteps = pipelineRun.steps.length;
+    const percentage = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
+    
+    const currentStep = pipelineRun.steps.find(step => step.status === 'running');
+    const currentStepName = currentStep?.name || 'Completed';
+
+    // Calculate timing
     const currentTime = new Date();
-    const startTime = new Date(currentTime.getTime() - 300000); // 5 minutes ago
-    const duration = Math.floor((currentTime.getTime() - startTime.getTime()) / 1000);
+    const duration = pipelineRun.duration ? Math.floor(pipelineRun.duration / 1000) : 
+      Math.floor((currentTime.getTime() - pipelineRun.startTime.getTime()) / 1000);
     
+    const estimatedRemaining = pipelineRun.status === PipelineRunStatus.RUNNING ? 
+      Math.max(0, (totalSteps - completedSteps) * 60) : 0; // Estimate 1 minute per step
+
     const progress = {
-      current_step: 'Running Tests',
-      completed_steps: 3,
-      total_steps: 5,
-      percentage: 60,
-      estimated_remaining: 120 // 2 minutes
+      current_step: currentStepName,
+      completed_steps: completedSteps,
+      total_steps: totalSteps,
+      percentage: percentage,
+      estimated_remaining: estimatedRemaining
     };
 
     const timing = {
-      started_at: startTime.toISOString(),
+      started_at: pipelineRun.startTime.toISOString(),
       updated_at: currentTime.toISOString(),
       duration: duration,
-      estimated_completion: new Date(currentTime.getTime() + 120000).toISOString()
+      estimated_completion: pipelineRun.status === PipelineRunStatus.RUNNING && estimatedRemaining > 0 ?
+        new Date(currentTime.getTime() + estimatedRemaining * 1000).toISOString() : undefined
     };
 
+    // Generate metrics (simulated - in real implementation, these would come from monitoring systems)
     const metrics = {
-      cpu_usage: 45.2,
-      memory_usage: 67.8,
-      disk_usage: 23.1,
-      network_io: 12.5
+      cpu_usage: Math.random() * 100,
+      memory_usage: Math.random() * 100,
+      disk_usage: Math.random() * 100,
+      network_io: Math.random() * 100
     };
 
     // Generate logs if requested
     let logs: any[] = [];
-    if (sanitizedInput.include_logs) {
-      logs = [
-        {
-          timestamp: new Date(currentTime.getTime() - 240000).toISOString(),
-          level: 'info' as const,
-          message: 'Pipeline execution started',
-          step: 'Initialization'
-        },
-        {
-          timestamp: new Date(currentTime.getTime() - 180000).toISOString(),
-          level: 'info' as const,
-          message: 'Dependencies installed successfully',
-          step: 'Setup'
-        },
-        {
-          timestamp: new Date(currentTime.getTime() - 120000).toISOString(),
-          level: 'info' as const,
-          message: 'Build completed successfully',
-          step: 'Build'
-        },
-        {
-          timestamp: new Date(currentTime.getTime() - 60000).toISOString(),
-          level: 'info' as const,
-          message: 'Running test suite',
-          step: 'Testing'
-        }
-      ];
+    if (sanitizedInput.include_logs && pipelineRun.logs) {
+      logs = pipelineRun.logs.entries.map(entry => ({
+        timestamp: entry.timestamp.toISOString(),
+        level: entry.level,
+        message: entry.message,
+        step: entry.source
+      }));
     }
 
     // Generate artifacts if requested
     let artifacts: any[] = [];
-    if (sanitizedInput.include_artifacts) {
-      artifacts = [
-        {
-          name: 'build-artifacts.zip',
-          type: 'archive',
-          size: 2048576, // 2MB
-          url: 'https://bitbucket.example.com/artifacts/build-artifacts.zip'
-        },
-        {
-          name: 'test-results.xml',
-          type: 'report',
-          size: 15360, // 15KB
-          url: 'https://bitbucket.example.com/artifacts/test-results.xml'
-        }
-      ];
+    if (sanitizedInput.include_artifacts && pipelineRun.artifacts) {
+      artifacts = pipelineRun.artifacts.map(artifact => ({
+        name: artifact.name,
+        type: artifact.type,
+        size: artifact.size,
+        url: artifact.downloadUrl
+      }));
     }
 
     const monitoring = {
       pipeline_id: sanitizedInput.pipeline_id,
       repository: sanitizedInput.repository,
-      execution_id: executionId,
-      status: 'running' as const,
+      execution_id: pipelineRun.id,
+      status: pipelineRun.status,
       progress: progress,
       timing: timing,
       metrics: metrics,
@@ -260,7 +290,7 @@ export async function executeMonitorPipeline(input: MonitorPipelineInput): Promi
     };
 
     // Log pipeline monitoring
-    console.log(`Monitoring pipeline: ${sanitizedInput.pipeline_id} execution: ${executionId}`);
+    console.log(`Monitoring pipeline: ${sanitizedInput.pipeline_id} execution: ${pipelineRun.id}`);
 
     return {
       success: true,
