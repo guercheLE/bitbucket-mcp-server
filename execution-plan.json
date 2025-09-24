@@ -228,7 +228,7 @@
                      {
                          "id":  "003-repository-management",
                          "name":  "Repository Management",
-                         "status":  "specified",
+                         "status":  "implemented",
                          "branch":  "feature/003-repository-management",
                          "dependencies":  [
                                               "001-mcp-server-infrastructure",
