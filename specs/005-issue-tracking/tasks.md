@@ -31,25 +31,25 @@
 ## Phase 2: Issue Management Operations
 
 ### T004: Issue Update and Status Management
-- [ ] Create MCP tool for issue updates
-- [ ] Implement status workflow transitions
-- [ ] Add field update validation and error handling
-- [ ] Create bulk update capabilities
-- [ ] Add support for issue templates
+- [x] Create MCP tool for issue updates
+- [x] Implement status workflow transitions
+- [x] Add field update validation and error handling
+- [x] Create bulk update capabilities
+- [x] Add support for issue templates
 
 ### T005: Issue Assignment and Ownership
-- [ ] Create MCP tool for issue assignment
-- [ ] Implement user and group assignment
-- [ ] Add assignment validation and permissions
-- [ ] Create assignment history tracking
-- [ ] Add bulk assignment operations
+- [x] Create MCP tool for issue assignment
+- [x] Implement user and group assignment
+- [x] Add assignment validation and permissions
+- [x] Create assignment history tracking
+- [x] Add bulk assignment operations
 
 ### T006: Issue Comment Management
-- [ ] Create MCP tool for comment creation
-- [ ] Implement comment editing and deletion
-- [ ] Add comment threading and replies
-- [ ] Create comment formatting and validation
-- [ ] Add comment attachment support
+- [x] Create MCP tool for comment creation
+- [x] Implement comment editing and deletion
+- [x] Add comment threading and replies
+- [x] Create comment formatting and validation
+- [x] Add comment attachment support
 
 ## Phase 3: Advanced Issue Features
 
