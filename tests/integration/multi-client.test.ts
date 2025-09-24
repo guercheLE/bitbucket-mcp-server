@@ -1,3 +1,37 @@
+<<<<<<< HEAD
+describe('Multi-Client Integration Test', () => {
+  beforeAll(async () => {
+    // TODO: Start the main server instance
+  });
+
+  afterAll(async () => {
+    // TODO: Stop the main server instance
+  });
+
+  it('should handle multiple client connections concurrently without errors', async () => {
+    const client1 = new Promise((resolve) => {
+      // TODO: Simulate client 1 connection and a simple request
+      resolve('Client 1 finished');
+    });
+
+    const client2 = new Promise((resolve) => {
+      // TODO: Simulate client 2 connection and a simple request
+      resolve('Client 2 finished');
+    });
+
+    const client3 = new Promise((resolve) => {
+      // TODO: Simulate client 3 connection and a simple request
+      resolve('Client 3 finished');
+    });
+
+    // The test passes if all simulated clients complete their interaction
+    // without the server crashing or throwing errors.
+    await expect(Promise.all([client1, client2, client3])).resolves.toEqual([
+      'Client 1 finished',
+      'Client 2 finished',
+      'Client 3 finished',
+    ]);
+=======
 /**
  * Multi-Client Integration Test
  * 
@@ -288,5 +322,6 @@ describe('Multi-Client Integration Tests', () => {
     // Should have 2 clients remaining (clients 3 and 4)
     expect(server.getClientCount()).toBe(2);
     expect(server.getMemoryUsageMB()).toBe(60); // Base 50MB + 10MB for 2 clients
+>>>>>>> main
   });
 });
