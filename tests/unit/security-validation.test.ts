@@ -19,19 +19,19 @@
  * - Security headers implementation
  */
 
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
-import { AdvancedCryptoService, EncryptedData } from '../../src/server/auth/advanced-crypto';
-import { AuthAuditLogger, AuditEventType, AuditSeverity } from '../../src/server/auth/auth-audit-logger';
-import { RateLimiter, RateLimitAlgorithm, RateLimitScope } from '../../src/server/auth/rate-limiter';
-import { SecurityHeadersManager, SecurityHeaderType } from '../../src/server/auth/security-headers';
-import { MemoryTokenStorage } from '../../src/server/auth/token-storage';
-import { SessionManager } from '../../src/server/auth/session-manager';
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { AdvancedCryptoService } from '../../src/server/auth/advanced-crypto';
+import { AuditEventType, AuditSeverity, AuthAuditLogger } from '../../src/server/auth/auth-audit-logger';
 import { OAuthManager } from '../../src/server/auth/oauth-manager';
-import { 
-  AccessToken, 
-  RefreshToken, 
-  AuthenticationConfig, 
+import { RateLimiter } from '../../src/server/auth/rate-limiter';
+import { SecurityHeadersManager } from '../../src/server/auth/security-headers';
+import { SessionManager } from '../../src/server/auth/session-manager';
+import { MemoryTokenStorage } from '../../src/server/auth/token-storage';
+import {
+  AccessToken,
+  AuthenticationConfig,
   OAuthApplication,
+  RefreshToken,
   UserSessionState
 } from '../../src/types/auth';
 
@@ -88,9 +88,19 @@ describe('Security Validation Tests', () => {
     };
 
     cryptoService = new AdvancedCryptoService({
-      algorithm: 'aes-256-gcm',
+      algorithm: 'aes-256-cbc',
       kdf: 'pbkdf2',
       pbkdf2Iterations: 10000,
+      scryptParams: {
+        N: 16384,
+        r: 8,
+        p: 1
+      },
+      saltLength: 32,
+      ivLength: 16,
+      tagLength: 16,
+      keyLength: 32,
+      maxKeyAge: 86400000, // 24 hours
       memoryProtection: true,
       forwardSecrecy: true
     });
@@ -107,7 +117,7 @@ describe('Security Validation Tests', () => {
     rateLimiter = new RateLimiter();
     securityHeaders = new SecurityHeadersManager();
     tokenStorage = new MemoryTokenStorage(testConfig);
-    
+
     // Mock OAuthManager for session tests
     oauthManager = {
       createApplication: jest.fn(),
@@ -136,20 +146,20 @@ describe('Security Validation Tests', () => {
   describe('Cryptographic Security Validation', () => {
     it('should validate encryption strength and integrity', async () => {
       const sensitiveData = 'highly-sensitive-authentication-data';
-      
+
       // Test encryption
       const encrypted = await cryptoService.encrypt(sensitiveData);
-      
+
       // Validate encryption structure
       expect(encrypted.data).toBeDefined();
       expect(encrypted.iv).toBeDefined();
       expect(encrypted.salt).toBeDefined();
       expect(encrypted.integrity).toBeDefined();
-      
+
       // Validate data integrity
       const decrypted = await cryptoService.decrypt(encrypted);
       expect(decrypted).toBe(sensitiveData);
-      
+
       // Test tampering detection
       const tamperedData = { ...encrypted, data: 'tampered-data' };
       await expect(cryptoService.decrypt(tamperedData)).rejects.toThrow();
@@ -165,16 +175,16 @@ describe('Security Validation Tests', () => {
         lastUsedAt: new Date(),
         isValid: true
       };
-      
+
       const encrypted = await cryptoService.encryptToken(testToken);
       const decrypted = await cryptoService.decryptToken<AccessToken>(encrypted);
-      
+
       // Validate token integrity
       expect(decrypted.token).toBe(testToken.token);
       expect(decrypted.tokenType).toBe(testToken.tokenType);
       expect(decrypted.scope).toEqual(testToken.scope);
       expect(decrypted.isValid).toBe(true);
-      
+
       // Validate encryption is not reversible without key
       expect(encrypted.data).not.toContain(testToken.token);
     });
@@ -182,7 +192,7 @@ describe('Security Validation Tests', () => {
     it('should validate secure token generation', () => {
       const tokens = new Set();
       const iterations = 100;
-      
+
       // Generate multiple tokens and validate uniqueness
       for (let i = 0; i < iterations; i++) {
         const token = cryptoService.generateSecureToken(32);
@@ -190,14 +200,14 @@ describe('Security Validation Tests', () => {
         expect(tokens.has(token)).toBe(false);
         tokens.add(token);
       }
-      
+
       expect(tokens.size).toBe(iterations);
     });
 
     it('should validate password generation security', () => {
       const passwords = new Set();
       const iterations = 50;
-      
+
       // Generate multiple passwords and validate uniqueness
       for (let i = 0; i < iterations; i++) {
         const password = cryptoService.generateSecurePassword(16);
@@ -205,18 +215,18 @@ describe('Security Validation Tests', () => {
         expect(passwords.has(password)).toBe(false);
         passwords.add(password);
       }
-      
+
       expect(passwords.size).toBe(iterations);
     });
 
     it('should validate HMAC integrity', () => {
       const data = 'critical-authentication-data';
       const key = Buffer.from('secret-authentication-key', 'utf8');
-      
+
       const hmac = cryptoService.createHmac(data, key);
       expect(hmac).toBeDefined();
       expect(hmac.length).toBeGreaterThan(0);
-      
+
       // Validate HMAC verification
       expect(cryptoService.verifyHmac(data, key, hmac)).toBe(true);
       expect(cryptoService.verifyHmac('tampered-data', key, hmac)).toBe(false);
@@ -236,16 +246,16 @@ describe('Security Validation Tests', () => {
         lastUsedAt: new Date(),
         isValid: true
       };
-      
+
       // Store token
       await tokenStorage.storeAccessToken(testToken, 'test-client');
-      
+
       // Retrieve and validate
       const retrieved = await tokenStorage.getAccessToken('test-client');
       expect(retrieved).toBeDefined();
       expect(retrieved?.token).toBe(testToken.token);
       expect(retrieved?.isValid).toBe(true);
-      
+
       // Test token expiration
       const expiredToken = { ...testToken, expiresAt: new Date(Date.now() - 1000) };
       await tokenStorage.storeAccessToken(expiredToken, 'expired-client');
@@ -265,10 +275,10 @@ describe('Security Validation Tests', () => {
         isValid: true,
         isRevoked: false
       };
-      
+
       await tokenStorage.storeRefreshToken(refreshToken);
       const retrieved = await tokenStorage.getRefreshToken('test-client');
-      
+
       expect(retrieved).toBeDefined();
       expect(retrieved?.token).toBe(refreshToken.token);
       expect(retrieved?.isValid).toBe(true);
@@ -285,9 +295,9 @@ describe('Security Validation Tests', () => {
         lastUsedAt: new Date(),
         isValid: true
       };
-      
+
       await tokenStorage.storeAccessToken(testToken, 'test-client');
-      
+
       // Remove token
       await tokenStorage.removeAccessToken('test-client');
       const removed = await tokenStorage.getAccessToken('test-client');
@@ -312,7 +322,7 @@ describe('Security Validation Tests', () => {
         updatedAt: new Date(),
         isActive: true
       };
-      
+
       const accessToken: AccessToken = {
         token: 'test-access-token',
         tokenType: 'Bearer',
@@ -323,7 +333,7 @@ describe('Security Validation Tests', () => {
         lastUsedAt: new Date(),
         isValid: true
       };
-      
+
       const refreshToken: RefreshToken = {
         id: 'refresh-123',
         token: 'test-refresh-token',
@@ -335,14 +345,14 @@ describe('Security Validation Tests', () => {
         isValid: true,
         isRevoked: false
       };
-      
+
       const userInfo: UserInfo = {
         id: 'user123',
         name: 'Test User',
         email: 'test@example.com',
         avatarUrl: 'https://example.com/avatar.jpg'
       };
-      
+
       const sessionResponse = await sessionManager.createSession(
         clientSessionId,
         testApplication,
@@ -350,7 +360,7 @@ describe('Security Validation Tests', () => {
         refreshToken,
         userInfo
       );
-      
+
       // Validate session creation response
       expect(sessionResponse).toBeDefined();
       if (sessionResponse.success && sessionResponse.data) {
@@ -379,7 +389,7 @@ describe('Security Validation Tests', () => {
         updatedAt: new Date(),
         isActive: true
       };
-      
+
       const accessToken: AccessToken = {
         token: 'test-access-token',
         tokenType: 'Bearer',
@@ -390,7 +400,7 @@ describe('Security Validation Tests', () => {
         lastUsedAt: new Date(),
         isValid: true
       };
-      
+
       const refreshToken: RefreshToken = {
         id: 'refresh-123',
         token: 'test-refresh-token',
@@ -402,14 +412,14 @@ describe('Security Validation Tests', () => {
         isValid: true,
         isRevoked: false
       };
-      
+
       const userInfo: UserInfo = {
         id: 'user123',
         name: 'Test User',
         email: 'test@example.com',
         avatarUrl: 'https://example.com/avatar.jpg'
       };
-      
+
       const sessionResponse = await sessionManager.createSession(
         clientSessionId,
         testApplication,
@@ -417,10 +427,10 @@ describe('Security Validation Tests', () => {
         refreshToken,
         userInfo
       );
-      
+
       if (sessionResponse.success && sessionResponse.data) {
         const session = sessionResponse.data;
-        
+
         // Test session retrieval
         const retrievedSession = await sessionManager.getSession(session.id);
         expect(retrievedSession).toBeDefined();
@@ -447,7 +457,7 @@ describe('Security Validation Tests', () => {
         updatedAt: new Date(),
         isActive: true
       };
-      
+
       const accessToken: AccessToken = {
         token: 'test-access-token',
         tokenType: 'Bearer',
@@ -458,7 +468,7 @@ describe('Security Validation Tests', () => {
         lastUsedAt: new Date(),
         isValid: true
       };
-      
+
       const refreshToken: RefreshToken = {
         id: 'refresh-123',
         token: 'test-refresh-token',
@@ -470,14 +480,14 @@ describe('Security Validation Tests', () => {
         isValid: true,
         isRevoked: false
       };
-      
+
       const userInfo: UserInfo = {
         id: 'user123',
         name: 'Test User',
         email: 'test@example.com',
         avatarUrl: 'https://example.com/avatar.jpg'
       };
-      
+
       // Test session creation
       const sessionResponse = await sessionManager.createSession(
         clientSessionId,
@@ -486,9 +496,9 @@ describe('Security Validation Tests', () => {
         refreshToken,
         userInfo
       );
-      
+
       expect(sessionResponse).toBeDefined();
-      
+
       // Test session listing
       const sessions = await sessionManager.getUserSessions(userInfo.id);
       expect(sessions).toBeDefined();
@@ -499,13 +509,13 @@ describe('Security Validation Tests', () => {
   describe('Rate Limiting Security Validation', () => {
     it('should validate rate limiting effectiveness', async () => {
       const clientId = 'rate-limit-test-client';
-      
+
       // Use the correct method name
       const result = await rateLimiter.checkRateLimit(clientId, {
         userId: clientId,
         sessionId: 'test-session'
       });
-      
+
       expect(result.allowed).toBe(true);
       expect(result.remaining).toBeGreaterThanOrEqual(0);
       expect(result.resetTime).toBeDefined();
@@ -513,7 +523,7 @@ describe('Security Validation Tests', () => {
 
     it('should validate rate limiting with multiple requests', async () => {
       const clientId = 'rate-limit-multiple-test';
-      
+
       // Make multiple requests
       const results: any[] = [];
       for (let i = 0; i < 5; i++) {
@@ -523,7 +533,7 @@ describe('Security Validation Tests', () => {
         });
         results.push(result);
       }
-      
+
       // All should be allowed within limit
       results.forEach(result => {
         expect(result.allowed).toBe(true);
@@ -532,14 +542,14 @@ describe('Security Validation Tests', () => {
 
     it('should validate different rate limiting scopes', async () => {
       const clientId = 'scope-test-client';
-      
+
       // Test per-user scope
       const userResult = await rateLimiter.checkRateLimit(clientId, {
         userId: clientId,
         sessionId: 'test-session'
       });
       expect(userResult.allowed).toBe(true);
-      
+
       // Test per-IP scope
       const ipResult = await rateLimiter.checkRateLimit(clientId, {
         userId: clientId,
@@ -563,13 +573,13 @@ describe('Security Validation Tests', () => {
           details: { method: 'oauth', provider: 'bitbucket' }
         }
       );
-      
+
       // Get events using the correct method
       const events = await auditLogger.getEvents({
         userId: 'user123',
         limit: 10
       });
-      
+
       expect(events.length).toBeGreaterThan(0);
       expect(events[0].type).toBe(AuditEventType.AUTH_LOGIN_SUCCESS);
       expect(events[0].userId).toBe('user123');
@@ -587,7 +597,7 @@ describe('Security Validation Tests', () => {
           userAgent: 'Test Agent'
         }
       );
-      
+
       await auditLogger.logEvent(
         AuditEventType.AUTH_LOGIN_FAILURE,
         'User 2 login failed',
@@ -598,7 +608,7 @@ describe('Security Validation Tests', () => {
           userAgent: 'Test Agent'
         }
       );
-      
+
       // Filter by user
       const user1Events = await auditLogger.getEvents({
         userId: 'user1',
@@ -606,7 +616,7 @@ describe('Security Validation Tests', () => {
       });
       expect(user1Events.length).toBe(1);
       expect(user1Events[0].userId).toBe('user1');
-      
+
       // Filter by type
       const failureEvents = await auditLogger.getEvents({
         type: AuditEventType.AUTH_LOGIN_FAILURE,
@@ -628,11 +638,11 @@ describe('Security Validation Tests', () => {
           userAgent: 'Test Agent'
         }
       );
-      
+
       // Cleanup old events using correct method
       const cleanedCount = await auditLogger.cleanup();
       expect(cleanedCount).toBeGreaterThanOrEqual(0);
-      
+
       // Verify events still exist (not old enough to be cleaned)
       const events = await auditLogger.getEvents({
         userId: 'user123',
@@ -648,7 +658,7 @@ describe('Security Validation Tests', () => {
         origin: 'https://example.com',
         isHttps: true
       });
-      
+
       expect(headers['X-Content-Type-Options']).toBe('nosniff');
       expect(headers['X-Frame-Options']).toBeDefined();
       expect(headers['X-XSS-Protection']).toBeDefined();
@@ -660,7 +670,7 @@ describe('Security Validation Tests', () => {
         origin: 'https://trusted.com',
         method: 'POST'
       });
-      
+
       expect(headers['Access-Control-Allow-Origin']).toBeDefined();
       expect(headers['Access-Control-Allow-Methods']).toBeDefined();
       expect(headers['Access-Control-Allow-Headers']).toBeDefined();
@@ -672,7 +682,7 @@ describe('Security Validation Tests', () => {
         'X-Frame-Options': 'DENY',
         'X-XSS-Protection': '1; mode=block'
       };
-      
+
       const validation = securityHeaders.validateHeaders(testHeaders);
       expect(validation.valid).toBe(true);
       expect(validation.errors.length).toBe(0);
@@ -683,12 +693,12 @@ describe('Security Validation Tests', () => {
     it('should validate end-to-end security flow', async () => {
       const clientId = 'security-integration-test';
       const sensitiveData = 'end-to-end-security-test-data';
-      
+
       try {
         // 1. Encrypt sensitive data
         const encrypted = await cryptoService.encrypt(sensitiveData);
         expect(encrypted.data).toBeDefined();
-        
+
         // 2. Log security event
         await auditLogger.logEvent(
           AuditEventType.AUTH_LOGIN_SUCCESS,
@@ -701,28 +711,28 @@ describe('Security Validation Tests', () => {
             details: { encryption: 'aes-256-gcm' }
           }
         );
-        
+
         // 3. Check rate limiting
         const rateLimitResult = await rateLimiter.checkRateLimit(clientId, {
           userId: clientId,
           sessionId: 'test-session'
         });
         expect(rateLimitResult.allowed).toBe(true);
-        
+
         // 4. Generate security headers
         const headers = securityHeaders.generateSecurityHeaders({
           origin: 'https://secure.example.com',
           isHttps: true
         });
         expect(headers['X-Content-Type-Options']).toBe('nosniff');
-        
+
         // 5. Validate audit log
         const events = await auditLogger.getEvents({
           userId: 'user123',
           limit: 1
         });
         expect(events.length).toBeGreaterThanOrEqual(0);
-        
+
         // 6. Decrypt and validate data
         const decrypted = await cryptoService.decrypt(encrypted);
         expect(decrypted).toBe(sensitiveData);
@@ -734,14 +744,14 @@ describe('Security Validation Tests', () => {
 
     it('should validate security failure scenarios', async () => {
       const clientId = 'security-failure-test';
-      
+
       // 1. Test rate limiting
       const rateLimitResult = await rateLimiter.checkRateLimit(clientId, {
         userId: clientId,
         sessionId: 'test-session'
       });
       expect(rateLimitResult.allowed).toBe(true);
-      
+
       // 2. Log security failure
       await auditLogger.logEvent(
         AuditEventType.AUTH_LOGIN_FAILURE,
@@ -754,7 +764,7 @@ describe('Security Validation Tests', () => {
           details: { reason: 'test_failure' }
         }
       );
-      
+
       // 3. Validate failure logging
       const failureEvents = await auditLogger.getEvents({
         type: AuditEventType.AUTH_LOGIN_FAILURE,
