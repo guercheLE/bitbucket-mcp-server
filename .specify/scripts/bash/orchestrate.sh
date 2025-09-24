@@ -318,9 +318,28 @@ cmd_finalize_implementation() {
 
 # --- Main Command Router ---
 
-# Parse global options first
-remaining_args=$(parse_global_options "$@")
-eval set -- "$remaining_args"
+# Parse global options first - fixed to avoid subshell issue
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --run-tasks)
+            RUN_TASKS=true
+            shift
+            ;;
+        --no-run-tasks)
+            RUN_TASKS=false
+            shift
+            ;;
+        -*)
+            echo "Unknown option: $1" >&2
+            echo "Global options: --run-tasks, --no-run-tasks" >&2
+            exit 1
+            ;;
+        *)
+            # Not a global option, break to process commands
+            break
+            ;;
+    esac
+done
 
 COMMAND=$1
 shift || true
