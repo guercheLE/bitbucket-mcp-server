@@ -48,12 +48,12 @@
 **Dependencies**: T002
 
 **Tasks:**
-- [ ] Create `list_pipeline_runs.ts` - List pipeline execution history
-- [ ] Create `get_pipeline_logs.ts` - Retrieve pipeline execution logs
-- [ ] Create `get_pipeline_artifacts.ts` - Access build artifacts and outputs
-- [ ] Update `pipeline_management_index.ts` with new tools
-- [ ] Implement efficient log streaming and pagination
-- [ ] Add artifact download and management capabilities
+- [x] Create `list_pipeline_runs.ts` - List pipeline execution history
+- [x] Create `get_pipeline_logs.ts` - Retrieve pipeline execution logs
+- [x] Create `get_pipeline_artifacts.ts` - Access build artifacts and outputs
+- [x] Update `pipeline_management_index.ts` with new tools
+- [x] Implement efficient log streaming and pagination
+- [x] Add artifact download and management capabilities
 
 **Acceptance Criteria:**
 - Users can view complete pipeline execution history
