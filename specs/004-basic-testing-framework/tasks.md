@@ -57,7 +57,7 @@
 - [x] Create tests for OAuth flow integration
 - [x] Implement tests for token management workflows
 - [x] Add tests for session handling across requests
-- [ ] Create tests for authentication error scenarios
+- [x] Create tests for authentication error scenarios
 - [ ] Implement tests for token refresh workflows
 
 ### T008: MCP Server Integration Tests
