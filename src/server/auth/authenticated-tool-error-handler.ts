@@ -25,12 +25,12 @@ import {
   AuthenticationError,
   AuthenticationErrorCode,
   UserSession
-} from '../../types/auth.js';
+} from '../../types/auth';
 import { 
   ToolExecutionContext, 
   ToolResult, 
   MCPErrorCode 
-} from '../../types/index.js';
+} from '../../types/index';
 
 /**
  * Error Context for Authenticated Tools

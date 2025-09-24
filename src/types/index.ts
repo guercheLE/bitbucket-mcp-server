@@ -434,4 +434,4 @@ export enum MCPErrorCode {
 // Export all types
 // ============================================================================
 
-export * from './auth.js';
+export * from './auth';

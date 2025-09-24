@@ -25,7 +25,7 @@ import {
   AuthenticationErrorCode,
   UserSession
 } from '../../types/auth';
-import { ToolExecutionContext, ToolRequest, ToolResponse } from '../../types/index.js';
+import { ToolExecutionContext, ToolRequest, ToolResponse } from '../../types/index';
 import { BitbucketAPIManager, APIRequestContext } from './bitbucket-api-manager';
 import { AuthenticatedToolErrorHandler, AuthenticatedToolErrorContext } from './authenticated-tool-error-handler';
 

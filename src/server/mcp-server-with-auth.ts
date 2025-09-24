@@ -29,19 +29,19 @@ import {
   ToolRequest, 
   ToolResponse,
   MCPErrorCode
-} from '../types/index.js';
+} from '../types/index';
 import { 
   UserSession,
   AuthenticationError,
   AuthenticationErrorCode
-} from '../types/auth.js';
-import { AuthenticationManager } from './auth/authentication-manager.js';
-import { ToolRegistry } from './tool-registry.js';
-import { BitbucketMCPTools } from './bitbucket-mcp-tools.js';
-import { BitbucketToolsIntegration } from './auth/bitbucket-tools-integration.js';
-import { MCPAuthIntegration } from './auth/mcp-auth-integration.js';
-import { MCPAuthMiddleware } from './auth/mcp-auth-middleware.js';
-import { BitbucketAPIManager } from './auth/bitbucket-api-manager.js';
+} from '../types/auth';
+import { AuthenticationManager } from './auth/authentication-manager';
+import { ToolRegistry } from './tool-registry';
+import { BitbucketMCPTools } from './bitbucket-mcp-tools';
+import { BitbucketToolsIntegration } from './auth/bitbucket-tools-integration';
+import { MCPAuthIntegration } from './auth/mcp-auth-integration';
+import { MCPAuthMiddleware } from './auth/mcp-auth-middleware';
+import { BitbucketAPIManager } from './auth/bitbucket-api-manager';
 
 /**
  * MCP Server Configuration

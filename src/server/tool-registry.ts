@@ -37,7 +37,7 @@ import {
   AuthenticationError,
   AuthenticationErrorCode,
   UserSession
-} from '../types/auth.js';
+} from '../types/auth';
 
 /**
  * Tool Registry Statistics
