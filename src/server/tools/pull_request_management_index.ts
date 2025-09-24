@@ -24,6 +24,9 @@ export { getPullRequestTool } from './get_pull_request.js';
 export { updatePullRequestTool } from './update_pull_request.js';
 export { managePullRequestReviewsTool } from './manage_pull_request_reviews.js';
 export { managePullRequestCommentsTool } from './manage_pull_request_comments.js';
+export { mergePullRequestTool } from './merge_pull_request.js';
+export { managePullRequestBranchesTool } from './manage_pull_request_branches.js';
+export { managePullRequestIntegrationTool } from './manage_pull_request_integration.js';
 
 // Export all tools as an array for easy registration
 export const pullRequestManagementTools = [
@@ -32,7 +35,10 @@ export const pullRequestManagementTools = [
   getPullRequestTool,
   updatePullRequestTool,
   managePullRequestReviewsTool,
-  managePullRequestCommentsTool
+  managePullRequestCommentsTool,
+  mergePullRequestTool,
+  managePullRequestBranchesTool,
+  managePullRequestIntegrationTool
 ];
 
 export default pullRequestManagementTools;
