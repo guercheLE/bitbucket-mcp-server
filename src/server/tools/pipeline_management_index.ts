@@ -49,6 +49,9 @@ export { configurePipelineTriggersTool } from './configure_pipeline_triggers.js'
 export { managePipelinePermissionsTool } from './manage_pipeline_permissions.js';
 export { configurePipelineAccessTool } from './configure_pipeline_access.js';
 export { auditPipelineAccessTool } from './audit_pipeline_access.js';
+export { configurePipelineWebhooksTool } from './configure_pipeline_webhooks.js';
+export { managePipelineIntegrationsTool } from './manage_pipeline_integrations.js';
+export { setupPipelineNotificationsTool } from './setup_pipeline_notifications.js';
 
 // Export all tools as an array for easy registration
 export const pipelineManagementTools = [
@@ -65,7 +68,10 @@ export const pipelineManagementTools = [
   configurePipelineTriggersTool,
   managePipelinePermissionsTool,
   configurePipelineAccessTool,
-  auditPipelineAccessTool
+  auditPipelineAccessTool,
+  configurePipelineWebhooksTool,
+  managePipelineIntegrationsTool,
+  setupPipelineNotificationsTool
 ];
 
 export default pipelineManagementTools;
