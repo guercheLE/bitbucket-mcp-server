@@ -52,6 +52,12 @@ export { auditPipelineAccessTool } from './audit_pipeline_access.js';
 export { configurePipelineWebhooksTool } from './configure_pipeline_webhooks.js';
 export { managePipelineIntegrationsTool } from './manage_pipeline_integrations.js';
 export { setupPipelineNotificationsTool } from './setup_pipeline_notifications.js';
+export { getPipelineAnalyticsTool } from './get_pipeline_analytics.js';
+export { generatePipelineReportsTool } from './generate_pipeline_reports.js';
+export { trackPipelineMetricsTool } from './track_pipeline_metrics.js';
+export { analyzePipelineDataTool } from './analyze_pipeline_data.js';
+export { exportPipelineDataTool } from './export_pipeline_data.js';
+export { diagnosePipelineIssuesTool } from './diagnose_pipeline_issues.js';
 
 // Export all tools as an array for easy registration
 export const pipelineManagementTools = [
@@ -71,7 +77,13 @@ export const pipelineManagementTools = [
   auditPipelineAccessTool,
   configurePipelineWebhooksTool,
   managePipelineIntegrationsTool,
-  setupPipelineNotificationsTool
+  setupPipelineNotificationsTool,
+  getPipelineAnalyticsTool,
+  generatePipelineReportsTool,
+  trackPipelineMetricsTool,
+  analyzePipelineDataTool,
+  exportPipelineDataTool,
+  diagnosePipelineIssuesTool
 ];
 
 export default pipelineManagementTools;
