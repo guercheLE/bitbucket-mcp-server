@@ -47,15 +47,15 @@
 ## Phase 3: Integration Testing Framework
 
 ### T006: End-to-End Test Infrastructure
-- [ ] Create integration test setup and teardown utilities
-- [ ] Implement test environment isolation
-- [ ] Add integration test data management
-- [ ] Create test user and workspace management
-- [ ] Implement test cleanup and reset utilities
+- [x] Create integration test setup and teardown utilities
+- [x] Implement test environment isolation
+- [x] Add integration test data management
+- [x] Create test user and workspace management
+- [x] Implement test cleanup and reset utilities
 
 ### T007: Authentication Integration Tests
-- [ ] Create tests for OAuth flow integration
-- [ ] Implement tests for token management workflows
+- [x] Create tests for OAuth flow integration
+- [x] Implement tests for token management workflows
 - [ ] Add tests for session handling across requests
 - [ ] Create tests for authentication error scenarios
 - [ ] Implement tests for token refresh workflows
