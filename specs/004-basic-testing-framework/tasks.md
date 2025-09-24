@@ -58,7 +58,7 @@
 - [x] Implement tests for token management workflows
 - [x] Add tests for session handling across requests
 - [x] Create tests for authentication error scenarios
-- [ ] Implement tests for token refresh workflows
+- [x] Implement tests for token refresh workflows
 
 ### T008: MCP Server Integration Tests
 - [ ] Create tests for server initialization workflows
