@@ -21,6 +21,9 @@ export { getRepositoryTool } from './get_repository.js';
 export { updateRepositorySettingsTool } from './update_repository_settings.js';
 export { manageRepositoryPermissionsTool } from './manage_repository_permissions.js';
 export { repositoryLifecycleTool } from './repository_lifecycle.js';
+export { branchManagementTool } from './branch_management.js';
+export { webhookManagementTool } from './webhook_management.js';
+export { repositoryIntegrationTool } from './repository_integration.js';
 
 // Export all tools as an array for easy registration
 export const repositoryManagementTools = [
@@ -29,7 +32,10 @@ export const repositoryManagementTools = [
   getRepositoryTool,
   updateRepositorySettingsTool,
   manageRepositoryPermissionsTool,
-  repositoryLifecycleTool
+  repositoryLifecycleTool,
+  branchManagementTool,
+  webhookManagementTool,
+  repositoryIntegrationTool
 ];
 
 export default repositoryManagementTools;
