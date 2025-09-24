@@ -61,7 +61,7 @@
 - [x] Implement tests for token refresh workflows
 
 ### T008: MCP Server Integration Tests
-- [ ] Create tests for server initialization workflows
+- [x] Create tests for server initialization workflows
 - [ ] Implement tests for tool registration and discovery
 - [ ] Add tests for authenticated tool execution
 - [ ] Create tests for error handling across the stack
