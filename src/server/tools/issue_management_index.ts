@@ -11,6 +11,9 @@
  * - update_issue: Update issues with status workflow transitions
  * - manage_issue_assignment: Manage issue assignments and ownership
  * - manage_issue_comments: Manage issue comments with threading
+ * - manage_issue_relationships: Manage issue linking and relationships
+ * - advanced_issue_search: Advanced issue search and filtering
+ * - manage_issue_attachments: Manage issue attachments and files
  * 
  * All tools support both Bitbucket Data Center and Cloud APIs.
  */
@@ -21,6 +24,9 @@ export { getIssueTool } from './get_issue.js';
 export { updateIssueTool } from './update_issue.js';
 export { manageIssueAssignmentTool } from './manage_issue_assignment.js';
 export { manageIssueCommentsTool } from './manage_issue_comments.js';
+export { manageIssueRelationshipsTool } from './manage_issue_relationships.js';
+export { advancedIssueSearchTool } from './advanced_issue_search.js';
+export { manageIssueAttachmentsTool } from './manage_issue_attachments.js';
 
 // Export all tools as an array for easy registration
 export const issueManagementTools = [
@@ -29,7 +35,10 @@ export const issueManagementTools = [
   getIssueTool,
   updateIssueTool,
   manageIssueAssignmentTool,
-  manageIssueCommentsTool
+  manageIssueCommentsTool,
+  manageIssueRelationshipsTool,
+  advancedIssueSearchTool,
+  manageIssueAttachmentsTool
 ];
 
 export default issueManagementTools;
