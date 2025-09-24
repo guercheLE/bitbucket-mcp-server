@@ -67,7 +67,7 @@ export default {
       setupFilesAfterEnv: ['<rootDir>/tests/setup.ts']
     },
     {
-      displayName: 'integration', 
+      displayName: 'integration',
       testMatch: ['<rootDir>/tests/integration/**/*.test.ts'],
       setupFilesAfterEnv: ['<rootDir>/tests/setup.ts']
     },

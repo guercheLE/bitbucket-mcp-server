@@ -88,19 +88,9 @@ describe('Security Validation Tests', () => {
     };
 
     cryptoService = new AdvancedCryptoService({
-      algorithm: 'aes-256-cbc',
+      algorithm: 'aes-256-gcm',
       kdf: 'pbkdf2',
       pbkdf2Iterations: 10000,
-      scryptParams: {
-        N: 16384,
-        r: 8,
-        p: 1
-      },
-      saltLength: 32,
-      ivLength: 16,
-      tagLength: 16,
-      keyLength: 32,
-      maxKeyAge: 86400000, // 24 hours
       memoryProtection: true,
       forwardSecrecy: true
     });

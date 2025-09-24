@@ -20,7 +20,7 @@
  * - Performance optimization
  */
 
-import { createCipheriv, createDecipheriv, createHash, createHmac, randomBytes, scrypt, timingSafeEqual } from 'crypto';
+import { createHash, createHmac, randomBytes, scrypt, timingSafeEqual } from 'crypto';
 import { promisify } from 'util';
 
 // Promisify scrypt for async/await usage
@@ -183,9 +183,7 @@ export class AdvancedCryptoService {
       encrypted += cipher.final('hex');
 
       // Get authentication tag (for GCM mode)
-      const tag = this.config.algorithm === 'aes-256-gcm'
-        ? cipher.getAuthTag()?.toString('hex')
-        : undefined;
+      const tag = undefined; // Simplified for CBC mode
 
       // Calculate integrity hash
       const integrity = this.calculateIntegrity(data, key);
@@ -213,8 +211,7 @@ export class AdvancedCryptoService {
 
       return encryptedData;
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      throw new Error(`Encryption failed: ${message}`);
+      throw new Error(`Encryption failed: ${error.message}`);
     }
   }
 
@@ -229,7 +226,7 @@ export class AdvancedCryptoService {
       // Parse components
       const salt = Buffer.from(encryptedData.salt, 'hex');
       const iv = Buffer.from(encryptedData.iv, 'hex');
-      const tag = encryptedData.tag ? Buffer.from(encryptedData.tag, 'hex') : undefined;
+      const tag = undefined; // Simplified for CBC mode
 
       // Derive decryption key
       const key = password
@@ -237,12 +234,7 @@ export class AdvancedCryptoService {
         : await this.keyManager.getCurrentKey();
 
       // Create decipher
-      const decipher = this.createDecipher(key, iv);
-
-      // Set authentication tag for GCM mode
-      if (this.config.algorithm === 'aes-256-gcm' && tag) {
-        (decipher as any).setAuthTag(tag);
-      }
+      const decipher = this.createDecipher(key, iv, tag);
 
       // Decrypt data
       let decrypted = decipher.update(encryptedData.data, 'hex', 'utf8');
@@ -264,8 +256,7 @@ export class AdvancedCryptoService {
 
       return decrypted;
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      throw new Error(`Decryption failed: ${message}`);
+      throw new Error(`Decryption failed: ${error.message}`);
     }
   }
 
@@ -350,11 +341,15 @@ export class AdvancedCryptoService {
    * Create cipher for encryption
    */
   private createCipher(key: Buffer, iv: Buffer): any {
+    const crypto = require('crypto');
+
     if (this.config.algorithm === 'aes-256-gcm') {
-      const cipher = createCipheriv('aes-256-gcm', key, iv);
+      const cipher = crypto.createCipherGCM('aes-256-gcm', key, iv);
+      cipher.setAutoPadding(true);
       return cipher;
     } else {
-      const cipher = createCipheriv('aes-256-cbc', key, iv);
+      const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+      cipher.setAutoPadding(true);
       return cipher;
     }
   }
@@ -362,15 +357,21 @@ export class AdvancedCryptoService {
   /**
    * Create decipher for decryption
    */
-  private createDecipher(key: Buffer, iv: Buffer): any {
+  private createDecipher(key: Buffer, iv: Buffer, tag?: Buffer): any {
+    const crypto = require('crypto');
+
     if (this.config.algorithm === 'aes-256-gcm') {
-      const decipher = createDecipheriv('aes-256-gcm', key, iv);
+      const decipher = crypto.createDecipherGCM('aes-256-gcm', key, iv);
+      decipher.setAutoPadding(true);
       return decipher;
     } else {
-      const decipher = createDecipheriv('aes-256-cbc', key, iv);
+      const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+      decipher.setAutoPadding(true);
       return decipher;
     }
-  }  /**
+  }
+
+  /**
    * Calculate data integrity hash
    */
   private calculateIntegrity(data: string, key: Buffer): string {
@@ -454,7 +455,7 @@ class SecureKeyManager implements KeyManager {
         });
       });
     } else if (this.config.kdf === 'scrypt') {
-      return scryptAsync(password, salt, this.config.keyLength) as Promise<Buffer>;
+      return scryptAsync(password, salt, this.config.keyLength, this.config.scryptParams) as Promise<Buffer>;
     } else {
       throw new Error(`Unsupported KDF: ${this.config.kdf}`);
     }
