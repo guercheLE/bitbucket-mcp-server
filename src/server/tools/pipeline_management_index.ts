@@ -43,6 +43,9 @@ export { getPipelineStatusTool } from './get_pipeline_status.js';
 export { listPipelineRunsTool } from './list_pipeline_runs.js';
 export { getPipelineLogsTool } from './get_pipeline_logs.js';
 export { getPipelineArtifactsTool } from './get_pipeline_artifacts.js';
+export { updatePipelineConfigTool } from './update_pipeline_config.js';
+export { managePipelineVariablesTool } from './manage_pipeline_variables.js';
+export { configurePipelineTriggersTool } from './configure_pipeline_triggers.js';
 
 // Export all tools as an array for easy registration
 export const pipelineManagementTools = [
@@ -53,7 +56,10 @@ export const pipelineManagementTools = [
   getPipelineStatusTool,
   listPipelineRunsTool,
   getPipelineLogsTool,
-  getPipelineArtifactsTool
+  getPipelineArtifactsTool,
+  updatePipelineConfigTool,
+  managePipelineVariablesTool,
+  configurePipelineTriggersTool
 ];
 
 export default pipelineManagementTools;
