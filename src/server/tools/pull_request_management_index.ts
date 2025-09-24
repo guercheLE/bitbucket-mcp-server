@@ -21,12 +21,18 @@
 export { createPullRequestTool } from './create_pull_request.js';
 export { listPullRequestsTool } from './list_pull_requests.js';
 export { getPullRequestTool } from './get_pull_request.js';
+export { updatePullRequestTool } from './update_pull_request.js';
+export { managePullRequestReviewsTool } from './manage_pull_request_reviews.js';
+export { managePullRequestCommentsTool } from './manage_pull_request_comments.js';
 
 // Export all tools as an array for easy registration
 export const pullRequestManagementTools = [
   createPullRequestTool,
   listPullRequestsTool,
-  getPullRequestTool
+  getPullRequestTool,
+  updatePullRequestTool,
+  managePullRequestReviewsTool,
+  managePullRequestCommentsTool
 ];
 
 export default pullRequestManagementTools;
