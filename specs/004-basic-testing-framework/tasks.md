@@ -56,7 +56,7 @@
 ### T007: Authentication Integration Tests
 - [x] Create tests for OAuth flow integration
 - [x] Implement tests for token management workflows
-- [ ] Add tests for session handling across requests
+- [x] Add tests for session handling across requests
 - [ ] Create tests for authentication error scenarios
 - [ ] Implement tests for token refresh workflows
 
