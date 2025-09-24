@@ -8,12 +8,12 @@
 **Dependencies**: None
 
 **Tasks:**
-- [ ] Create `create_pipeline.ts` - Pipeline creation with configurable settings
-- [ ] Create `configure_pipeline.ts` - Pipeline configuration management
-- [ ] Create `pipeline_management_index.ts` - Export all pipeline tools
-- [ ] Implement parameter validation and error handling
-- [ ] Add comprehensive JSDoc documentation
-- [ ] Test with both Bitbucket Data Center and Cloud APIs
+- [x] Create `create_pipeline.ts` - Pipeline creation with configurable settings
+- [x] Create `configure_pipeline.ts` - Pipeline configuration management
+- [x] Create `pipeline_management_index.ts` - Export all pipeline tools
+- [x] Implement parameter validation and error handling
+- [x] Add comprehensive JSDoc documentation
+- [x] Test with both Bitbucket Data Center and Cloud APIs
 
 **Acceptance Criteria:**
 - Users can create new pipelines with custom configurations
