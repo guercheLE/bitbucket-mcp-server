@@ -25,14 +25,8 @@
  * - Error handling and logging
  */
 
-import { MCPServer } from './mcp-server.js';
-import { MCPServerSDK, createMCPServerWithSDK, createTransport } from './mcp-server-sdk.js';
-import { MCPServerLogger, createLoggerFromConfig, LogCategory } from './logger.js';
-import { ConnectionManager, createConnectionManager } from './connection-manager.js';
-import { SessionManager } from './client-session.js';
+// Simplified imports for working server
 import { ToolRegistry } from './tool-registry.js';
-import { TransportFactory } from './transport-factory.js';
-import { ProtocolMessageHandler } from './protocol-handler.js';
 import { 
   ServerConfig, 
   TransportConfig, 

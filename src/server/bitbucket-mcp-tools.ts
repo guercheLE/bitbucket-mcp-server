@@ -19,9 +19,9 @@
  * - Comprehensive error handling
  */
 
-import { Tool, ToolParameter, ToolExecutionContext, ToolResult, MCPErrorCode } from '../types/index';
-import { BitbucketToolsIntegration } from './auth/bitbucket-tools-integration';
-import { AuthenticationError, AuthenticationErrorCode } from '../types/auth';
+import { Tool, ToolParameter, ToolExecutionContext, ToolResult, MCPErrorCode } from '../types/index.js';
+import { BitbucketToolsIntegration } from './auth/bitbucket-tools-integration.js';
+import { AuthenticationError, AuthenticationErrorCode } from '../types/auth.js';
 
 /**
  * Bitbucket MCP Tools Registry

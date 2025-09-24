@@ -427,7 +427,217 @@ export enum MCPErrorCode {
   // Bitbucket API errors
   BITBUCKET_API_ERROR = 'BITBUCKET_API_ERROR',
   BITBUCKET_PERMISSION_DENIED = 'BITBUCKET_PERMISSION_DENIED',
-  BITBUCKET_RESOURCE_NOT_FOUND = 'BITBUCKET_RESOURCE_NOT_FOUND'
+  BITBUCKET_RESOURCE_NOT_FOUND = 'BITBUCKET_RESOURCE_NOT_FOUND',
+  
+  // Additional error codes
+  PARSE_ERROR = 'PARSE_ERROR',
+  METHOD_NOT_FOUND = 'METHOD_NOT_FOUND',
+  RESOURCE_NOT_FOUND = 'RESOURCE_NOT_FOUND',
+  TRANSPORT_ERROR = 'TRANSPORT_ERROR',
+  INITIALIZATION_FAILED = 'INITIALIZATION_FAILED',
+  MEMORY_LIMIT_EXCEEDED = 'MEMORY_LIMIT_EXCEEDED',
+  CONCURRENT_OPERATION = 'CONCURRENT_OPERATION'
+}
+
+// ============================================================================
+// Server Configuration Types
+// ============================================================================
+
+/**
+ * Server Configuration
+ * Configuration for MCP server setup
+ */
+export interface ServerConfig {
+  /** Server name */
+  name: string;
+  
+  /** Server version */
+  version: string;
+  
+  /** Server description */
+  description?: string;
+  
+  /** Server port */
+  port?: number;
+  
+  /** Server host */
+  host?: string;
+  
+  /** Transport configurations */
+  transports?: TransportConfig[];
+  
+  /** Logging configuration */
+  logging?: {
+    level: string;
+    format: string;
+  };
+  
+  /** Authentication configuration */
+  authentication?: {
+    enabled: boolean;
+    methods: string[];
+  };
+}
+
+/**
+ * Transport Configuration
+ * Configuration for transport setup
+ */
+export interface TransportConfig {
+  /** Transport type */
+  type: TransportType;
+  
+  /** Transport endpoint */
+  endpoint?: string;
+  
+  /** Transport options */
+  options?: Record<string, any>;
+}
+
+/**
+ * Transport Type
+ * Available transport types
+ */
+export enum TransportType {
+  STDIO = 'stdio',
+  HTTP = 'http',
+  WEBSOCKET = 'websocket',
+  SSE = 'sse'
+}
+
+/**
+ * Transport Interface
+ * Transport abstraction
+ */
+export interface Transport {
+  /** Transport type */
+  type: TransportType;
+  
+  /** Transport endpoint */
+  endpoint?: string;
+  
+  /** Start transport */
+  start(): Promise<void>;
+  
+  /** Stop transport */
+  stop(): Promise<void>;
+  
+  /** Send message */
+  send(message: any): Promise<void>;
+  
+  /** Receive message */
+  receive(): Promise<any>;
+  
+  /** Disconnect transport */
+  disconnect?(): Promise<void>;
+}
+
+/**
+ * Transport Statistics
+ * Statistics for transport performance
+ */
+export interface TransportStats {
+  /** Messages sent */
+  messagesSent: number;
+  
+  /** Messages received */
+  messagesReceived: number;
+  
+  /** Bytes sent */
+  bytesSent: number;
+  
+  /** Bytes received */
+  bytesReceived: number;
+  
+  /** Connection uptime */
+  uptime: number;
+  
+  /** Last activity */
+  lastActivity: Date;
+}
+
+/**
+ * Protocol Message
+ * MCP protocol message structure
+ */
+export interface ProtocolMessage {
+  /** Message ID */
+  id: string;
+  
+  /** Message type */
+  type: string;
+  
+  /** Message method */
+  method?: string;
+  
+  /** Message parameters */
+  params?: any;
+  
+  /** Message result */
+  result?: any;
+  
+  /** Message error */
+  error?: {
+    code: number;
+    message: string;
+    data?: any;
+  };
+  
+  /** Message timestamp */
+  timestamp: Date;
+}
+
+/**
+ * Server Statistics
+ * Server performance statistics
+ */
+export interface ServerStats {
+  /** Server uptime */
+  uptime: number;
+  
+  /** Active sessions */
+  activeSessions: number;
+  
+  /** Total requests */
+  totalRequests: number;
+  
+  /** Successful requests */
+  successfulRequests: number;
+  
+  /** Failed requests */
+  failedRequests: number;
+  
+  /** Average response time */
+  averageResponseTime: number;
+  
+  /** Memory usage */
+  memoryUsage: number;
+  
+  /** CPU usage */
+  cpuUsage: number;
+}
+
+/**
+ * Health Status
+ * Server health status
+ */
+export enum HealthStatus {
+  HEALTHY = 'healthy',
+  DEGRADED = 'degraded',
+  UNHEALTHY = 'unhealthy',
+  UNKNOWN = 'unknown'
+}
+
+/**
+ * Client Session State
+ * Client session states
+ */
+export enum ClientSessionState {
+  CONNECTING = 'connecting',
+  CONNECTED = 'connected',
+  AUTHENTICATED = 'authenticated',
+  DISCONNECTED = 'disconnected',
+  ERROR = 'error'
 }
 
 // ============================================================================

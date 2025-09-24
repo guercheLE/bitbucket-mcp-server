@@ -457,6 +457,16 @@ export enum AuthenticationErrorCode {
   
   // General Errors
   AUTHENTICATION_FAILED = 'authentication_failed',
+  INVALID_CREDENTIALS = 'invalid_credentials',
+  INSUFFICIENT_PERMISSIONS = 'insufficient_permissions',
+  ACCOUNT_LOCKED = 'account_locked',
+  REFRESH_TOKEN_INVALID = 'refresh_token_invalid',
+  REFRESH_TOKEN_EXPIRED = 'refresh_token_expired',
+  USER_NOT_FOUND = 'user_not_found',
+  APPLICATION_DISABLED = 'application_disabled',
+  RATE_LIMIT_EXCEEDED = 'rate_limit_exceeded',
+  SERVER_ERROR = 'server_error',
+  UNKNOWN_ERROR = 'unknown_error',
   AUTHORIZATION_FAILED = 'authorization_failed',
   INTERNAL_ERROR = 'internal_error'
 }

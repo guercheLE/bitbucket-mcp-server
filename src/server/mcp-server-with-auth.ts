@@ -29,12 +29,12 @@ import {
   ToolRequest, 
   ToolResponse,
   MCPErrorCode
-} from '../types/index';
+} from '../types/index.js';
 import { 
   UserSession,
   AuthenticationError,
   AuthenticationErrorCode
-} from '../types/auth';
+} from '../types/auth.js';
 import { AuthenticationManager } from './auth/authentication-manager';
 import { ToolRegistry } from './tool-registry';
 import { BitbucketMCPTools } from './bitbucket-mcp-tools';

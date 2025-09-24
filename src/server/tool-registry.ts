@@ -32,12 +32,12 @@ import {
   ToolExecutionContext,
   ToolResult,
   MCPErrorCode
-} from '../types/index';
+} from '../types/index.js';
 import { 
   AuthenticationError,
   AuthenticationErrorCode,
   UserSession
-} from '../types/auth';
+} from '../types/auth.js';
 
 /**
  * Tool Registry Statistics

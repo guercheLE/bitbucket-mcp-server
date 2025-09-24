@@ -84,6 +84,17 @@ module.exports = {
             },
             setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
             testTimeout: 60000
+        },
+        {
+            displayName: 'performance',
+            preset: 'ts-jest',
+            testEnvironment: 'node',
+            testMatch: ['<rootDir>/tests/performance/**/*.test.ts'],
+            transform: {
+                '^.+\\.ts$': 'ts-jest'
+            },
+            setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
+            testTimeout: 120000
         }
     ]
 };
