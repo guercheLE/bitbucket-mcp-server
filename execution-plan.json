@@ -35,10 +35,11 @@
       "012-advanced-security"
     ],
     "incomplete_features": [
-      ""
+      "012-advanced-security"
     ],
     "missing_implementations": [
-      "001-mcp-server-infrastructure: Phase 3 core implementation 100% complete, Phase 4 integration ready"
+      "011-multi-workspace-support: Compilation errors remaining (572 TypeScript errors)",
+      "012-advanced-security: Specification created, ready for implementation"
     ],
     "src_files": 7,
     "test_files": 2,
