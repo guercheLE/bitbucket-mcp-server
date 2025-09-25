@@ -279,14 +279,14 @@
     {
       "id": "010-analytics-dashboard",
       "name": "Analytics Dashboard",
-      "status": "specified",
+      "status": "pending",
       "branch": "feature/010-analytics-dashboard",
       "dependencies": [
         "001-mcp-server-infrastructure",
         "002-authentication-system",
         "003-repository-management"
       ],
-      "spec_complete": true
+      "spec_complete": false
     },
     {
       "id": "011-multi-workspace-support",
