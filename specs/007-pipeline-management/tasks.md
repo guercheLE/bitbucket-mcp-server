@@ -166,8 +166,8 @@
 **Tasks:**
 - [x] Create `diagnose_pipeline_issues.ts` - Identify and diagnose pipeline problems
 - [x] Create `troubleshoot_pipeline_failures.ts` - Handle pipeline failure analysis
-- [ ] Create `optimize_pipeline_performance.ts` - Suggest performance improvements
-- [ ] Update `pipeline_management_index.ts` with new tools
+- [x] Create `optimize_pipeline_performance.ts` - Suggest performance improvements
+- [x] Update `pipeline_management_index.ts` with new tools
 - [ ] Implement intelligent problem detection
 - [ ] Add performance optimization recommendations
 

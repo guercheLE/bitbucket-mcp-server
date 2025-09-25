@@ -29,6 +29,7 @@
  * - export_pipeline_data: Export pipeline data for analysis
  * - diagnose_pipeline_issues: Identify and diagnose pipeline problems
  * - troubleshoot_pipeline_failures: Handle pipeline failure analysis
+ * - optimize_pipeline_performance: Optimize and improve pipeline performance
  * 
  * All tools support both Bitbucket Data Center and Cloud APIs.
  */
@@ -54,6 +55,7 @@ import { managePipelineIntegrationsTool } from './manage_pipeline_integrations.j
 import { managePipelinePermissionsTool } from './manage_pipeline_permissions.js';
 import { managePipelineVariablesTool } from './manage_pipeline_variables.js';
 import { monitorPipelineTool } from './monitor_pipeline.js';
+import { optimizePipelinePerformanceTool } from './optimize_pipeline_performance.js';
 import { setupPipelineNotificationsTool } from './setup_pipeline_notifications.js';
 import { trackPipelineMetricsTool } from './track_pipeline_metrics.js';
 import { troubleshootPipelineFailuresTool } from './troubleshoot_pipeline_failures.js';
@@ -79,6 +81,7 @@ export { managePipelineIntegrationsTool } from './manage_pipeline_integrations.j
 export { managePipelinePermissionsTool } from './manage_pipeline_permissions.js';
 export { managePipelineVariablesTool } from './manage_pipeline_variables.js';
 export { monitorPipelineTool } from './monitor_pipeline.js';
+export { optimizePipelinePerformanceTool } from './optimize_pipeline_performance.js';
 export { setupPipelineNotificationsTool } from './setup_pipeline_notifications.js';
 export { trackPipelineMetricsTool } from './track_pipeline_metrics.js';
 export { troubleshootPipelineFailuresTool } from './troubleshoot_pipeline_failures.js';
@@ -109,7 +112,8 @@ export const pipelineManagementTools = [
   analyzePipelineDataTool,
   exportPipelineDataTool,
   diagnosePipelineIssuesTool,
-  troubleshootPipelineFailuresTool
+  troubleshootPipelineFailuresTool,
+  optimizePipelinePerformanceTool
 ];
 
 export default pipelineManagementTools;
