@@ -1,59 +1,35 @@
 {
   "name": "bitbucket-mcp-server",
   "version": "1.0.0",
+  "description": "MCP Server for Bitbucket integration with pipeline management",
   "type": "module",
-  "description": "MCP Server for Bitbucket Data Center and Cloud APIs",
-  "main": "dist/server/index.js",
-  "engines": {
-    "node": ">=18.0.0"
-  },
+  "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node simple-server.js",
-    "dev": "ts-node --esm src/server/index.ts",
-    "test": "jest --config jest.config.cjs",
-    "test:watch": "jest --config jest.config.cjs --watch",
-    "test:coverage": "jest --config jest.config.cjs --coverage",
-    "test:unit": "jest --config jest.config.cjs --selectProjects unit",
-    "test:integration": "jest --config jest.config.cjs --selectProjects integration",
-    "test:contract": "jest --config jest.config.cjs --selectProjects contract",
-    "test:compliance": "jest --config jest.config.cjs --selectProjects compliance",
-    "test:unit:watch": "jest --config jest.config.cjs --selectProjects unit --watch",
-    "test:integration:watch": "jest --config jest.config.cjs --selectProjects integration --watch",
-    "test:all": "jest --config jest.config.cjs --selectProjects unit integration contract compliance",
-    "test:ci": "jest --config jest.config.cjs --selectProjects unit integration contract compliance --coverage --ci",
-    "lint": "eslint src/**/*.ts",
-    "lint:fix": "eslint src/**/*.ts --fix",
-    "clean": "rimraf dist"
+    "test": "jest",
+    "test:unit": "jest --testPathPattern=unit",
+    "test:integration": "jest --testPathPattern=integration",
+    "test:pipeline": "jest --testPathPattern=pipeline",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js"
   },
   "keywords": [
     "mcp",
-    "model-context-protocol",
     "bitbucket",
-    "api",
-    "server"
+    "pipeline",
+    "cicd",
+    "automation"
   ],
   "author": "Bitbucket MCP Server Team",
-  "license": "LGPL-3.0",
+  "license": "MIT",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^0.5.0",
-    "sqlite-vec": "^0.1.7-alpha.2",
-    "winston": "^3.11.0",
-    "winston-daily-rotate-file": "^4.7.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/jest": "^29.5.8",
-    "@types/node": "^20.10.0",
-    "@typescript-eslint/eslint-plugin": "^6.13.0",
-    "@typescript-eslint/parser": "^6.13.0",
-    "eslint": "^8.54.0",
+    "@types/node": "^20.9.0",
     "jest": "^29.7.0",
-    "jest-junit": "^16.0.0",
-    "rimraf": "^5.0.5",
     "ts-jest": "^29.1.1",
-    "ts-node": "^10.9.1",
-    "tsx": "^4.20.5",
-    "typescript": "^5.3.2"
+    "typescript": "^5.2.2"
   }
 }
