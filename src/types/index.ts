@@ -104,6 +104,19 @@ export interface ToolParameter {
     pattern?: string;
     enum?: any[];
   };
+  
+  /** JSON Schema validation */
+  schema?: {
+    pattern?: string;
+    minLength?: number;
+    maxLength?: number;
+    minimum?: number;
+    maximum?: number;
+    enum?: any[];
+    type?: string;
+    properties?: Record<string, any>;
+    required?: string[];
+  };
 }
 
 /**

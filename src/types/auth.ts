@@ -30,37 +30,37 @@
 export interface OAuthApplication {
   /** Unique application identifier */
   readonly id: string;
-  
+
   /** Application name */
   readonly name: string;
-  
+
   /** Application description */
   readonly description?: string;
-  
+
   /** OAuth client ID */
   readonly clientId: string;
-  
+
   /** OAuth client secret (encrypted in storage) */
   readonly clientSecret: string;
-  
+
   /** Redirect URI for OAuth flow */
   readonly redirectUri: string;
-  
+
   /** Bitbucket instance type */
   readonly instanceType: 'datacenter' | 'cloud';
-  
+
   /** Bitbucket base URL */
   readonly baseUrl: string;
-  
+
   /** OAuth scopes requested */
   readonly scopes: string[];
-  
+
   /** Application creation timestamp */
   readonly createdAt: Date;
-  
+
   /** Last configuration update */
   readonly updatedAt: Date;
-  
+
   /** Whether application is active */
   readonly isActive: boolean;
 }
@@ -72,19 +72,19 @@ export interface OAuthApplication {
 export interface OAuthApplicationRequest {
   /** Application name */
   name: string;
-  
+
   /** Application description */
   description?: string;
-  
+
   /** Redirect URI */
   redirectUri: string;
-  
+
   /** Bitbucket instance type */
   instanceType: 'datacenter' | 'cloud';
-  
+
   /** Bitbucket base URL */
   baseUrl: string;
-  
+
   /** Requested OAuth scopes */
   scopes?: string[];
 }
@@ -100,10 +100,10 @@ export interface OAuthApplicationRequest {
 export interface TokenStorageConfig {
   /** Storage backend type */
   type: 'memory' | 'file' | 'database';
-  
+
   /** Encryption key for token storage */
   encryptionKey?: string;
-  
+
   /** Storage-specific configuration */
   options?: Record<string, any>;
 }
@@ -115,16 +115,16 @@ export interface TokenStorageConfig {
 export interface TokenValidationResult {
   /** Whether the token is valid */
   isValid: boolean;
-  
+
   /** Token expiration date */
   expiresAt: Date;
-  
+
   /** Time until expiration in milliseconds */
   timeUntilExpiration: number;
-  
+
   /** Whether token needs refresh */
   needsRefresh: boolean;
-  
+
   /** Validation timestamp */
   validatedAt: Date;
 }
@@ -136,25 +136,25 @@ export interface TokenValidationResult {
 export interface AccessToken {
   /** Token value */
   readonly token: string;
-  
+
   /** Token type (usually "Bearer") */
   readonly tokenType: string;
-  
+
   /** Token expiration timestamp */
   readonly expiresAt: Date;
-  
+
   /** Token scope */
   readonly scope: string[];
-  
+
   /** Associated refresh token ID */
   readonly refreshTokenId?: string;
-  
+
   /** Token creation timestamp */
   readonly createdAt: Date;
-  
+
   /** Last usage timestamp */
   lastUsedAt: Date;
-  
+
   /** Whether token is valid */
   readonly isValid: boolean;
 }
@@ -166,28 +166,28 @@ export interface AccessToken {
 export interface RefreshToken {
   /** Unique refresh token identifier */
   readonly id: string;
-  
+
   /** Token value (encrypted in storage) */
   readonly token: string;
-  
+
   /** Token expiration timestamp */
   readonly expiresAt: Date;
-  
+
   /** Associated OAuth application ID */
   readonly applicationId: string;
-  
+
   /** Associated user identifier */
   readonly userId: string;
-  
+
   /** Token creation timestamp */
   readonly createdAt: Date;
-  
+
   /** Last usage timestamp */
   lastUsedAt: Date;
-  
+
   /** Whether token is valid */
   readonly isValid: boolean;
-  
+
   /** Whether token has been revoked */
   readonly isRevoked: boolean;
 }
@@ -199,13 +199,13 @@ export interface RefreshToken {
 export interface TokenExchangeRequest {
   /** Authorization code from OAuth flow */
   code: string;
-  
+
   /** OAuth application ID */
   applicationId: string;
-  
+
   /** State parameter for CSRF protection */
   state?: string;
-  
+
   /** Redirect URI used in authorization */
   redirectUri: string;
 }
@@ -217,7 +217,7 @@ export interface TokenExchangeRequest {
 export interface TokenRefreshRequest {
   /** Refresh token ID */
   refreshTokenId: string;
-  
+
   /** OAuth application ID */
   applicationId: string;
 }
@@ -247,58 +247,58 @@ export enum UserSessionState {
 export interface UserSession {
   /** Unique session identifier */
   readonly id: string;
-  
+
   /** Associated client session ID */
   readonly clientSessionId: string;
-  
+
   /** Current session state */
   readonly state: UserSessionState;
-  
+
   /** Associated OAuth application ID */
   readonly applicationId: string;
-  
+
   /** User identifier from Bitbucket */
   readonly userId: string;
-  
+
   /** User display name */
   readonly userName: string;
-  
+
   /** User email address */
   readonly userEmail: string;
-  
+
   /** Current access token */
   readonly accessToken: AccessToken;
-  
+
   /** Associated refresh token */
   readonly refreshToken: RefreshToken;
-  
+
   /** Session creation timestamp */
   readonly createdAt: Date;
-  
+
   /** Last activity timestamp */
   lastActivity: Date;
-  
+
   /** Session expiration timestamp */
   readonly expiresAt: Date;
-  
+
   /** Session metadata */
   metadata: Record<string, any>;
-  
+
   /** User permissions and scopes */
   readonly permissions: string[];
-  
+
   /** Update session activity */
   updateActivity(): void;
-  
+
   /** Check if session is active */
   isActive(): boolean;
-  
+
   /** Check if session has expired */
   isExpired(): boolean;
-  
+
   /** Check if access token needs refresh */
   needsTokenRefresh(): boolean;
-  
+
   /** Get session statistics */
   getStats(): UserSessionStats;
 }
@@ -310,19 +310,19 @@ export interface UserSession {
 export interface UserSessionStats {
   /** Session duration in milliseconds */
   duration: number;
-  
+
   /** Number of API requests made */
   apiRequests: number;
-  
+
   /** Number of token refreshes */
   tokenRefreshes: number;
-  
+
   /** Last API request timestamp */
   lastApiRequest: Date;
-  
+
   /** Average request interval */
   averageRequestInterval: number;
-  
+
   /** Memory usage in bytes */
   memoryUsage: number;
 }
@@ -338,34 +338,34 @@ export interface UserSessionStats {
 export interface AuthenticationState {
   /** Whether user is authenticated */
   readonly isAuthenticated: boolean;
-  
+
   /** Current user session */
   readonly session?: UserSession;
-  
+
   /** Available OAuth applications */
   readonly applications: OAuthApplication[];
-  
+
   /** Current authentication method */
   readonly authMethod?: 'oauth' | 'token' | 'session';
-  
+
   /** Authentication timestamp */
   readonly authenticatedAt?: Date;
-  
+
   /** Last authentication check */
   readonly lastAuthCheck: Date;
-  
+
   /** Authentication errors */
   readonly errors: AuthenticationError[];
-  
+
   /** Get current access token */
   getCurrentAccessToken(): AccessToken | null;
-  
+
   /** Check if authentication is valid */
   isValid(): boolean;
-  
+
   /** Check if token refresh is needed */
   needsRefresh(): boolean;
-  
+
   /** Get user permissions */
   getUserPermissions(): string[];
 }
@@ -377,19 +377,19 @@ export interface AuthenticationState {
 export interface AuthenticationError {
   /** Error code */
   readonly code: AuthenticationErrorCode;
-  
+
   /** Error message */
   readonly message: string;
-  
+
   /** Error details */
   readonly details?: any;
-  
+
   /** Error timestamp */
   readonly timestamp: Date;
-  
+
   /** Associated session ID */
   readonly sessionId?: string;
-  
+
   /** Whether error is recoverable */
   readonly isRecoverable: boolean;
 }
@@ -398,21 +398,22 @@ export interface AuthenticationError {
  * Authentication Error Class
  * Class implementation for authentication errors
  */
-export class AuthenticationError extends Error implements AuthenticationError {
-  public readonly code: AuthenticationErrorCode;
+export class AuthenticationErrorClass extends Error {
+  public readonly code!: AuthenticationErrorCode;
   public readonly details?: any;
-  public readonly timestamp: Date;
+  public readonly timestamp!: Date;
   public readonly sessionId?: string;
-  public readonly isRecoverable: boolean;
+  public readonly isRecoverable!: boolean;
 
   constructor(error: AuthenticationError) {
     super(error.message);
     this.name = 'AuthenticationError';
-    this.code = error.code;
-    this.details = error.details;
-    this.timestamp = error.timestamp;
-    this.sessionId = error.sessionId;
-    this.isRecoverable = error.isRecoverable;
+    // Use Object.defineProperty to set readonly properties
+    Object.defineProperty(this, 'code', { value: error.code });
+    Object.defineProperty(this, 'details', { value: error.details });
+    Object.defineProperty(this, 'timestamp', { value: error.timestamp });
+    Object.defineProperty(this, 'sessionId', { value: error.sessionId });
+    Object.defineProperty(this, 'isRecoverable', { value: error.isRecoverable });
   }
 }
 
@@ -428,33 +429,33 @@ export enum AuthenticationErrorCode {
   INVALID_SCOPE = 'invalid_scope',
   UNAUTHORIZED_CLIENT = 'unauthorized_client',
   UNSUPPORTED_GRANT_TYPE = 'unsupported_grant_type',
-  
+
   // Token Errors
   TOKEN_EXPIRED = 'token_expired',
   TOKEN_INVALID = 'token_invalid',
   TOKEN_REVOKED = 'token_revoked',
   TOKEN_MISSING = 'token_missing',
-  
+
   // Session Errors
   SESSION_EXPIRED = 'session_expired',
   SESSION_INVALID = 'session_invalid',
   SESSION_NOT_FOUND = 'session_not_found',
-  
+
   // Application Errors
   APPLICATION_NOT_FOUND = 'application_not_found',
   APPLICATION_INACTIVE = 'application_inactive',
   APPLICATION_MISMATCH = 'application_mismatch',
-  
+
   // Network Errors
   NETWORK_ERROR = 'network_error',
   TIMEOUT_ERROR = 'timeout_error',
   CONNECTION_ERROR = 'connection_error',
-  
+
   // Security Errors
   CSRF_TOKEN_MISMATCH = 'csrf_token_mismatch',
   STATE_MISMATCH = 'state_mismatch',
   INVALID_REDIRECT_URI = 'invalid_redirect_uri',
-  
+
   // General Errors
   AUTHENTICATION_FAILED = 'authentication_failed',
   AUTHORIZATION_FAILED = 'authorization_failed',
@@ -472,10 +473,10 @@ export enum AuthenticationErrorCode {
 export interface OAuthAuthorizationRequest {
   /** OAuth application ID */
   applicationId: string;
-  
+
   /** State parameter for CSRF protection */
   state?: string;
-  
+
   /** Additional OAuth parameters */
   params?: Record<string, string>;
 }
@@ -487,10 +488,10 @@ export interface OAuthAuthorizationRequest {
 export interface OAuthAuthorizationResponse {
   /** Authorization URL */
   authorizationUrl: string;
-  
+
   /** State parameter for verification */
   state: string;
-  
+
   /** Expiration timestamp for the authorization request */
   expiresAt: Date;
 }
@@ -502,16 +503,16 @@ export interface OAuthAuthorizationResponse {
 export interface OAuthCallbackRequest {
   /** Authorization code */
   code: string;
-  
+
   /** State parameter */
   state: string;
-  
+
   /** Error code if authorization failed */
   error?: string;
-  
+
   /** Error description if authorization failed */
   errorDescription?: string;
-  
+
   /** Additional callback parameters */
   params?: Record<string, string>;
 }
@@ -531,21 +532,21 @@ export interface AuthenticationConfig {
     description: string;
     scopes: string[];
   };
-  
+
   /** Token management settings */
   tokens: {
     accessTokenLifetime: number; // milliseconds
     refreshTokenLifetime: number; // milliseconds
     refreshThreshold: number; // milliseconds before expiry
   };
-  
+
   /** Session management settings */
   sessions: {
     maxConcurrentSessions: number;
     sessionTimeout: number; // milliseconds
     activityTimeout: number; // milliseconds
   };
-  
+
   /** Security settings */
   security: {
     encryptTokens: boolean;
@@ -553,14 +554,14 @@ export interface AuthenticationConfig {
     csrfProtection: boolean;
     rateLimitRequests: boolean;
   };
-  
+
   /** Storage settings */
   storage: {
     type: 'memory' | 'file' | 'database';
     path?: string;
     encryptionKey?: string;
   };
-  
+
   /** Logging settings */
   logging: {
     logAuthEvents: boolean;
@@ -580,13 +581,13 @@ export interface AuthenticationConfig {
 export interface AuthenticationResponse<T = any> {
   /** Response success status */
   success: boolean;
-  
+
   /** Response data */
   data?: T;
-  
+
   /** Authentication error if operation failed */
   error?: AuthenticationError;
-  
+
   /** Response metadata */
   metadata?: {
     timestamp: Date;
@@ -623,22 +624,22 @@ export interface AuthenticationEvents {
 export interface SecurityViolation {
   /** Violation type */
   readonly type: 'rate_limit' | 'invalid_token' | 'suspicious_activity' | 'csrf_attack';
-  
+
   /** Violation description */
   readonly description: string;
-  
+
   /** Associated session ID */
   readonly sessionId?: string;
-  
+
   /** Violation timestamp */
   readonly timestamp: Date;
-  
+
   /** Source IP address */
   readonly sourceIp?: string;
-  
+
   /** User agent */
   readonly userAgent?: string;
-  
+
   /** Additional context */
   readonly context?: Record<string, any>;
 }

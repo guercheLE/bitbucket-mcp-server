@@ -25,20 +25,18 @@
  * - Error handling and logging
  */
 
-import { MCPServer } from './mcp-server.js';
-import { MCPServerSDK, createMCPServerWithSDK, createTransport } from './mcp-server-sdk.js';
-import { MCPServerLogger, createLoggerFromConfig, LogCategory } from './logger.js';
+import {
+  MCPErrorCode,
+  ServerConfig,
+  Tool
+} from '../types/index.js';
 import { ConnectionManager, createConnectionManager } from './connection-manager.js';
-import { SessionManager } from './client-session.js';
+import { MCPServerLogger, createLoggerFromConfig } from './logger.js';
+import { MCPServerSDK, createMCPServerWithSDK, createTransport } from './mcp-server-sdk.js';
+import { MCPServer } from './mcp-server.js';
+import { ProtocolMessageHandler } from './protocol-handler.js';
 import { ToolRegistry } from './tool-registry.js';
 import { TransportFactory } from './transport-factory.js';
-import { ProtocolMessageHandler } from './protocol-handler.js';
-import { 
-  ServerConfig, 
-  TransportConfig, 
-  Tool,
-  MCPErrorCode
-} from '../types/index.js';
 
 /**
  * Server Application Class
@@ -61,23 +59,23 @@ export class MCPServerApplication {
   constructor(config?: Partial<ServerConfig>) {
     // Initialize default configuration
     this.config = this.createDefaultConfig(config);
-    
+
     // Initialize logger first
     this.logger = createLoggerFromConfig(this.config);
-    
+
     // Initialize connection manager
     this.connectionManager = createConnectionManager(this.config, this.logger);
-    
+
     // Initialize components
     this.sessionManager = null; // SessionManager is static
-    
+
     this.toolRegistry = new ToolRegistry({
       validateParameters: this.config.tools.validationEnabled,
       trackStatistics: true,
       allowOverwrite: false,
       maxTools: 1000
     });
-    
+
     this.transportFactory = new TransportFactory({
       maxConnections: this.config.maxClients,
       connectionTimeout: 30000,
@@ -86,22 +84,22 @@ export class MCPServerApplication {
       enableMonitoring: true,
       defaultTransport: 'stdio'
     });
-    
+
     this.messageHandler = new ProtocolMessageHandler({
       maxQueueSize: 1000,
       processingTimeout: 30000,
       enableBatchProcessing: true,
       enableNotifications: true
     });
-    
+
     this.server = new MCPServer(this.config);
-    
+
     // Initialize SDK server (will be created in start method)
     this.sdkServer = null as any;
-    
+
     // Setup component integration
     this.setupComponentIntegration();
-    
+
     // Setup event handlers
     this.setupEventHandlers();
   }
@@ -121,41 +119,41 @@ export class MCPServerApplication {
         version: this.config.version,
         description: this.config.description
       });
-      
+
       console.log('Starting Bitbucket MCP Server...');
       console.log(`Server: ${this.config.name} v${this.config.version}`);
       console.log(`Description: ${this.config.description || 'No description'}`);
-      
+
       // Validate configuration
       const isValid = await this.server.validateConfig();
       if (!isValid) {
         throw new Error('Server configuration validation failed');
       }
-      
+
       // Start server
       await this.server.start();
-      
+
       // Create SDK server with official MCP SDK integration
       this.sdkServer = await createMCPServerWithSDK(this.config, this.server);
-      
+
       // Initialize transports
       await this.initializeTransports();
-      
+
       // Register default tools
       await this.registerDefaultTools();
-      
+
       // Start health monitoring
       this.startHealthMonitoring();
-      
+
       // Mark as running
       this.isRunning = true;
-      
+
       console.log('✅ Bitbucket MCP Server started successfully');
       console.log(`📊 Memory limit: ${this.config.memoryLimit / (1024 * 1024)}MB`);
       console.log(`👥 Max clients: ${this.config.maxClients}`);
       console.log(`🔧 Transports: ${this.config.transports.map(t => t.type).join(', ')}`);
       console.log(`🛠️  Tools registered: ${this.toolRegistry.getAvailableTools().length}`);
-      
+
     } catch (error) {
       console.error('❌ Failed to start MCP server:', error instanceof Error ? error.message : String(error));
       throw error;
@@ -174,23 +172,23 @@ export class MCPServerApplication {
     try {
       this.logger.logServerEvent('stop');
       console.log('Stopping Bitbucket MCP Server...');
-      
+
       // Stop health monitoring
       this.stopHealthMonitoring();
-      
+
       // Stop server
       await this.server.stop();
-      
+
       // Shutdown components
       await this.connectionManager.shutdown();
       await this.transportFactory.shutdown();
       // SessionManager is static, no shutdown needed
-      
+
       // Mark as stopped
       this.isRunning = false;
-      
+
       console.log('✅ Bitbucket MCP Server stopped successfully');
-      
+
     } catch (error) {
       console.error('❌ Error stopping MCP server:', error instanceof Error ? error.message : String(error));
       throw error;
@@ -237,7 +235,7 @@ export class MCPServerApplication {
       });
 
       const session = await this.connectionManager.createSession(clientId, transport);
-      
+
       this.logger.logSessionEvent(session.id, 'created', {
         clientId,
         transportType: transport.type
@@ -264,7 +262,7 @@ export class MCPServerApplication {
   async authenticateSession(sessionId: string, authData?: any): Promise<void> {
     try {
       await this.connectionManager.authenticateSession(sessionId, authData);
-      
+
       this.logger.logSessionEvent(sessionId, 'authenticated', {
         authData: authData ? 'provided' : 'none'
       });
@@ -291,7 +289,7 @@ export class MCPServerApplication {
       });
 
       await this.connectionManager.disconnectSession(sessionId, reason);
-      
+
       this.logger.logSessionEvent(sessionId, 'disconnected', {
         reason
       });
@@ -331,7 +329,7 @@ export class MCPServerApplication {
   async performHealthCheck(): Promise<void> {
     try {
       await this.connectionManager.performHealthCheck();
-      
+
       this.logger.logServerEvent('health_check', {
         activeSessions: this.connectionManager.getActiveSessions().length
       });
@@ -355,12 +353,12 @@ export class MCPServerApplication {
     try {
       await this.toolRegistry.registerTool(tool);
       await this.server.registerTool(tool);
-      
+
       // Register with SDK server if available
       if (this.sdkServer) {
         await this.sdkServer.registerTool(tool);
       }
-      
+
       this.logger.logToolEvent(tool.name, 'registered', {
         toolName: tool.name,
         description: tool.description,
@@ -400,23 +398,23 @@ export class MCPServerApplication {
       version: '1.0.0',
       description: 'Model Context Protocol server for Bitbucket integration',
       maxClients: 100,
-      clientTimeout: 300000, // 5 minutes
       memoryLimit: 512 * 1024 * 1024, // 512MB (constitutional requirement <1GB)
       logging: {
         level: 'info',
+        format: 'json',
         file: 'logs/mcp-server.log',
         console: true
       },
       transports: [
         {
-          type: 'stdio',
-          timeout: 30000
+          type: 'stdio'
         }
       ],
       tools: {
-        autoRegister: true,
-        selectiveLoading: true,
-        validationEnabled: true
+        validationEnabled: true,
+        trackStatistics: true,
+        allowOverwrite: false,
+        maxTools: 1000
       }
     };
 
@@ -435,21 +433,21 @@ export class MCPServerApplication {
         console.error('Failed to register tool with server:', error.message);
       });
     });
-    
+
     this.toolRegistry.on('toolUnregistered', (toolName) => {
       this.server.unregisterTool(toolName).catch((error: any) => {
         console.error('Failed to unregister tool from server:', error.message);
       });
     });
-    
+
     // Connect session manager to server (SessionManager is static)
     // Event handling is done through connectionManager
-    
+
     // Connect transport factory to server
     this.transportFactory.on('transportCreated', (transport) => {
       console.log(`Transport created: ${transport.type}`);
     });
-    
+
     this.transportFactory.on('transportError', (transport, error) => {
       console.error(`Transport error (${transport.type}):`, error.message);
     });
@@ -466,13 +464,13 @@ export class MCPServerApplication {
       await this.stop();
       process.exit(0);
     });
-    
+
     process.on('SIGTERM', async () => {
       console.log('\nReceived SIGTERM, shutting down gracefully...');
       await this.stop();
       process.exit(0);
     });
-    
+
     // Handle uncaught exceptions
     process.on('uncaughtException', (error) => {
       console.error('Uncaught Exception:', error);
@@ -480,7 +478,7 @@ export class MCPServerApplication {
         process.exit(1);
       });
     });
-    
+
     // Handle unhandled promise rejections
     process.on('unhandledRejection', (reason, promise) => {
       console.error('Unhandled Rejection at:', promise, 'reason:', reason);
@@ -488,7 +486,7 @@ export class MCPServerApplication {
         process.exit(1);
       });
     });
-    
+
     // Handle memory warnings
     process.on('warning', (warning) => {
       if (warning.name === 'MaxListenersExceededWarning') {
@@ -506,12 +504,12 @@ export class MCPServerApplication {
       try {
         // Create transport using official MCP SDK
         const transport = createTransport(transportConfig);
-        
+
         // Connect the transport to the SDK server
         if (this.sdkServer) {
           await this.sdkServer.connect(transport);
         }
-        
+
         console.log(`✅ Transport initialized with MCP SDK: ${transportConfig.type}`);
       } catch (error) {
         console.error(`❌ Failed to initialize transport ${transportConfig.type}:`, error instanceof Error ? error.message : String(error));
@@ -538,13 +536,18 @@ export class MCPServerApplication {
             pong: true,
             timestamp: new Date().toISOString(),
             serverTime: Date.now()
+          },
+          metadata: {
+            executionTime: 0,
+            memoryUsed: 0,
+            timestamp: new Date()
           }
         };
       }
     };
-    
+
     await this.registerTool(pingTool);
-    
+
     // Register health tool
     const healthTool: Tool = {
       name: 'health_check',
@@ -554,13 +557,18 @@ export class MCPServerApplication {
       async execute(params, context) {
         return {
           success: true,
-          data: context.server.getHealthStatus()
+          data: context.server.getHealthStatus(),
+          metadata: {
+            executionTime: 0,
+            memoryUsed: 0,
+            timestamp: new Date()
+          }
         };
       }
     };
-    
+
     await this.registerTool(healthTool);
-    
+
     console.log('✅ Default tools registered');
   }
 
@@ -571,13 +579,13 @@ export class MCPServerApplication {
   private startHealthMonitoring(): void {
     setInterval(() => {
       const health = this.getHealthStatus();
-      
+
       // Check memory usage
       const memoryUsage = process.memoryUsage();
       if (memoryUsage.heapUsed > this.config.memoryLimit) {
         console.warn('⚠️  Memory usage exceeds limit:', memoryUsage.heapUsed);
       }
-      
+
       // Log health status periodically
       if (this.config.logging.level === 'debug') {
         console.log('📊 Health check:', {
@@ -620,7 +628,7 @@ export async function main(): Promise<void> {
     // Parse command line arguments
     const args = process.argv.slice(2);
     const config: Partial<ServerConfig> = {};
-    
+
     // Simple argument parsing
     for (let i = 0; i < args.length; i++) {
       switch (args[i]) {
@@ -674,13 +682,13 @@ Examples:
           process.exit(0);
       }
     }
-    
+
     // Create and start server
     const app = await createMCPServer(config);
-    
+
     // Keep the process running
     process.stdin.resume();
-    
+
   } catch (error) {
     console.error('Failed to start MCP server:', error instanceof Error ? error.message : String(error));
     process.exit(1);

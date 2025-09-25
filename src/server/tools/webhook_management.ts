@@ -12,7 +12,7 @@
  * - Webhook lifecycle management
  */
 
-import { Tool, ToolParameter, ToolExecutor, ToolResult, ToolExecutionContext } from '../../types/index.js';
+import { Tool, ToolExecutionContext, ToolExecutor, ToolParameter, ToolResult, MCPErrorCode } from '../../types/index.js';
 
 /**
  * Webhook Management Tool Parameters
@@ -129,6 +129,7 @@ const webhookManagementParameters: ToolParameter[] = [
  * Webhook Management Tool Executor
  */
 const webhookManagementExecutor: ToolExecutor = async (params: Record<string, any>, context: ToolExecutionContext): Promise<ToolResult> => {
+  const startTime = Date.now();
   try {
     // Validate required parameters
     if (!params.workspace || !params.repository || !params.action) {
