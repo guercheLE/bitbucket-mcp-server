@@ -184,10 +184,10 @@
 **Dependencies**: T008
 
 **Tasks:**
-- [ ] Create `archive_pipeline.ts` - Archive old and unused pipelines
-- [ ] Create `cleanup_pipeline_data.ts` - Clean up old pipeline data
+- [x] Create `archive_pipeline.ts` - Archive old and unused pipelines
+- [x] Create `cleanup_pipeline_data.ts` - Clean up old pipeline data
 - [ ] Create `migrate_pipeline_config.ts` - Migrate pipeline configurations
-- [ ] Update `pipeline_management_index.ts` with new tools
+- [x] Update `pipeline_management_index.ts` with new tools
 - [ ] Implement data retention policies
 - [ ] Add migration and backup capabilities
 

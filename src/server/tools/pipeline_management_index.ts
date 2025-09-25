@@ -26,6 +26,8 @@
  * - generate_pipeline_reports: Generate comprehensive pipeline reports
  * - track_pipeline_metrics: Track and monitor pipeline performance metrics
  * - analyze_pipeline_data: Analyze pipeline data for insights
+ * - archive_pipeline: Archive old and unused pipelines with metadata preservation
+ * - cleanup_pipeline_data: Clean up old pipeline data, artifacts, and logs
  * - export_pipeline_data: Export pipeline data for analysis
  * - diagnose_pipeline_issues: Identify and diagnose pipeline problems
  * - troubleshoot_pipeline_failures: Handle pipeline failure analysis
@@ -36,7 +38,9 @@
 
 // Import tools for array export
 import { analyzePipelineDataTool } from './analyze_pipeline_data.js';
+import { archivePipelineTool } from './archive_pipeline.js';
 import { auditPipelineAccessTool } from './audit_pipeline_access.js';
+import { cleanupPipelineDataTool } from './cleanup_pipeline_data.js';
 import { configurePipelineTool } from './configure_pipeline.js';
 import { configurePipelineAccessTool } from './configure_pipeline_access.js';
 import { configurePipelineTriggersTool } from './configure_pipeline_triggers.js';
@@ -62,7 +66,9 @@ import { troubleshootPipelineFailuresTool } from './troubleshoot_pipeline_failur
 import { updatePipelineConfigTool } from './update_pipeline_config.js';
 
 export { analyzePipelineDataTool } from './analyze_pipeline_data.js';
+export { archivePipelineTool } from './archive_pipeline.js';
 export { auditPipelineAccessTool } from './audit_pipeline_access.js';
+export { cleanupPipelineDataTool } from './cleanup_pipeline_data.js';
 export { configurePipelineTool } from './configure_pipeline.js';
 export { configurePipelineAccessTool } from './configure_pipeline_access.js';
 export { configurePipelineTriggersTool } from './configure_pipeline_triggers.js';
@@ -110,6 +116,8 @@ export const pipelineManagementTools = [
   generatePipelineReportsTool,
   trackPipelineMetricsTool,
   analyzePipelineDataTool,
+  archivePipelineTool,
+  cleanupPipelineDataTool,
   exportPipelineDataTool,
   diagnosePipelineIssuesTool,
   troubleshootPipelineFailuresTool,
