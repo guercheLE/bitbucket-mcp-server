@@ -21,6 +21,7 @@
  * - audit_pipeline_access: Audit pipeline access and permissions
  * - configure_pipeline_webhooks: Configure webhook integrations
  * - manage_pipeline_integrations: Handle third-party integrations
+ * - migrate_pipeline_config: Migrate pipeline configurations between versions/environments
  * - setup_pipeline_notifications: Configure notifications and alerts
  * - get_pipeline_analytics: Retrieve pipeline analytics and insights
  * - generate_pipeline_reports: Generate comprehensive pipeline reports
@@ -58,6 +59,7 @@ import { listPipelineRunsTool } from './list_pipeline_runs.js';
 import { managePipelineIntegrationsTool } from './manage_pipeline_integrations.js';
 import { managePipelinePermissionsTool } from './manage_pipeline_permissions.js';
 import { managePipelineVariablesTool } from './manage_pipeline_variables.js';
+import { migratePipelineConfigTool } from './migrate_pipeline_config.js';
 import { monitorPipelineTool } from './monitor_pipeline.js';
 import { optimizePipelinePerformanceTool } from './optimize_pipeline_performance.js';
 import { setupPipelineNotificationsTool } from './setup_pipeline_notifications.js';
@@ -86,6 +88,7 @@ export { listPipelineRunsTool } from './list_pipeline_runs.js';
 export { managePipelineIntegrationsTool } from './manage_pipeline_integrations.js';
 export { managePipelinePermissionsTool } from './manage_pipeline_permissions.js';
 export { managePipelineVariablesTool } from './manage_pipeline_variables.js';
+export { migratePipelineConfigTool } from './migrate_pipeline_config.js';
 export { monitorPipelineTool } from './monitor_pipeline.js';
 export { optimizePipelinePerformanceTool } from './optimize_pipeline_performance.js';
 export { setupPipelineNotificationsTool } from './setup_pipeline_notifications.js';
@@ -111,6 +114,7 @@ export const pipelineManagementTools = [
   auditPipelineAccessTool,
   configurePipelineWebhooksTool,
   managePipelineIntegrationsTool,
+  migratePipelineConfigTool,
   setupPipelineNotificationsTool,
   getPipelineAnalyticsTool,
   generatePipelineReportsTool,
