@@ -1,0 +1,95 @@
+/**
+ * Authentication Module Index
+ * 
+ * This module exports all authentication-related classes and types
+ * for the Bitbucket MCP Server authentication system.
+ */
+
+// Export main authentication classes
+export { AuthenticationManager } from './authentication-manager';
+export { OAuthManager } from './oauth-manager';
+export { SessionManager } from './session-manager';
+export { BitbucketApiClient } from './bitbucket-api-client';
+export { AuthenticationMiddleware } from './auth-middleware';
+export { TokenManager } from './token-manager';
+export { TokenStorage, TokenStorageFactory, MemoryTokenStorage } from './token-storage';
+
+// Export MCP integration classes
+export { MCPAuthIntegration } from './mcp-auth-integration';
+export { MCPAuthMiddleware } from './mcp-auth-middleware';
+export { MCPServerAuthIntegration } from './mcp-server-auth-integration';
+
+// Export Bitbucket API integration classes
+export { BitbucketAuthenticatedClient, BitbucketAPIConfig } from './bitbucket-authenticated-client';
+export { BitbucketAPIManager, BitbucketInstanceConfig } from './bitbucket-api-manager';
+export { BitbucketToolsIntegration } from './bitbucket-tools-integration';
+
+// Export advanced session management classes
+export { AdvancedSessionManager, SessionConfig, SessionStatistics } from './advanced-session-manager';
+export { SessionPersistenceManager, SessionPersistenceConfig } from './session-persistence';
+export { ConcurrentSessionManager, ConcurrentSessionConfig } from './concurrent-session-manager';
+
+// Export security and audit classes
+export { AdvancedCryptoService, EncryptedData, CryptoConfig, KeyManager } from './advanced-crypto';
+export { AuthAuditLogger, AuditEvent, AuditEventType, AuditSeverity, AuditConfig, AuditStats } from './auth-audit-logger';
+export { RateLimiter, RateLimitRule, RateLimitResult, RateLimitConfig, RateLimitStats, RateLimitAlgorithm, RateLimitScope } from './rate-limiter';
+export { SecurityHeadersManager, SecurityHeadersConfig, CorsConfig, CspConfig, SecurityHeaderType } from './security-headers';
+
+// Export error handling classes
+export { 
+  AuthenticationErrorHandler, 
+  ErrorRecoveryStrategy, 
+  ErrorRecoveryConfig, 
+  ErrorRecoveryResult, 
+  UserFriendlyError, 
+  FallbackAuthMethod 
+} from './auth-error-handler';
+
+// Export authentication types
+export * from '../../types/auth';
+
+// Export default authentication configuration
+export const defaultAuthConfig = {
+  defaultApplication: {
+    name: 'Bitbucket MCP Server',
+    description: 'OAuth application for Bitbucket MCP Server integration',
+    scopes: [
+      'read:repository',
+      'write:repository',
+      'read:project',
+      'write:project',
+      'read:pullrequest',
+      'write:pullrequest',
+      'read:issue',
+      'write:issue',
+      'read:user',
+      'read:team'
+    ]
+  },
+  tokens: {
+    accessTokenLifetime: 3600000, // 1 hour
+    refreshTokenLifetime: 2592000000, // 30 days
+    refreshThreshold: 300000 // 5 minutes before expiry
+  },
+  sessions: {
+    maxConcurrentSessions: 10,
+    sessionTimeout: 86400000, // 24 hours
+    activityTimeout: 1800000 // 30 minutes
+  },
+  security: {
+    encryptTokens: true,
+    requireHttps: true,
+    csrfProtection: true,
+    rateLimitRequests: true
+  },
+  storage: {
+    type: 'memory' as const,
+    path: undefined,
+    encryptionKey: undefined
+  },
+  logging: {
+    logAuthEvents: true,
+    logTokenUsage: true,
+    logSecurityEvents: true
+  }
+};

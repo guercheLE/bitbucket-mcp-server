@@ -32,7 +32,12 @@ import {
   ToolExecutionContext,
   ToolResult,
   MCPErrorCode
-} from '../types/index.js';
+} from '../types/index';
+import { 
+  AuthenticationError,
+  AuthenticationErrorCode,
+  UserSession
+} from '../types/auth.js';
 
 /**
  * Tool Registry Statistics
@@ -67,6 +72,17 @@ export interface ToolRegistrationOptions {
   version?: string;
   /** Additional metadata */
   metadata?: Record<string, any>;
+  /** Authentication requirements */
+  authentication?: {
+    /** Whether authentication is required */
+    required?: boolean;
+    /** Required permissions */
+    permissions?: string[];
+    /** Required user groups */
+    groups?: string[];
+    /** Minimum permission level */
+    minPermissionLevel?: 'read' | 'write' | 'admin';
+  };
 }
 
 /**
@@ -142,6 +158,7 @@ export class ToolRegistry extends EventEmitter {
         version: options.version ?? tool.version ?? '1.0.0',
         metadata: {
           ...tool.metadata,
+          authentication: options.authentication,
           ...options.metadata,
           registeredAt: new Date(),
           registryOptions: options
@@ -304,7 +321,7 @@ export class ToolRegistry extends EventEmitter {
 
   /**
    * Execute a tool
-   * Handles tool execution with proper error handling and statistics
+   * Handles tool execution with proper error handling, authentication, and statistics
    */
   async executeTool(
     toolName: string, 
@@ -318,6 +335,11 @@ export class ToolRegistry extends EventEmitter {
       const tool = this.getTool(toolName);
       if (!tool) {
         throw new Error(`Tool '${toolName}' not found or disabled`);
+      }
+      
+      // Validate authentication if required
+      if (tool.authentication?.required) {
+        this.validateToolAuthentication(tool, context);
       }
       
       // Validate parameters if enabled
@@ -389,6 +411,7 @@ export class ToolRegistry extends EventEmitter {
         stats.totalExecutionTime / stats.totalExecutions : 0
     };
   }
+
 
   /**
    * Get registry statistics
@@ -501,7 +524,7 @@ export class ToolRegistry extends EventEmitter {
     }
     
     // Check for duplicate parameter names
-    const paramNames = tool.parameters.map(p => p.name);
+    const paramNames = tool.parameters.map((p: ToolParameter) => p.name);
     const uniqueParamNames = new Set(paramNames);
     if (paramNames.length !== uniqueParamNames.size) {
       throw new Error('Tool parameters must have unique names');
@@ -532,6 +555,89 @@ export class ToolRegistry extends EventEmitter {
   }
 
   /**
+   * Validate tool authentication requirements
+   * Ensures user has proper authentication and permissions
+   */
+  private validateToolAuthentication(tool: Tool, context: ToolExecutionContext): void {
+    // Check if authentication context exists
+    if (!context.authentication) {
+      throw new AuthenticationError({
+        name: 'AuthenticationError',
+        code: AuthenticationErrorCode.AUTHENTICATION_FAILED,
+        message: `Tool '${tool.name}' requires authentication`,
+        timestamp: new Date(),
+        isRecoverable: false
+      });
+    }
+
+    // Check if user is authenticated
+    if (!context.authentication.isAuthenticated) {
+      throw new AuthenticationError({
+        name: 'AuthenticationError',
+        code: AuthenticationErrorCode.AUTHENTICATION_FAILED,
+        message: `Tool '${tool.name}' requires user authentication`,
+        timestamp: new Date(),
+        isRecoverable: false
+      });
+    }
+
+    // Check required permissions
+    if (tool.authentication?.permissions && tool.authentication.permissions.length > 0) {
+      const userPermissions = context.authentication.permissions || [];
+      const hasRequiredPermissions = tool.authentication.permissions.every(
+        (permission: string) => userPermissions.includes(permission)
+      );
+
+      if (!hasRequiredPermissions) {
+        throw new AuthenticationError({
+          name: 'AuthenticationError',
+          code: AuthenticationErrorCode.AUTHORIZATION_FAILED,
+          message: `Tool '${tool.name}' requires permissions: ${tool.authentication.permissions.join(', ')}`,
+          details: {
+            required: tool.authentication.permissions,
+            user: userPermissions
+          },
+          timestamp: new Date(),
+          isRecoverable: false
+        });
+      }
+    }
+
+    // Check required scopes
+    if (tool.authentication?.scopes && tool.authentication.scopes.length > 0) {
+      const userSession = context.authentication.userSession;
+      if (!userSession || !userSession.scopes) {
+        throw new AuthenticationError({
+          name: 'AuthenticationError',
+          code: AuthenticationErrorCode.AUTHORIZATION_FAILED,
+          message: `Tool '${tool.name}' requires OAuth scopes: ${tool.authentication.scopes.join(', ')}`,
+          timestamp: new Date(),
+          isRecoverable: false
+        });
+      }
+
+      const userScopes = userSession.scopes || [];
+      const hasRequiredScopes = tool.authentication.scopes.every(
+        (scope: string) => userScopes.includes(scope)
+      );
+
+      if (!hasRequiredScopes) {
+        throw new AuthenticationError({
+          name: 'AuthenticationError',
+          code: AuthenticationErrorCode.AUTHORIZATION_FAILED,
+          message: `Tool '${tool.name}' requires OAuth scopes: ${tool.authentication.scopes.join(', ')}`,
+          details: {
+            required: tool.authentication.scopes,
+            user: userScopes
+          },
+          timestamp: new Date(),
+          isRecoverable: false
+        });
+      }
+    }
+  }
+
+  /**
    * Validate tool parameters against tool definition
    * Ensures provided parameters match tool requirements
    */
@@ -554,7 +660,7 @@ export class ToolRegistry extends EventEmitter {
     }
     
     // Check for unknown parameters
-    const knownParamNames = new Set(tool.parameters.map(p => p.name));
+    const knownParamNames = new Set(tool.parameters.map((p: ToolParameter) => p.name));
     for (const paramName of Object.keys(params)) {
       if (!knownParamNames.has(paramName)) {
         throw new Error(`Unknown parameter '${paramName}'`);
