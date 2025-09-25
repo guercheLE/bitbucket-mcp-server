@@ -20,7 +20,7 @@
  * - Performance optimization
  */
 
-import { randomBytes, createHash, createHmac, scrypt, timingSafeEqual } from 'crypto';
+import { createHash, createHmac, randomBytes, scrypt, timingSafeEqual } from 'crypto';
 import { promisify } from 'util';
 
 // Promisify scrypt for async/await usage
@@ -33,38 +33,38 @@ const scryptAsync = promisify(scrypt);
 export interface CryptoConfig {
   /** Encryption algorithm */
   algorithm: 'aes-256-gcm' | 'aes-256-cbc';
-  
+
   /** Key derivation function */
   kdf: 'pbkdf2' | 'scrypt';
-  
+
   /** PBKDF2 iterations (minimum 100,000 for security) */
   pbkdf2Iterations: number;
-  
+
   /** Scrypt parameters */
   scryptParams: {
     N: number; // CPU/memory cost
     r: number; // Block size
     p: number; // Parallelization
   };
-  
+
   /** Salt length in bytes */
   saltLength: number;
-  
+
   /** IV length in bytes */
   ivLength: number;
-  
+
   /** Tag length in bytes (for GCM mode) */
   tagLength: number;
-  
+
   /** Key length in bytes */
   keyLength: number;
-  
+
   /** Maximum key age in milliseconds */
   maxKeyAge: number;
-  
+
   /** Enable memory protection */
   memoryProtection: boolean;
-  
+
   /** Enable forward secrecy */
   forwardSecrecy: boolean;
 }
@@ -76,29 +76,29 @@ export interface CryptoConfig {
 export interface EncryptedData {
   /** Encrypted payload */
   readonly data: string;
-  
+
   /** Initialization vector */
   readonly iv: string;
-  
+
   /** Authentication tag (for GCM mode) */
   readonly tag?: string;
-  
+
   /** Salt used for key derivation */
   readonly salt: string;
-  
+
   /** Key derivation parameters */
   readonly kdfParams: {
     type: string;
     iterations?: number;
     scryptParams?: any;
   };
-  
+
   /** Encryption timestamp */
   readonly timestamp: number;
-  
+
   /** Data integrity hash */
   readonly integrity: string;
-  
+
   /** Encryption version */
   readonly version: string;
 }
@@ -110,19 +110,19 @@ export interface EncryptedData {
 export interface KeyManager {
   /** Generate a new encryption key */
   generateKey(): Promise<Buffer>;
-  
+
   /** Derive key from password */
   deriveKey(password: string, salt: Buffer): Promise<Buffer>;
-  
+
   /** Rotate encryption key */
   rotateKey(): Promise<Buffer>;
-  
+
   /** Get current active key */
   getCurrentKey(): Promise<Buffer>;
-  
+
   /** Validate key integrity */
   validateKey(key: Buffer): Promise<boolean>;
-  
+
   /** Secure key destruction */
   destroyKey(key: Buffer): void;
 }
@@ -169,25 +169,25 @@ export class AdvancedCryptoService {
       // Generate random salt and IV
       const salt = randomBytes(this.config.saltLength);
       const iv = randomBytes(this.config.ivLength);
-      
+
       // Derive encryption key
-      const key = password 
+      const key = password
         ? await this.keyManager.deriveKey(password, salt)
         : await this.keyManager.getCurrentKey();
-      
+
       // Create cipher
       const cipher = this.createCipher(key, iv);
-      
+
       // Encrypt data
       let encrypted = cipher.update(data, 'utf8', 'hex');
       encrypted += cipher.final('hex');
-      
+
       // Get authentication tag (for GCM mode)
       const tag = undefined; // Simplified for CBC mode
-      
+
       // Calculate integrity hash
       const integrity = this.calculateIntegrity(data, key);
-      
+
       // Create encrypted data structure
       const encryptedData: EncryptedData = {
         data: encrypted,
@@ -203,12 +203,10 @@ export class AdvancedCryptoService {
         integrity,
         version: '1.0'
       };
-      
       // Secure memory cleanup
       if (this.config.memoryProtection) {
         this.secureMemoryCleanup([key, salt, iv]);
       }
-      
       return encryptedData;
     } catch (error) {
       throw new Error(`Encryption failed: ${error.message}`);
@@ -222,24 +220,23 @@ export class AdvancedCryptoService {
     try {
       // Validate encrypted data structure
       this.validateEncryptedData(encryptedData);
-      
       // Parse components
       const salt = Buffer.from(encryptedData.salt, 'hex');
       const iv = Buffer.from(encryptedData.iv, 'hex');
       const tag = undefined; // Simplified for CBC mode
-      
+
       // Derive decryption key
-      const key = password 
+      const key = password
         ? await this.keyManager.deriveKey(password, salt)
         : await this.keyManager.getCurrentKey();
-      
+
       // Create decipher
       const decipher = this.createDecipher(key, iv, tag);
-      
+
       // Decrypt data
       let decrypted = decipher.update(encryptedData.data, 'hex', 'utf8');
       decrypted += decipher.final('utf8');
-      
+
       // Verify integrity
       const calculatedIntegrity = this.calculateIntegrity(decrypted, key);
       if (!timingSafeEqual(
@@ -248,12 +245,10 @@ export class AdvancedCryptoService {
       )) {
         throw new Error('Data integrity verification failed');
       }
-      
       // Secure memory cleanup
       if (this.config.memoryProtection) {
         this.secureMemoryCleanup([key, salt, iv]);
       }
-      
       return decrypted;
     } catch (error) {
       throw new Error(`Decryption failed: ${error.message}`);
@@ -289,12 +284,10 @@ export class AdvancedCryptoService {
   generateSecurePassword(length: number = 16): string {
     const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
     let password = '';
-    
     for (let i = 0; i < length; i++) {
       const randomIndex = randomBytes(1)[0] % charset.length;
       password += charset[randomIndex];
     }
-    
     return password;
   }
 
@@ -342,7 +335,6 @@ export class AdvancedCryptoService {
    */
   private createCipher(key: Buffer, iv: Buffer): any {
     const crypto = require('crypto');
-    
     if (this.config.algorithm === 'aes-256-gcm') {
       const cipher = crypto.createCipherGCM('aes-256-gcm', key, iv);
       cipher.setAutoPadding(true);
@@ -359,7 +351,6 @@ export class AdvancedCryptoService {
    */
   private createDecipher(key: Buffer, iv: Buffer, tag?: Buffer): any {
     const crypto = require('crypto');
-    
     if (this.config.algorithm === 'aes-256-gcm') {
       const decipher = crypto.createDecipherGCM('aes-256-gcm', key, iv);
       decipher.setAutoPadding(true);
@@ -385,9 +376,9 @@ export class AdvancedCryptoService {
     if (!encryptedData.data || !encryptedData.iv || !encryptedData.salt) {
       throw new Error('Invalid encrypted data structure');
     }
-    
+
     // Simplified validation for CBC mode
-    
+
     // Check data age if forward secrecy is enabled
     if (this.config.forwardSecrecy) {
       const age = Date.now() - encryptedData.timestamp;
@@ -420,7 +411,6 @@ export class AdvancedCryptoService {
       clearInterval(this.keyRotationTimer);
       this.keyRotationTimer = null;
     }
-    
     if (this.currentKey) {
       this.keyManager.destroyKey(this.currentKey);
       this.currentKey = null;
@@ -463,11 +453,11 @@ class SecureKeyManager implements KeyManager {
 
   async rotateKey(): Promise<Buffer> {
     const newKey = await this.generateKey();
-    
+
     // Store old key in history for decryption of old data
     if (this.currentKey) {
       this.keyHistory.push(this.currentKey);
-      
+
       // Limit history size
       if (this.keyHistory.length > 10) {
         const oldKey = this.keyHistory.shift();
@@ -476,7 +466,6 @@ class SecureKeyManager implements KeyManager {
         }
       }
     }
-    
     this.currentKey = newKey;
     return newKey;
   }

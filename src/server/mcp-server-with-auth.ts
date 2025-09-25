@@ -22,26 +22,20 @@
  */
 
 import { EventEmitter } from 'events';
-import { 
-  MCPServer, 
-  ServerCapabilities, 
-  ToolExecutionContext, 
-  ToolRequest, 
-  ToolResponse,
-  MCPErrorCode
+import {
+  MCPErrorCode,
+  MCPServer,
+  ServerCapabilities,
+  ToolRequest,
+  ToolResponse
 } from '../types/index.js';
-import { 
-  UserSession,
-  AuthenticationError,
-  AuthenticationErrorCode
-} from '../types/auth.js';
-import { AuthenticationManager } from './auth/authentication-manager.js';
-import { ToolRegistry } from './tool-registry.js';
-import { BitbucketMCPTools } from './bitbucket-mcp-tools.js';
-import { BitbucketToolsIntegration } from './auth/bitbucket-tools-integration.js';
-import { MCPAuthIntegration } from './auth/mcp-auth-integration.js';
-import { MCPAuthMiddleware } from './auth/mcp-auth-middleware.js';
-import { BitbucketAPIManager } from './auth/bitbucket-api-manager.js';
+import { AuthenticationManager } from './auth/authentication-manager';
+import { BitbucketAPIManager } from './auth/bitbucket-api-manager';
+import { BitbucketToolsIntegration } from './auth/bitbucket-tools-integration';
+import { MCPAuthIntegration } from './auth/mcp-auth-integration';
+import { MCPAuthMiddleware } from './auth/mcp-auth-middleware';
+import { BitbucketMCPTools } from './bitbucket-mcp-tools';
+import { ToolRegistry } from './tool-registry';
 
 /**
  * MCP Server Configuration
@@ -49,19 +43,19 @@ import { BitbucketAPIManager } from './auth/bitbucket-api-manager.js';
 export interface MCPServerConfig {
   /** Server name */
   name: string;
-  
+
   /** Server version */
   version: string;
-  
+
   /** Whether authentication is required */
   requireAuth: boolean;
-  
+
   /** Whether to auto-refresh tokens */
   autoRefresh: boolean;
-  
+
   /** Maximum concurrent connections */
   maxConnections: number;
-  
+
   /** Request timeout in milliseconds */
   requestTimeout: number;
 }
@@ -88,13 +82,13 @@ export class MCPServerWithAuth extends EventEmitter implements MCPServer {
 
   constructor(config: MCPServerConfig, authManager: AuthenticationManager) {
     super();
-    
+
     this.id = `mcp-server-${Date.now()}`;
     this.name = config.name;
     this.version = config.version;
     this.config = config;
     this.authManager = authManager;
-    
+
     // Initialize components
     this.apiManager = new BitbucketAPIManager();
     this.toolsIntegration = new BitbucketToolsIntegration(this.apiManager);
@@ -113,7 +107,7 @@ export class MCPServerWithAuth extends EventEmitter implements MCPServer {
       maxTools: 1000
     });
     this.bitbucketTools = new BitbucketMCPTools(this.toolsIntegration);
-    
+
     this.setupEventHandlers();
     this.registerTools();
   }
@@ -129,10 +123,10 @@ export class MCPServerWithAuth extends EventEmitter implements MCPServer {
     try {
       // Initialize authentication manager
       await this.authManager.initialize();
-      
+
       // Initialize API manager
       await this.apiManager.initialize();
-      
+
       // Emit server started event
       this.emit('server:started', {
         serverId: this.id,
@@ -140,7 +134,7 @@ export class MCPServerWithAuth extends EventEmitter implements MCPServer {
         version: this.version,
         timestamp: new Date()
       });
-      
+
       console.log(`MCP Server started: ${this.name} v${this.version}`);
     } catch (error) {
       this.emit('server:error', error);
@@ -157,17 +151,17 @@ export class MCPServerWithAuth extends EventEmitter implements MCPServer {
       for (const [connectionId, connection] of this.activeConnections) {
         await this.handleClientDisconnect(connectionId);
       }
-      
+
       // Cleanup components
       await this.authManager.cleanup();
       await this.apiManager.cleanup();
-      
+
       // Emit server stopped event
       this.emit('server:stopped', {
         serverId: this.id,
         timestamp: new Date()
       });
-      
+
       console.log(`MCP Server stopped: ${this.name}`);
     } catch (error) {
       this.emit('server:error', error);
@@ -184,14 +178,14 @@ export class MCPServerWithAuth extends EventEmitter implements MCPServer {
    */
   async executeTool(request: ToolRequest): Promise<ToolResponse> {
     const startTime = Date.now();
-    
+
     try {
       // Process tool request through authentication middleware
       const processedRequest = await this.authMiddleware.processToolRequest(
         request,
         request.context.session
       );
-      
+
       if (!processedRequest.success) {
         return {
           success: false,
@@ -206,14 +200,14 @@ export class MCPServerWithAuth extends EventEmitter implements MCPServer {
           }
         };
       }
-      
+
       // Execute tool through registry
       const result = await this.toolRegistry.executeTool(
         request.name,
         request.arguments,
         processedRequest.data.context
       );
-      
+
       // Process tool response through authentication middleware
       const processedResponse = await this.authMiddleware.processToolResponse(
         {
@@ -225,7 +219,7 @@ export class MCPServerWithAuth extends EventEmitter implements MCPServer {
         request.context.session,
         request
       );
-      
+
       if (!processedResponse.success) {
         return {
           success: false,
@@ -240,9 +234,9 @@ export class MCPServerWithAuth extends EventEmitter implements MCPServer {
           }
         };
       }
-      
+
       return processedResponse.data;
-      
+
     } catch (error) {
       return {
         success: false,
@@ -270,14 +264,14 @@ export class MCPServerWithAuth extends EventEmitter implements MCPServer {
     try {
       // Store client connection
       this.activeConnections.set(clientSession.id, clientSession);
-      
+
       // Emit client connected event
       this.emit('client:connected', {
         clientId: clientSession.id,
         transport: clientSession.transport.type,
         timestamp: new Date()
       });
-      
+
       console.log(`Client connected: ${clientSession.id}`);
     } catch (error) {
       this.emit('client:error', clientSession.id, error);
@@ -292,16 +286,16 @@ export class MCPServerWithAuth extends EventEmitter implements MCPServer {
     try {
       // Handle disconnection through auth integration
       await this.authIntegration.handleClientDisconnect(clientId);
-      
+
       // Remove client connection
       this.activeConnections.delete(clientId);
-      
+
       // Emit client disconnected event
       this.emit('client:disconnected', {
         clientId,
         timestamp: new Date()
       });
-      
+
       console.log(`Client disconnected: ${clientId}`);
     } catch (error) {
       this.emit('client:error', clientId, error);
@@ -322,7 +316,7 @@ export class MCPServerWithAuth extends EventEmitter implements MCPServer {
         authToken,
         sessionId
       );
-      
+
       if (authResponse.success) {
         this.emit('client:authenticated', {
           clientId: clientSession.id,
@@ -330,7 +324,7 @@ export class MCPServerWithAuth extends EventEmitter implements MCPServer {
           timestamp: new Date()
         });
       }
-      
+
       return {
         success: authResponse.success,
         error: authResponse.error
@@ -353,7 +347,7 @@ export class MCPServerWithAuth extends EventEmitter implements MCPServer {
    */
   getCapabilities(): ServerCapabilities {
     const tools = this.toolRegistry.getAvailableTools();
-    
+
     return {
       protocolVersion: '2024-11-05',
       tools: tools.map(tool => tool.name),
@@ -398,7 +392,7 @@ export class MCPServerWithAuth extends EventEmitter implements MCPServer {
     if (!tool) {
       return undefined;
     }
-    
+
     return {
       name: tool.name,
       description: tool.description,
@@ -444,11 +438,11 @@ export class MCPServerWithAuth extends EventEmitter implements MCPServer {
   private async registerTools(): Promise<void> {
     try {
       const tools = this.bitbucketTools.getTools();
-      
+
       for (const tool of tools) {
         // Determine authentication requirements based on tool name
         const authRequirements = this.getToolAuthRequirements(tool.name);
-        
+
         await this.toolRegistry.registerTool(tool, {
           validateParameters: true,
           trackStatistics: true,
@@ -458,7 +452,7 @@ export class MCPServerWithAuth extends EventEmitter implements MCPServer {
           authentication: authRequirements
         });
       }
-      
+
       console.log(`Registered ${tools.length} Bitbucket MCP tools`);
     } catch (error) {
       this.emit('tools:registration-error', error);
@@ -480,18 +474,18 @@ export class MCPServerWithAuth extends EventEmitter implements MCPServer {
       case 'search-ids':
         // Search doesn't require authentication but benefits from user context
         return { required: false };
-      
+
       case 'get-id':
         // Getting operation details doesn't require authentication
         return { required: false };
-      
+
       case 'call-id':
         // Execution requires authentication for most operations
-        return { 
+        return {
           required: true,
           minPermissionLevel: 'read'
         };
-      
+
       default:
         // For other tools, determine based on functionality
         if (toolName.includes('admin') || toolName.includes('user') || toolName.includes('security')) {
@@ -500,14 +494,14 @@ export class MCPServerWithAuth extends EventEmitter implements MCPServer {
             minPermissionLevel: 'admin'
           };
         }
-        
+
         if (toolName.includes('create') || toolName.includes('update') || toolName.includes('delete')) {
           return {
             required: true,
             minPermissionLevel: 'write'
           };
         }
-        
+
         // Default to read-level authentication
         return {
           required: true,

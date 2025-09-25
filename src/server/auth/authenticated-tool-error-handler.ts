@@ -25,12 +25,11 @@ import {
   AuthenticationError,
   AuthenticationErrorCode,
   UserSession
-} from '../../types/auth.js';
-import { 
-  ToolExecutionContext, 
-  ToolResult, 
-  MCPErrorCode 
-} from '../../types/index.js';
+} from '../../types/auth';
+import {
+  MCPErrorCode,
+  ToolResult
+} from '../../types/index';
 
 /**
  * Error Context for Authenticated Tools
@@ -38,25 +37,25 @@ import {
 export interface AuthenticatedToolErrorContext {
   /** Tool name that failed */
   toolName: string;
-  
+
   /** User session (if available) */
   userSession?: UserSession;
-  
+
   /** User ID */
   userId?: string;
-  
+
   /** User permissions */
   userPermissions?: string[];
-  
+
   /** Required permissions for the tool */
   requiredPermissions?: string[];
-  
+
   /** Original error */
   originalError: Error;
-  
+
   /** Request timestamp */
   timestamp: Date;
-  
+
   /** Request ID */
   requestId: string;
 }
@@ -67,13 +66,13 @@ export interface AuthenticatedToolErrorContext {
 export interface ErrorRecoverySuggestion {
   /** Recovery action */
   action: string;
-  
+
   /** Recovery description */
   description: string;
-  
+
   /** Whether recovery is automatic */
   automatic: boolean;
-  
+
   /** Recovery parameters */
   parameters?: Record<string, any>;
 }
@@ -105,7 +104,7 @@ export class AuthenticatedToolErrorHandler extends EventEmitter {
   ): ToolResult {
     const mcpErrorCode = this.mapAuthenticationErrorToMCP(error.code);
     const recoverySuggestions = this.getRecoverySuggestions(error.code);
-    
+
     // Emit error event for monitoring
     this.emit('authentication:error', {
       error,
@@ -144,7 +143,7 @@ export class AuthenticatedToolErrorHandler extends EventEmitter {
   ): ToolResult {
     const mcpErrorCode = MCPErrorCode.AUTHORIZATION_FAILED;
     const recoverySuggestions = this.getRecoverySuggestions(error.code);
-    
+
     // Emit error event for monitoring
     this.emit('authorization:error', {
       error,
@@ -192,7 +191,7 @@ export class AuthenticatedToolErrorHandler extends EventEmitter {
 
     // Handle other types of errors
     const mcpErrorCode = MCPErrorCode.TOOL_EXECUTION_FAILED;
-    
+
     // Emit error event for monitoring
     this.emit('tool:execution-error', {
       error,
@@ -234,25 +233,25 @@ export class AuthenticatedToolErrorHandler extends EventEmitter {
     switch (error.code) {
       case AuthenticationErrorCode.AUTHENTICATION_FAILED:
         return `Authentication required to use the '${context.toolName}' tool. Please authenticate with Bitbucket first.`;
-      
+
       case AuthenticationErrorCode.SESSION_EXPIRED:
         return `Your session has expired. Please re-authenticate to use the '${context.toolName}' tool.`;
-      
+
       case AuthenticationErrorCode.TOKEN_EXPIRED:
         return `Your access token has expired. Please refresh your authentication to use the '${context.toolName}' tool.`;
-      
+
       case AuthenticationErrorCode.INVALID_TOKEN:
         return `Invalid authentication token. Please re-authenticate to use the '${context.toolName}' tool.`;
-      
+
       case AuthenticationErrorCode.NETWORK_ERROR:
         return `Network error while authenticating. Please check your connection and try again.`;
-      
+
       case AuthenticationErrorCode.TIMEOUT_ERROR:
         return `Authentication request timed out. Please try again.`;
-      
+
       case AuthenticationErrorCode.RATE_LIMIT_EXCEEDED:
         return `Too many authentication requests. Please wait a moment and try again.`;
-      
+
       default:
         return `Authentication error: ${error.message}`;
     }
@@ -268,7 +267,7 @@ export class AuthenticatedToolErrorHandler extends EventEmitter {
     if (context.requiredPermissions && context.requiredPermissions.length > 0) {
       return `You don't have the required permissions to use the '${context.toolName}' tool. Required permissions: ${context.requiredPermissions.join(', ')}.`;
     }
-    
+
     return `You don't have permission to use the '${context.toolName}' tool. Please contact your administrator.`;
   }
 

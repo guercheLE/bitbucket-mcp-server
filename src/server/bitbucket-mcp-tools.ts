@@ -19,9 +19,8 @@
  * - Comprehensive error handling
  */
 
-import { Tool, ToolParameter, ToolExecutionContext, ToolResult, MCPErrorCode } from '../types/index.js';
+import { MCPErrorCode, Tool, ToolExecutionContext, ToolResult } from '../types/index.js';
 import { BitbucketToolsIntegration } from './auth/bitbucket-tools-integration.js';
-import { AuthenticationError, AuthenticationErrorCode } from '../types/auth.js';
 
 /**
  * Bitbucket MCP Tools Registry
@@ -45,14 +44,14 @@ export class BitbucketMCPTools {
       this.createRepositoryCreateTool(),
       this.createRepositoryUpdateTool(),
       this.createRepositoryDeleteTool(),
-      
+
       // Project tools
       this.createProjectListTool(),
       this.createProjectGetTool(),
       this.createProjectCreateTool(),
       this.createProjectUpdateTool(),
       this.createProjectDeleteTool(),
-      
+
       // Pull Request tools
       this.createPullRequestListTool(),
       this.createPullRequestGetTool(),
@@ -60,25 +59,25 @@ export class BitbucketMCPTools {
       this.createPullRequestUpdateTool(),
       this.createPullRequestMergeTool(),
       this.createPullRequestDeclineTool(),
-      
+
       // User tools
       this.createUserInfoTool(),
       this.createUserListTool(),
-      
+
       // Authentication tools
       this.createOAuthApplicationCreateTool(),
       this.createOAuthApplicationGetTool(),
       this.createOAuthApplicationUpdateTool(),
       this.createOAuthApplicationDeleteTool(),
       this.createOAuthApplicationListTool(),
-      
+
       // Session tools
       this.createSessionCreateTool(),
       this.createSessionGetTool(),
       this.createSessionRefreshTool(),
       this.createSessionRevokeTool(),
       this.createSessionListTool(),
-      
+
       // Search tools
       this.createSearchRepositoriesTool(),
       this.createSearchCommitsTool(),

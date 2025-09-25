@@ -22,12 +22,11 @@
 import { EventEmitter } from 'events';
 import {
   AuthenticationError as AuthError,
-  AuthenticationErrorCode,
-  UserSession
+  AuthenticationErrorCode
 } from '../../types/auth';
-import { ToolExecutionContext, ToolRequest, ToolResponse } from '../../types/index.js';
-import { BitbucketAPIManager, APIRequestContext } from './bitbucket-api-manager';
-import { AuthenticatedToolErrorHandler, AuthenticatedToolErrorContext } from './authenticated-tool-error-handler';
+import { ToolExecutionContext } from '../../types/index';
+import { AuthenticatedToolErrorContext, AuthenticatedToolErrorHandler } from './authenticated-tool-error-handler';
+import { APIRequestContext, BitbucketAPIManager } from './bitbucket-api-manager';
 
 /**
  * Tool Execution Result
@@ -35,17 +34,17 @@ import { AuthenticatedToolErrorHandler, AuthenticatedToolErrorContext } from './
 export interface ToolExecutionResult {
   /** Whether execution was successful */
   success: boolean;
-  
+
   /** Result data */
   data?: any;
-  
+
   /** Error information */
   error?: {
     code: string;
     message: string;
     details?: any;
   };
-  
+
   /** Execution metadata */
   metadata: {
     toolName: string;
@@ -178,7 +177,7 @@ export class BitbucketToolsIntegration extends EventEmitter {
 
       // Handle error through authenticated error handler
       const errorResult = this.errorHandler.handleToolExecutionError(
-        error instanceof Error ? error : new Error(String(error)), 
+        error instanceof Error ? error : new Error(String(error)),
         errorContext
       );
 
@@ -213,109 +212,109 @@ export class BitbucketToolsIntegration extends EventEmitter {
       // Repository tools
       case 'bitbucket/repository/list':
         return await this.executeRepositoryList(params, context, mapping);
-      
+
       case 'bitbucket/repository/get':
         return await this.executeRepositoryGet(params, context, mapping);
-      
+
       case 'bitbucket/repository/create':
         return await this.executeRepositoryCreate(params, context, mapping);
-      
+
       case 'bitbucket/repository/update':
         return await this.executeRepositoryUpdate(params, context, mapping);
-      
+
       case 'bitbucket/repository/delete':
         return await this.executeRepositoryDelete(params, context, mapping);
-      
+
       // Project tools
       case 'bitbucket/project/list':
         return await this.executeProjectList(params, context, mapping);
-      
+
       case 'bitbucket/project/get':
         return await this.executeProjectGet(params, context, mapping);
-      
+
       case 'bitbucket/project/create':
         return await this.executeProjectCreate(params, context, mapping);
-      
+
       case 'bitbucket/project/update':
         return await this.executeProjectUpdate(params, context, mapping);
-      
+
       case 'bitbucket/project/delete':
         return await this.executeProjectDelete(params, context, mapping);
-      
+
       // Pull Request tools
       case 'bitbucket/pull-request/list':
         return await this.executePullRequestList(params, context, mapping);
-      
+
       case 'bitbucket/pull-request/get':
         return await this.executePullRequestGet(params, context, mapping);
-      
+
       case 'bitbucket/pull-request/create':
         return await this.executePullRequestCreate(params, context, mapping);
-      
+
       case 'bitbucket/pull-request/update':
         return await this.executePullRequestUpdate(params, context, mapping);
-      
+
       case 'bitbucket/pull-request/merge':
         return await this.executePullRequestMerge(params, context, mapping);
-      
+
       case 'bitbucket/pull-request/decline':
         return await this.executePullRequestDecline(params, context, mapping);
-      
+
       // User tools
       case 'bitbucket/user/info':
         return await this.executeUserInfo(params, context, mapping);
-      
+
       case 'bitbucket/user/list':
         return await this.executeUserList(params, context, mapping);
-      
+
       // OAuth Application tools
       case 'bitbucket/oauth/application/create':
         return await this.executeOAuthApplicationCreate(params, context, mapping);
-      
+
       case 'bitbucket/oauth/application/get':
         return await this.executeOAuthApplicationGet(params, context, mapping);
-      
+
       case 'bitbucket/oauth/application/update':
         return await this.executeOAuthApplicationUpdate(params, context, mapping);
-      
+
       case 'bitbucket/oauth/application/delete':
         return await this.executeOAuthApplicationDelete(params, context, mapping);
-      
+
       case 'bitbucket/oauth/application/list':
         return await this.executeOAuthApplicationList(params, context, mapping);
-      
+
       // Session tools
       case 'bitbucket/session/create':
         return await this.executeSessionCreate(params, context, mapping);
-      
+
       case 'bitbucket/session/get':
         return await this.executeSessionGet(params, context, mapping);
-      
+
       case 'bitbucket/session/refresh':
         return await this.executeSessionRefresh(params, context, mapping);
-      
+
       case 'bitbucket/session/revoke':
         return await this.executeSessionRevoke(params, context, mapping);
-      
+
       case 'bitbucket/session/list':
         return await this.executeSessionList(params, context, mapping);
-      
+
       // Search tools
       case 'bitbucket/search/repositories':
         return await this.executeSearchRepositories(params, context, mapping);
-      
+
       case 'bitbucket/search/commits':
         return await this.executeSearchCommits(params, context, mapping);
-      
+
       case 'bitbucket/search/pull-requests':
         return await this.executeSearchPullRequests(params, context, mapping);
-      
+
       case 'bitbucket/search/code':
         return await this.executeSearchCode(params, context, mapping);
-      
+
       case 'bitbucket/search/users':
         return await this.executeSearchUsers(params, context, mapping);
-      
+
       default:
         const authError = new AuthError({
           code: AuthenticationErrorCode.INTERNAL_ERROR,
@@ -363,7 +362,7 @@ export class BitbucketToolsIntegration extends EventEmitter {
     mapping: ToolMapping
   ): Promise<{ instanceId: string; data: any }> {
     const endpoint = this.buildEndpoint(mapping.endpoint, params);
-    
+
     const result = await this.apiManager.makeRequest(context, {
       method: 'GET',
       endpoint
@@ -439,7 +438,7 @@ export class BitbucketToolsIntegration extends EventEmitter {
     mapping: ToolMapping
   ): Promise<{ instanceId: string; data: any }> {
     const endpoint = this.buildEndpoint(mapping.endpoint, params);
-    
+
     const result = await this.apiManager.makeRequest(context, {
       method: 'GET',
       endpoint
@@ -488,7 +487,7 @@ export class BitbucketToolsIntegration extends EventEmitter {
     mapping: ToolMapping
   ): Promise<{ instanceId: string; data: any }> {
     const endpoint = this.buildEndpoint(mapping.endpoint, params);
-    
+
     const result = await this.apiManager.makeRequest(context, {
       method: 'GET',
       endpoint
@@ -539,7 +538,7 @@ export class BitbucketToolsIntegration extends EventEmitter {
     mapping: ToolMapping
   ): Promise<{ instanceId: string; data: any }> {
     const endpoint = mapping.endpoint;
-    
+
     const result = await this.apiManager.makeRequest(context, {
       method: 'GET',
       endpoint
@@ -588,7 +587,7 @@ export class BitbucketToolsIntegration extends EventEmitter {
     mapping: ToolMapping
   ): Promise<{ instanceId: string; data: any }> {
     const endpoint = this.buildEndpoint(mapping.endpoint, params);
-    
+
     const result = await this.apiManager.makeRequest(context, {
       method: 'DELETE',
       endpoint
@@ -664,7 +663,7 @@ export class BitbucketToolsIntegration extends EventEmitter {
     mapping: ToolMapping
   ): Promise<{ instanceId: string; data: any }> {
     const endpoint = this.buildEndpoint(mapping.endpoint, params);
-    
+
     const result = await this.apiManager.makeRequest(context, {
       method: 'DELETE',
       endpoint
@@ -823,7 +822,7 @@ export class BitbucketToolsIntegration extends EventEmitter {
     mapping: ToolMapping
   ): Promise<{ instanceId: string; data: any }> {
     const endpoint = this.buildEndpoint(mapping.endpoint, params);
-    
+
     const result = await this.apiManager.makeRequest(context, {
       method: 'GET',
       endpoint
@@ -872,7 +871,7 @@ export class BitbucketToolsIntegration extends EventEmitter {
     mapping: ToolMapping
   ): Promise<{ instanceId: string; data: any }> {
     const endpoint = this.buildEndpoint(mapping.endpoint, params);
-    
+
     const result = await this.apiManager.makeRequest(context, {
       method: 'DELETE',
       endpoint
@@ -893,7 +892,7 @@ export class BitbucketToolsIntegration extends EventEmitter {
     mapping: ToolMapping
   ): Promise<{ instanceId: string; data: any }> {
     const endpoint = mapping.endpoint;
-    
+
     const result = await this.apiManager.makeRequest(context, {
       method: 'GET',
       endpoint
@@ -944,7 +943,7 @@ export class BitbucketToolsIntegration extends EventEmitter {
     mapping: ToolMapping
   ): Promise<{ instanceId: string; data: any }> {
     const endpoint = mapping.endpoint;
-    
+
     const result = await this.apiManager.makeRequest(context, {
       method: 'GET',
       endpoint
@@ -965,7 +964,7 @@ export class BitbucketToolsIntegration extends EventEmitter {
     mapping: ToolMapping
   ): Promise<{ instanceId: string; data: any }> {
     const endpoint = this.buildEndpoint(mapping.endpoint, params);
-    
+
     const result = await this.apiManager.makeRequest(context, {
       method: 'POST',
       endpoint
@@ -986,7 +985,7 @@ export class BitbucketToolsIntegration extends EventEmitter {
     mapping: ToolMapping
   ): Promise<{ instanceId: string; data: any }> {
     const endpoint = this.buildEndpoint(mapping.endpoint, params);
-    
+
     const result = await this.apiManager.makeRequest(context, {
       method: 'DELETE',
       endpoint
@@ -1596,12 +1595,12 @@ export class BitbucketToolsIntegration extends EventEmitter {
 
   private buildEndpoint(template: string, params: Record<string, any>): string {
     let endpoint = template;
-    
+
     // Replace path parameters
     for (const [key, value] of Object.entries(params)) {
       endpoint = endpoint.replace(`{${key}}`, encodeURIComponent(String(value)));
     }
-    
+
     return endpoint;
   }
 

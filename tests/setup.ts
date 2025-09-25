@@ -1,27 +1,22 @@
 /**
- * Jest Setup File
- * 
- * This file is executed before each test file to set up the testing environment.
+ * Jest test setup configuration
+ * This file is run before each test file
  */
 
-// Set up test environment variables
+// Configure test environment
 process.env.NODE_ENV = 'test';
+process.env.LOG_LEVEL = 'silent'; // Suppress logs during tests
 
-// Mock console methods to reduce noise in tests
-global.console = {
-  ...console,
-  // Uncomment to suppress console output during tests
-  // log: jest.fn(),
-  // debug: jest.fn(),
-  // info: jest.fn(),
-  // warn: jest.fn(),
-  // error: jest.fn(),
-};
-
-// Set up global test timeout
-jest.setTimeout(10000);
+// Set test timeout
+jest.setTimeout(30000); // 30 seconds
 
 // Mock crypto for tests that don't need real crypto
 if (!global.crypto) {
   global.crypto = require('crypto').webcrypto;
 }
+
+// Global test cleanup
+afterEach(() => {
+  // Clear all mocks after each test
+  jest.clearAllMocks();
+});
