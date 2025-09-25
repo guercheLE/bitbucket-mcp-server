@@ -29,15 +29,15 @@
       "006-pull-request-management",
       "007-pipeline-management",
       "008-webhook-support",
-      "009-advanced-search"
+      "009-advanced-search",
+      "010-analytics-dashboard"
     ],
     "incomplete_features": [
-      "010-analytics-dashboard",
       "011-multi-workspace-support",
       "012-advanced-security"
     ],
     "missing_implementations": [
-      "Features 010-012 are in specification phase - implementation needed"
+      "Features 011-012 are in specification phase - implementation needed"
     ],
     "src_files": 0,
     "test_files": 0,
