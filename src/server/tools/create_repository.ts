@@ -12,7 +12,7 @@
  * - Error handling for creation failures
  */
 
-import { Tool, ToolParameter, ToolExecutor, ToolResult, ToolExecutionContext } from '../../types/index.js';
+import { MCPErrorCode, Tool, ToolExecutionContext, ToolExecutor, ToolParameter, ToolResult } from '../../types/index.js';
 
 /**
  * Create Repository Tool Parameters
@@ -101,13 +101,14 @@ const createRepositoryExecutor: ToolExecutor = async (params: Record<string, any
       return {
         success: false,
         error: {
-          code: -32602, // Invalid params
+          code: MCPErrorCode.INVALID_PARAMS,
           message: 'Repository name and workspace are required',
           details: { missing: ['name', 'workspace'] }
         },
         metadata: {
-          timestamp: new Date(),
-          tool: 'create_repository'
+          executionTime: 0,
+          memoryUsed: process.memoryUsage().heapUsed,
+          timestamp: new Date()
         }
       };
     }
@@ -118,13 +119,14 @@ const createRepositoryExecutor: ToolExecutor = async (params: Record<string, any
       return {
         success: false,
         error: {
-          code: -32602,
+          code: MCPErrorCode.INVALID_PARAMS,
           message: 'Repository name must contain only alphanumeric characters, hyphens, and underscores',
           details: { invalid_name: params.name }
         },
         metadata: {
-          timestamp: new Date(),
-          tool: 'create_repository'
+          executionTime: 0,
+          memoryUsed: process.memoryUsage().heapUsed,
+          timestamp: new Date()
         }
       };
     }
@@ -170,7 +172,9 @@ const createRepositoryExecutor: ToolExecutor = async (params: Record<string, any
     };
 
     // Log the repository creation
-    context.session?.emit('tool:executed', 'create_repository', mockRepository);
+    if (context.session && context.session.emit) {
+      context.session.emit('tool:executed', 'create_repository', mockRepository);
+    }
 
     return {
       success: true,
@@ -179,10 +183,9 @@ const createRepositoryExecutor: ToolExecutor = async (params: Record<string, any
         message: `Repository '${repositoryData.name}' created successfully in workspace '${repositoryData.workspace}'`
       },
       metadata: {
-        timestamp: new Date(),
-        tool: 'create_repository',
-        execution_time: Date.now() - context.request.timestamp.getTime(),
-        workspace: repositoryData.workspace
+        executionTime: Date.now() - context.request.timestamp.getTime(),
+        memoryUsed: process.memoryUsage().heapUsed,
+        timestamp: new Date()
       }
     };
 
@@ -190,14 +193,14 @@ const createRepositoryExecutor: ToolExecutor = async (params: Record<string, any
     return {
       success: false,
       error: {
-        code: -32603, // Internal error
+        code: MCPErrorCode.INTERNAL_ERROR,
         message: error instanceof Error ? error.message : 'Unknown error occurred',
         details: error
       },
       metadata: {
-        timestamp: new Date(),
-        tool: 'create_repository',
-        error_type: error instanceof Error ? error.constructor.name : 'Unknown'
+        executionTime: 0,
+        memoryUsed: process.memoryUsage().heapUsed,
+        timestamp: new Date()
       }
     };
   }

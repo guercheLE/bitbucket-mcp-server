@@ -25,13 +25,18 @@
  * - Error handling and logging
  */
 
-// Simplified imports for working server
-import { createAnalyticsTools } from '../analytics/tools/index.js';
 import {
   MCPErrorCode,
   ServerConfig,
   Tool
 } from '../types/index.js';
+import { ConnectionManager, createConnectionManager } from './connection-manager.js';
+import { MCPServerLogger, createLoggerFromConfig } from './logger.js';
+import { MCPServerSDK, createMCPServerWithSDK, createTransport } from './mcp-server-sdk.js';
+import { MCPServer } from './mcp-server.js';
+import { ProtocolMessageHandler } from './protocol-handler.js';
+import { ToolRegistry } from './tool-registry.js';
+import { TransportFactory } from './transport-factory.js';
 
 /**
  * Server Application Class
@@ -384,23 +389,23 @@ export class MCPServerApplication {
       version: '1.0.0',
       description: 'Model Context Protocol server for Bitbucket integration',
       maxClients: 100,
-      clientTimeout: 300000, // 5 minutes
       memoryLimit: 512 * 1024 * 1024, // 512MB (constitutional requirement <1GB)
       logging: {
         level: 'info',
+        format: 'json',
         file: 'logs/mcp-server.log',
         console: true
       },
       transports: [
         {
-          type: 'stdio',
-          timeout: 30000
+          type: 'stdio'
         }
       ],
       tools: {
-        autoRegister: true,
-        selectiveLoading: true,
-        validationEnabled: true
+        validationEnabled: true,
+        trackStatistics: true,
+        allowOverwrite: false,
+        maxTools: 1000
       }
     };
 
@@ -514,6 +519,11 @@ export class MCPServerApplication {
             pong: true,
             timestamp: new Date().toISOString(),
             serverTime: Date.now()
+          },
+          metadata: {
+            executionTime: 0,
+            memoryUsed: 0,
+            timestamp: new Date()
           }
         };
       }
@@ -530,15 +540,17 @@ export class MCPServerApplication {
       async execute(params, context) {
         return {
           success: true,
-          data: context.server.getHealthStatus()
+          data: context.server.getHealthStatus(),
+          metadata: {
+            executionTime: 0,
+            memoryUsed: 0,
+            timestamp: new Date()
+          }
         };
       }
     };
 
     await this.registerTool(healthTool);
-
-    // Register analytics tools
-    await this.registerAnalyticsTools();
 
     console.log('✅ Default tools registered');
   }

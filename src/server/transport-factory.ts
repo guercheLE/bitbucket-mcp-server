@@ -24,13 +24,12 @@
  */
 
 import { EventEmitter } from 'events';
-import { 
-  Transport, 
-  TransportType, 
-  TransportConfig, 
-  TransportStats,
+import {
   ProtocolMessage,
-  MCPErrorCode
+  Transport,
+  TransportConfig,
+  TransportStats,
+  TransportType
 } from '../types/index.js';
 
 /**
@@ -75,7 +74,7 @@ class StdioTransport extends EventEmitter implements Transport {
   public readonly type: TransportType = 'stdio';
   public readonly config: TransportConfig;
   public isConnected: boolean = false;
-  
+
   private inputStream: NodeJS.ReadableStream;
   private outputStream: NodeJS.WritableStream;
   private messageQueue: ProtocolMessage[] = [];
@@ -87,7 +86,7 @@ class StdioTransport extends EventEmitter implements Transport {
     this.inputStream = process.stdin;
     this.outputStream = process.stdout;
     this.stats = this.initializeStats();
-    
+
     this.setupStreamHandlers();
   }
 
@@ -101,13 +100,13 @@ class StdioTransport extends EventEmitter implements Transport {
       this.inputStream.setEncoding('utf8');
       // Note: setDefaultEncoding is not available on WritableStream in newer Node.js versions
       // this.outputStream.setDefaultEncoding('utf8');
-      
+
       this.isConnected = true;
       this.stats.uptime = Date.now();
-      
+
       this.emit('connected', this);
       console.log('Stdio transport connected');
-      
+
     } catch (error) {
       this.emit('error', error);
       throw new Error(`Failed to connect stdio transport: ${(error as any).message}`);
@@ -122,10 +121,10 @@ class StdioTransport extends EventEmitter implements Transport {
     try {
       this.isConnected = false;
       this.messageQueue = [];
-      
+
       this.emit('disconnected', this);
       console.log('Stdio transport disconnected');
-      
+
     } catch (error) {
       this.emit('error', error);
       throw new Error(`Failed to disconnect stdio transport: ${(error as any).message}`);
@@ -140,11 +139,11 @@ class StdioTransport extends EventEmitter implements Transport {
     try {
       const jsonMessage = JSON.stringify(message) + '\n';
       this.outputStream.write(jsonMessage);
-      
+
       this.stats.messagesSent++;
       this.stats.bytesSent += Buffer.byteLength(jsonMessage, 'utf8');
       this.stats.lastActivity = new Date();
-      
+
     } catch (error) {
       this.emit('error', error);
       throw new Error(`Failed to send message via stdio: ${(error as any).message}`);
@@ -164,13 +163,13 @@ class StdioTransport extends EventEmitter implements Transport {
       const onData = (data: string) => {
         clearTimeout(timeout);
         this.inputStream.removeListener('data', onData);
-        
+
         try {
           const message = JSON.parse(data.trim()) as ProtocolMessage;
           this.stats.messagesReceived++;
           this.stats.bytesReceived += Buffer.byteLength(data, 'utf8');
           this.stats.lastActivity = new Date();
-          
+
           resolve(message);
         } catch (error) {
           reject(new Error(`Failed to parse stdio message: ${(error as any).message}`));
@@ -182,9 +181,9 @@ class StdioTransport extends EventEmitter implements Transport {
   }
 
   isHealthy(): boolean {
-    return this.isConnected && 
-           this.inputStream.readable && 
-           this.outputStream.writable;
+    return this.isConnected &&
+      this.inputStream.readable &&
+      this.outputStream.writable;
   }
 
   getStats(): TransportStats {
@@ -195,7 +194,7 @@ class StdioTransport extends EventEmitter implements Transport {
     this.inputStream.on('error', (error) => {
       this.emit('error', error);
     });
-    
+
     this.outputStream.on('error', (error) => {
       this.emit('error', error);
     });
@@ -207,10 +206,18 @@ class StdioTransport extends EventEmitter implements Transport {
       messagesReceived: 0,
       bytesSent: 0,
       bytesReceived: 0,
-      averageResponseTime: 0,
       uptime: 0,
-      lastActivity: new Date()
+      lastActivity: new Date(),
+      errors: 0
     };
+  }
+
+  onMessage(handler: (message: ProtocolMessage) => void): void {
+    this.on('message', handler);
+  }
+
+  onError(handler: (error: Error) => void): void {
+    this.on('error', handler);
   }
 }
 
@@ -222,7 +229,7 @@ class HttpTransport extends EventEmitter implements Transport {
   public readonly type: TransportType = 'http';
   public readonly config: TransportConfig;
   public isConnected: boolean = false;
-  
+
   private server: any;
   private requestCount: number = 0;
   private stats: TransportStats;
@@ -241,27 +248,27 @@ class HttpTransport extends EventEmitter implements Transport {
     try {
       // Create HTTP server for MCP communication
       const http = await import('http');
-      
+
       this.server = http.createServer((req, res) => {
         this.handleHttpRequest(req, res);
       });
-      
+
       const port = this.config.port || 8080;
       const host = this.config.host || 'localhost';
-      
+
       await new Promise<void>((resolve, reject) => {
         this.server.listen(port, host, () => {
           this.isConnected = true;
           this.stats.uptime = Date.now();
-          
+
           this.emit('connected', this);
           console.log(`HTTP transport connected on ${host}:${port}`);
           resolve();
         });
-        
+
         this.server.on('error', reject);
       });
-      
+
     } catch (error) {
       this.emit('error', error);
       throw new Error(`Failed to connect HTTP transport: ${(error as any).message}`);
@@ -286,7 +293,7 @@ class HttpTransport extends EventEmitter implements Transport {
           }
         });
       });
-      
+
     } catch (error) {
       this.emit('error', error);
       throw new Error(`Failed to disconnect HTTP transport: ${(error as any).message}`);
@@ -336,47 +343,47 @@ class HttpTransport extends EventEmitter implements Transport {
   private async handleHttpRequest(req: any, res: any): Promise<void> {
     try {
       this.requestCount++;
-      
+
       // Set CORS headers
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
       res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-      
+
       if (req.method === 'OPTIONS') {
         res.writeHead(200);
         res.end();
         return;
       }
-      
+
       if (req.method === 'POST') {
         let body = '';
         req.on('data', (chunk: any) => {
           body += chunk.toString();
         });
-        
+
         req.on('end', () => {
           try {
             const message = JSON.parse(body) as ProtocolMessage;
             this.stats.messagesReceived++;
             this.stats.bytesReceived += Buffer.byteLength(body, 'utf8');
             this.stats.lastActivity = new Date();
-            
+
             // Emit message for processing
             this.emit('message', message);
-            
+
             // Send response
             const response: ProtocolMessage = {
               jsonrpc: '2.0',
               id: message.id,
               result: { status: 'received' }
             };
-            
+
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(response));
-            
+
             this.stats.messagesSent++;
             this.stats.bytesSent += Buffer.byteLength(JSON.stringify(response), 'utf8');
-            
+
           } catch (error) {
             res.writeHead(400, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'Invalid JSON' }));
@@ -386,7 +393,7 @@ class HttpTransport extends EventEmitter implements Transport {
         res.writeHead(405, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Method not allowed' }));
       }
-      
+
     } catch (error) {
       this.emit('error', error);
       res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -400,10 +407,18 @@ class HttpTransport extends EventEmitter implements Transport {
       messagesReceived: 0,
       bytesSent: 0,
       bytesReceived: 0,
-      averageResponseTime: 0,
       uptime: 0,
-      lastActivity: new Date()
+      lastActivity: new Date(),
+      errors: 0
     };
+  }
+
+  onMessage(handler: (message: ProtocolMessage) => void): void {
+    this.on('message', handler);
+  }
+
+  onError(handler: (error: Error) => void): void {
+    this.on('error', handler);
   }
 }
 
@@ -415,7 +430,7 @@ class SseTransport extends EventEmitter implements Transport {
   public readonly type: TransportType = 'sse';
   public readonly config: TransportConfig;
   public isConnected: boolean = false;
-  
+
   private server: any;
   private clients: Set<any> = new Set();
   private eventCount: number = 0;
@@ -435,27 +450,27 @@ class SseTransport extends EventEmitter implements Transport {
     try {
       // Create HTTP server for SSE communication
       const http = await import('http');
-      
+
       this.server = http.createServer((req, res) => {
         this.handleSseRequest(req, res);
       });
-      
+
       const port = this.config.port || 8081;
       const host = this.config.host || 'localhost';
-      
+
       await new Promise<void>((resolve, reject) => {
         this.server.listen(port, host, () => {
           this.isConnected = true;
           this.stats.uptime = Date.now();
-          
+
           this.emit('connected', this);
           console.log(`SSE transport connected on ${host}:${port}`);
           resolve();
         });
-        
+
         this.server.on('error', reject);
       });
-      
+
     } catch (error) {
       this.emit('error', error);
       throw new Error(`Failed to connect SSE transport: ${(error as any).message}`);
@@ -473,7 +488,7 @@ class SseTransport extends EventEmitter implements Transport {
         client.end();
       }
       this.clients.clear();
-      
+
       await new Promise<void>((resolve, reject) => {
         this.server.close((error: any) => {
           if (error) {
@@ -486,7 +501,7 @@ class SseTransport extends EventEmitter implements Transport {
           }
         });
       });
-      
+
     } catch (error) {
       this.emit('error', error);
       throw new Error(`Failed to disconnect SSE transport: ${(error as any).message}`);
@@ -500,17 +515,17 @@ class SseTransport extends EventEmitter implements Transport {
 
     try {
       const sseData = `data: ${JSON.stringify(message)}\n\n`;
-      
+
       // Send to all connected clients
       for (const client of this.clients) {
         client.write(sseData);
       }
-      
+
       this.stats.messagesSent++;
       this.stats.bytesSent += Buffer.byteLength(sseData, 'utf8');
       this.stats.lastActivity = new Date();
       this.eventCount++;
-      
+
     } catch (error) {
       this.emit('error', error);
       throw new Error(`Failed to send SSE message: ${(error as any).message}`);
@@ -548,7 +563,7 @@ class SseTransport extends EventEmitter implements Transport {
   private async handleSseRequest(req: any, res: any): Promise<void> {
     try {
       const url = new URL(req.url, `http://${req.headers.host}`);
-      
+
       if (url.pathname === this.config.path || url.pathname === '/events') {
         // Setup SSE connection
         res.writeHead(200, {
@@ -558,46 +573,46 @@ class SseTransport extends EventEmitter implements Transport {
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Headers': 'Cache-Control'
         });
-        
+
         // Send initial connection event
         res.write('data: {"type":"connected"}\n\n');
-        
+
         // Add client to set
         this.clients.add(res);
-        
+
         // Handle client disconnect
         req.on('close', () => {
           this.clients.delete(res);
         });
-        
+
         // Handle POST requests for sending messages
         if (req.method === 'POST') {
           let body = '';
           req.on('data', (chunk: any) => {
             body += chunk.toString();
           });
-          
+
           req.on('end', () => {
             try {
               const message = JSON.parse(body) as ProtocolMessage;
               this.stats.messagesReceived++;
               this.stats.bytesReceived += Buffer.byteLength(body, 'utf8');
               this.stats.lastActivity = new Date();
-              
+
               // Emit message for processing
               this.emit('message', message);
-              
+
             } catch (error) {
               this.emit('error', error);
             }
           });
         }
-        
+
       } else {
         res.writeHead(404, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Not found' }));
       }
-      
+
     } catch (error) {
       this.emit('error', error);
       res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -611,10 +626,18 @@ class SseTransport extends EventEmitter implements Transport {
       messagesReceived: 0,
       bytesSent: 0,
       bytesReceived: 0,
-      averageResponseTime: 0,
       uptime: 0,
-      lastActivity: new Date()
+      lastActivity: new Date(),
+      errors: 0
     };
+  }
+
+  onMessage(handler: (message: ProtocolMessage) => void): void {
+    this.on('message', handler);
+  }
+
+  onError(handler: (error: Error) => void): void {
+    this.on('error', handler);
   }
 }
 
@@ -631,7 +654,7 @@ export class TransportFactory extends EventEmitter {
 
   constructor(options: TransportFactoryOptions = {}) {
     super();
-    
+
     this.options = {
       maxConnections: options.maxConnections ?? 100,
       connectionTimeout: options.connectionTimeout ?? 30000,
@@ -640,7 +663,7 @@ export class TransportFactory extends EventEmitter {
       enableMonitoring: options.enableMonitoring ?? true,
       defaultTransport: options.defaultTransport ?? 'stdio'
     };
-    
+
     this.stats = this.initializeStats();
   }
 
@@ -652,15 +675,15 @@ export class TransportFactory extends EventEmitter {
     try {
       // Validate configuration
       this.validateTransportConfig(config);
-      
+
       // Check connection limits
       if (this.transports.size >= this.options.maxConnections) {
         throw new Error(`Maximum transport connections exceeded (${this.options.maxConnections})`);
       }
-      
+
       // Create transport instance
       let transport: Transport;
-      
+
       switch (config.type) {
         case 'stdio':
           transport = new StdioTransport(config);
@@ -674,24 +697,24 @@ export class TransportFactory extends EventEmitter {
         default:
           throw new Error(`Unsupported transport type: ${config.type}`);
       }
-      
+
       // Setup transport event handlers
       this.setupTransportHandlers(transport);
-      
+
       // Register transport
       const transportId = this.generateTransportId(config);
       this.transports.set(transportId, transport);
-      
+
       // Update statistics
       this.updateStats();
-      
+
       // Emit transport created event
       this.emit('transportCreated', transport, config);
-      
+
       console.log(`Transport created: ${config.type} (${transportId})`);
-      
+
       return transport;
-      
+
     } catch (error) {
       this.emit('transportCreationError', config, error);
       throw new Error(`Failed to create transport: ${(error as any).message}`);
@@ -731,26 +754,26 @@ export class TransportFactory extends EventEmitter {
     if (!transport) {
       return false;
     }
-    
+
     try {
       // Disconnect transport if connected
       if (transport.isConnected) {
         await transport.disconnect();
       }
-      
+
       // Remove from registry
       this.transports.delete(transportId);
-      
+
       // Update statistics
       this.updateStats();
-      
+
       // Emit transport removed event
       this.emit('transportRemoved', transport);
-      
+
       console.log(`Transport removed: ${transportId}`);
-      
+
       return true;
-      
+
     } catch (error) {
       this.emit('transportRemovalError', transport, error);
       throw new Error(`Failed to remove transport ${transportId}: ${(error as any).message}`);
@@ -771,19 +794,19 @@ export class TransportFactory extends EventEmitter {
    */
   async shutdown(): Promise<void> {
     console.log('Shutting down transport factory...');
-    
+
     // Remove all transports
     const transportIds = Array.from(this.transports.keys());
     for (const transportId of transportIds) {
       await this.removeTransport(transportId);
     }
-    
+
     // Clear collections
     this.transports.clear();
-    
+
     // Emit shutdown event
     this.emit('shutdown');
-    
+
     console.log('Transport factory shutdown complete');
   }
 
@@ -799,12 +822,12 @@ export class TransportFactory extends EventEmitter {
     if (!config.type) {
       throw new Error('Transport type is required');
     }
-    
+
     const validTypes: TransportType[] = ['stdio', 'http', 'sse'];
     if (!validTypes.includes(config.type)) {
       throw new Error(`Invalid transport type: ${config.type}`);
     }
-    
+
     // Validate type-specific requirements
     switch (config.type) {
       case 'http':
@@ -817,7 +840,7 @@ export class TransportFactory extends EventEmitter {
         }
         break;
     }
-    
+
     // Validate timeout
     if (config.timeout && config.timeout <= 0) {
       throw new Error('Timeout must be greater than 0');
@@ -832,11 +855,11 @@ export class TransportFactory extends EventEmitter {
     transport.on('connected', () => {
       this.emit('transportConnected', transport);
     });
-    
+
     transport.on('disconnected', () => {
       this.emit('transportDisconnected', transport);
     });
-    
+
     transport.on('error', (error) => {
       this.emit('transportError', transport, error);
     });
@@ -849,7 +872,7 @@ export class TransportFactory extends EventEmitter {
   private generateTransportId(config: TransportConfig): string {
     const timestamp = Date.now();
     const random = Math.random().toString(36).substring(2, 8);
-    
+
     switch (config.type) {
       case 'stdio':
         return `stdio_${timestamp}_${random}`;
@@ -877,7 +900,8 @@ export class TransportFactory extends EventEmitter {
       transportsByType: {
         stdio: 0,
         http: 0,
-        sse: 0
+        sse: 0,
+        websocket: 0
       }
     };
   }
@@ -887,26 +911,29 @@ export class TransportFactory extends EventEmitter {
    */
   private updateStats(): void {
     const transports = Array.from(this.transports.values());
-    
+
     this.stats.totalTransports = transports.length;
     this.stats.activeTransports = transports.filter(t => t.isConnected).length;
     this.stats.activeConnections = this.stats.activeTransports;
-    
+
     // Count by type
     this.stats.transportsByType = {
       stdio: transports.filter(t => t.type === 'stdio').length,
       http: transports.filter(t => t.type === 'http').length,
-      sse: transports.filter(t => t.type === 'sse').length
+      sse: transports.filter(t => t.type === 'sse').length,
+      websocket: transports.filter(t => t.type === 'websocket').length
     };
-    
+
     // Calculate total messages
     this.stats.totalMessages = transports.reduce((total, transport) => {
-      const stats = transport.getStats();
-      return total + stats.messagesSent + stats.messagesReceived;
+      // Cast to any to access internal stats since getStats isn't in the interface
+      const stats = (transport as any).stats;
+      return total + (stats?.messagesSent || 0) + (stats?.messagesReceived || 0);
     }, 0);
   }
 }
 
 // Export the factory and transport classes
 export default TransportFactory;
-export { StdioTransport, HttpTransport, SseTransport };
+export { HttpTransport, SseTransport, StdioTransport };
+

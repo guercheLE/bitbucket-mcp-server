@@ -13,7 +13,7 @@
  * - Branch comparison and merge capabilities
  */
 
-import { Tool, ToolParameter, ToolExecutor, ToolResult, ToolExecutionContext } from '../../types/index.js';
+import { MCPErrorCode, Tool, ToolExecutionContext, ToolExecutor, ToolParameter, ToolResult } from '../../types/index.js';
 
 /**
  * Branch Management Tool Parameters
@@ -125,19 +125,21 @@ const branchManagementParameters: ToolParameter[] = [
  * Branch Management Tool Executor
  */
 const branchManagementExecutor: ToolExecutor = async (params: Record<string, any>, context: ToolExecutionContext): Promise<ToolResult> => {
+  const startTime = Date.now();
   try {
     // Validate required parameters
     if (!params.workspace || !params.repository || !params.action) {
       return {
         success: false,
         error: {
-          code: -32602, // Invalid params
+          code: MCPErrorCode.INVALID_PARAMS,
           message: 'Workspace, repository, and action are required',
           details: { missing: ['workspace', 'repository', 'action'] }
         },
         metadata: {
-          timestamp: new Date(),
-          tool: 'branch_management'
+          executionTime: Date.now() - startTime,
+          memoryUsed: process.memoryUsage().heapUsed,
+          timestamp: new Date()
         }
       };
     }
@@ -148,13 +150,14 @@ const branchManagementExecutor: ToolExecutor = async (params: Record<string, any
       return {
         success: false,
         error: {
-          code: -32602,
+          code: MCPErrorCode.INVALID_PARAMS,
           message: 'Repository name must contain only alphanumeric characters, hyphens, and underscores',
           details: { invalid_repository: params.repository }
         },
         metadata: {
-          timestamp: new Date(),
-          tool: 'branch_management'
+          executionTime: Date.now() - startTime,
+          memoryUsed: process.memoryUsage().heapUsed,
+          timestamp: new Date()
         }
       };
     }
@@ -165,13 +168,14 @@ const branchManagementExecutor: ToolExecutor = async (params: Record<string, any
       return {
         success: false,
         error: {
-          code: -32602,
+          code: MCPErrorCode.INVALID_PARAMS,
           message: 'Branch name is required for this action',
           details: { required_for_actions: branchActions }
         },
         metadata: {
-          timestamp: new Date(),
-          tool: 'branch_management'
+          executionTime: Date.now() - startTime,
+          memoryUsed: process.memoryUsage().heapUsed,
+          timestamp: new Date()
         }
       };
     }
@@ -180,13 +184,14 @@ const branchManagementExecutor: ToolExecutor = async (params: Record<string, any
       return {
         success: false,
         error: {
-          code: -32602,
+          code: MCPErrorCode.INVALID_PARAMS,
           message: 'Target branch is required for compare action',
           details: { required_for_action: 'compare' }
         },
         metadata: {
-          timestamp: new Date(),
-          tool: 'branch_management'
+          executionTime: Date.now() - startTime,
+          memoryUsed: process.memoryUsage().heapUsed,
+          timestamp: new Date()
         }
       };
     }
@@ -413,35 +418,35 @@ const branchManagementExecutor: ToolExecutor = async (params: Record<string, any
         return {
           success: false,
           error: {
-            code: -32602,
+            code: MCPErrorCode.INVALID_PARAMS,
             message: 'Invalid action specified',
             details: { valid_actions: ['list', 'create', 'delete', 'set_default', 'get_protection', 'set_protection', 'compare'] }
           },
           metadata: {
-            timestamp: new Date(),
-            tool: 'branch_management'
+            executionTime: Date.now() - startTime,
+            memoryUsed: process.memoryUsage().heapUsed,
+            timestamp: new Date()
           }
         };
     }
 
     // Log the branch management action
-    context.session?.emit('tool:executed', 'branch_management', {
-      action: params.action,
-      repository: params.repository,
-      workspace: params.workspace,
-      branch_name: params.branch_name
-    });
+    if (context.session && context.session.emit) {
+      context.session.emit('tool:executed', 'branch_management', {
+        action: params.action,
+        repository: params.repository,
+        workspace: params.workspace,
+        branch_name: params.branch_name
+      });
+    }
 
     return {
       success: true,
       data: result,
       metadata: {
-        timestamp: new Date(),
-        tool: 'branch_management',
-        execution_time: Date.now() - context.request.timestamp.getTime(),
-        workspace: params.workspace,
-        repository: params.repository,
-        action: params.action
+        executionTime: Date.now() - startTime,
+        memoryUsed: process.memoryUsage().heapUsed,
+        timestamp: new Date()
       }
     };
 
@@ -449,14 +454,14 @@ const branchManagementExecutor: ToolExecutor = async (params: Record<string, any
     return {
       success: false,
       error: {
-        code: -32603, // Internal error
+        code: MCPErrorCode.INTERNAL_ERROR,
         message: error instanceof Error ? error.message : 'Unknown error occurred',
         details: error
       },
       metadata: {
-        timestamp: new Date(),
-        tool: 'branch_management',
-        error_type: error instanceof Error ? error.constructor.name : 'Unknown'
+        executionTime: Date.now() - startTime,
+        memoryUsed: process.memoryUsage().heapUsed,
+        timestamp: new Date()
       }
     };
   }

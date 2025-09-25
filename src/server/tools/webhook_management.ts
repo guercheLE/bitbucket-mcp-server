@@ -129,6 +129,7 @@ const webhookManagementParameters: ToolParameter[] = [
  * Webhook Management Tool Executor
  */
 const webhookManagementExecutor: ToolExecutor = async (params: Record<string, any>, context: ToolExecutionContext): Promise<ToolResult> => {
+  const startTime = Date.now();
   try {
     // Validate required parameters
     if (!params.workspace || !params.repository || !params.action) {

@@ -12,7 +12,9 @@
     "declaration": true,
     "outDir": "./dist",
     "resolveJsonModule": true,
-    "types": ["node", "jest"]
+    "isolatedModules": true,
+    "verbatimModuleSyntax": false,
+    "downlevelIteration": true
   },
   "include": [
     "src/**/*",

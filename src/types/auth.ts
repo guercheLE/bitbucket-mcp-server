@@ -398,21 +398,22 @@ export interface AuthenticationError {
  * Authentication Error Class
  * Class implementation for authentication errors
  */
-export class AuthenticationError extends Error implements AuthenticationError {
-  public readonly code: AuthenticationErrorCode;
+export class AuthenticationErrorClass extends Error {
+  public readonly code!: AuthenticationErrorCode;
   public readonly details?: any;
-  public readonly timestamp: Date;
+  public readonly timestamp!: Date;
   public readonly sessionId?: string;
-  public readonly isRecoverable: boolean;
+  public readonly isRecoverable!: boolean;
 
   constructor(error: AuthenticationError) {
     super(error.message);
     this.name = 'AuthenticationError';
-    this.code = error.code;
-    this.details = error.details;
-    this.timestamp = error.timestamp;
-    this.sessionId = error.sessionId;
-    this.isRecoverable = error.isRecoverable;
+    // Use Object.defineProperty to set readonly properties
+    Object.defineProperty(this, 'code', { value: error.code });
+    Object.defineProperty(this, 'details', { value: error.details });
+    Object.defineProperty(this, 'timestamp', { value: error.timestamp });
+    Object.defineProperty(this, 'sessionId', { value: error.sessionId });
+    Object.defineProperty(this, 'isRecoverable', { value: error.isRecoverable });
   }
 }
 
@@ -457,16 +458,6 @@ export enum AuthenticationErrorCode {
 
   // General Errors
   AUTHENTICATION_FAILED = 'authentication_failed',
-  INVALID_CREDENTIALS = 'invalid_credentials',
-  INSUFFICIENT_PERMISSIONS = 'insufficient_permissions',
-  ACCOUNT_LOCKED = 'account_locked',
-  REFRESH_TOKEN_INVALID = 'refresh_token_invalid',
-  REFRESH_TOKEN_EXPIRED = 'refresh_token_expired',
-  USER_NOT_FOUND = 'user_not_found',
-  APPLICATION_DISABLED = 'application_disabled',
-  RATE_LIMIT_EXCEEDED = 'rate_limit_exceeded',
-  SERVER_ERROR = 'server_error',
-  UNKNOWN_ERROR = 'unknown_error',
   AUTHORIZATION_FAILED = 'authorization_failed',
   INTERNAL_ERROR = 'internal_error'
 }
