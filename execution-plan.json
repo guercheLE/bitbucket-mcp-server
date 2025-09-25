@@ -243,7 +243,7 @@
     {
       "id": "005-issue-tracking",
       "name": "Issue Tracking",
-      "status": "specified",
+      "status": "implemented",
       "branch": "feature/005-issue-tracking",
       "dependencies": [
         "001-mcp-server-infrastructure",
