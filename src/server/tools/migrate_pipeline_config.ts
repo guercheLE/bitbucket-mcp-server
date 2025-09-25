@@ -475,7 +475,7 @@ export async function handleMigratePipelineConfig(
                 rollback_info: {
                     rollback_available: migrationConfig.create_backup && backupInfo.success,
                     backup_locations: backupInfo.backup_locations || [],
-                    rollback_instructions: migrationConfig.create_backup 
+                    rollback_instructions: migrationConfig.create_backup
                         ? 'Use the backup files to restore original configurations if needed'
                         : undefined
                 },
@@ -488,7 +488,7 @@ export async function handleMigratePipelineConfig(
                 errors_encountered: migrationResults.reduce((acc, result) => acc.concat(result.errors), [] as string[]),
                 next_action_required: totalErrors > 0 || recommendations.some(r => r.priority === 'high')
             },
-            message: totalErrors === 0 
+            message: totalErrors === 0
                 ? `Pipeline configuration migration ${migrationConfig.dry_run ? 'analysis' : 'completed'} successfully. ${migrationResults.filter(r => r.migration_status === 'success').length} pipelines processed.`
                 : `Pipeline configuration migration completed with ${totalErrors} errors. Review detailed results for more information.`
         };
@@ -497,7 +497,7 @@ export async function handleMigratePipelineConfig(
 
     } catch (error) {
         const operationDuration = (Date.now() - startTime) / 1000;
-        
+
         return MigratePipelineConfigOutputSchema.parse({
             success: false,
             metadata: {
@@ -592,8 +592,8 @@ async function getSourcePipelines(source: any, pipelineService: PipelineService)
  * Validate source pipelines before migration
  */
 async function validateSourcePipelines(
-    pipelines: Pipeline[], 
-    validationConfig: any, 
+    pipelines: Pipeline[],
+    validationConfig: any,
     pipelineService: PipelineService
 ): Promise<any> {
     return {
@@ -616,8 +616,8 @@ async function validateSourcePipelines(
  * Create backups of pipelines before migration
  */
 async function createPipelineBackups(
-    pipelines: Pipeline[], 
-    migrationId: string, 
+    pipelines: Pipeline[],
+    migrationId: string,
     pipelineService: PipelineService
 ): Promise<any> {
     return {

@@ -8,7 +8,6 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import { PipelineService } from '../services/pipeline-service.js';
-import { Pipeline, PipelineRun, PipelineStep } from '../../types/pipeline.js';
 
 // Define missing types for troubleshooting
 export interface PipelineFailure {
@@ -336,10 +335,10 @@ export async function handleTroubleshootPipelineFailures(
   try {
     // Validate input
     const validatedInput = TroubleshootPipelineFailuresSchema.parse(input);
-    
+
     // Get pipeline information
     const pipeline = await pipelineService.getPipeline(validatedInput.pipeline_id);
-    
+
     if (!pipeline.success || !pipeline.data) {
       return {
         success: false,
@@ -515,27 +514,27 @@ interface IntelligentAnalysisResult {
  */
 async function detectFailurePatterns(failures: PipelineFailure[]): Promise<FailurePattern[]> {
   const patterns: FailurePattern[] = [];
-  
+
   // Temporal pattern detection
   const temporalPatterns = await detectTemporalPatterns(failures);
   patterns.push(...temporalPatterns);
-  
+
   // Resource exhaustion patterns
   const resourcePatterns = await detectResourcePatterns(failures);
   patterns.push(...resourcePatterns);
-  
+
   // Dependency chain failure patterns  
   const dependencyPatterns = await detectDependencyPatterns(failures);
   patterns.push(...dependencyPatterns);
-  
+
   // Environmental failure patterns
   const environmentalPatterns = await detectEnvironmentalPatterns(failures);
   patterns.push(...environmentalPatterns);
-  
+
   // Behavioral anomaly patterns
   const behavioralPatterns = await detectBehavioralPatterns(failures);
   patterns.push(...behavioralPatterns);
-  
+
   return patterns.sort((a, b) => b.confidence - a.confidence);
 }
 
@@ -544,24 +543,24 @@ async function detectFailurePatterns(failures: PipelineFailure[]): Promise<Failu
  */
 async function detectTemporalPatterns(failures: PipelineFailure[]): Promise<FailurePattern[]> {
   const patterns: FailurePattern[] = [];
-  
+
   if (failures.length < 3) return patterns;
-  
+
   // Sort failures by timestamp
-  const sortedFailures = [...failures].sort((a, b) => 
+  const sortedFailures = [...failures].sort((a, b) =>
     new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
   );
-  
+
   // Check for time-of-day patterns
   const hourlyFailures: Record<number, number> = {};
   sortedFailures.forEach(failure => {
     const hour = new Date(failure.timestamp).getHours();
     hourlyFailures[hour] = (hourlyFailures[hour] || 0) + 1;
   });
-  
+
   const peakHour = Object.entries(hourlyFailures)
-    .sort(([,a], [,b]) => b - a)[0];
-    
+    .sort(([, a], [, b]) => b - a)[0];
+
   if (peakHour && hourlyFailures[parseInt(peakHour[0])] >= failures.length * 0.4) {
     patterns.push({
       id: `temporal_hourly_${peakHour[0]}`,
@@ -584,13 +583,13 @@ async function detectTemporalPatterns(failures: PipelineFailure[]): Promise<Fail
       ]
     });
   }
-  
+
   // Check for weekend/weekday patterns
   const weekdayFailures = sortedFailures.filter(f => {
     const day = new Date(f.timestamp).getDay();
     return day >= 1 && day <= 5; // Monday-Friday
   });
-  
+
   if (weekdayFailures.length >= failures.length * 0.8) {
     patterns.push({
       id: 'temporal_weekday',
@@ -611,7 +610,7 @@ async function detectTemporalPatterns(failures: PipelineFailure[]): Promise<Fail
       ]
     });
   }
-  
+
   return patterns;
 }
 
@@ -620,14 +619,14 @@ async function detectTemporalPatterns(failures: PipelineFailure[]): Promise<Fail
  */
 async function detectResourcePatterns(failures: PipelineFailure[]): Promise<FailurePattern[]> {
   const patterns: FailurePattern[] = [];
-  
+
   // Detect memory-related failures
-  const memoryFailures = failures.filter(f => 
+  const memoryFailures = failures.filter(f =>
     f.error_message?.toLowerCase().includes('memory') ||
     f.error_message?.toLowerCase().includes('oom') ||
     f.error_code?.includes('MEMORY')
   );
-  
+
   if (memoryFailures.length >= failures.length * 0.3) {
     patterns.push({
       id: 'resource_memory',
@@ -651,7 +650,7 @@ async function detectResourcePatterns(failures: PipelineFailure[]): Promise<Fail
       ]
     });
   }
-  
+
   // Detect CPU/timeout patterns
   const timeoutFailures = failures.filter(f =>
     f.error_message?.toLowerCase().includes('timeout') ||
@@ -659,7 +658,7 @@ async function detectResourcePatterns(failures: PipelineFailure[]): Promise<Fail
     f.error_code?.includes('TIMEOUT') ||
     (f.duration && f.duration > 3600) // Longer than 1 hour
   );
-  
+
   if (timeoutFailures.length >= failures.length * 0.25) {
     patterns.push({
       id: 'resource_timeout',
@@ -684,7 +683,7 @@ async function detectResourcePatterns(failures: PipelineFailure[]): Promise<Fail
       ]
     });
   }
-  
+
   return patterns;
 }
 
@@ -693,7 +692,7 @@ async function detectResourcePatterns(failures: PipelineFailure[]): Promise<Fail
  */
 async function detectDependencyPatterns(failures: PipelineFailure[]): Promise<FailurePattern[]> {
   const patterns: FailurePattern[] = [];
-  
+
   // Group failures by step/component
   const componentFailures: Record<string, PipelineFailure[]> = {};
   failures.forEach(failure => {
@@ -703,12 +702,12 @@ async function detectDependencyPatterns(failures: PipelineFailure[]): Promise<Fa
     }
     componentFailures[component].push(failure);
   });
-  
+
   // Detect cascade failure patterns
   const cascadeComponents = Object.entries(componentFailures)
     .filter(([, compFailures]) => compFailures.length >= 2)
     .map(([component]) => component);
-    
+
   if (cascadeComponents.length >= 2) {
     patterns.push({
       id: 'dependency_cascade',
@@ -732,7 +731,7 @@ async function detectDependencyPatterns(failures: PipelineFailure[]): Promise<Fa
       ]
     });
   }
-  
+
   // Detect external dependency failures
   const externalFailures = failures.filter(f =>
     f.error_message?.toLowerCase().includes('connection') ||
@@ -741,7 +740,7 @@ async function detectDependencyPatterns(failures: PipelineFailure[]): Promise<Fa
     f.error_code?.includes('NETWORK') ||
     f.error_code?.includes('CONNECTION')
   );
-  
+
   if (externalFailures.length >= failures.length * 0.2) {
     patterns.push({
       id: 'dependency_external',
@@ -766,7 +765,7 @@ async function detectDependencyPatterns(failures: PipelineFailure[]): Promise<Fa
       ]
     });
   }
-  
+
   return patterns;
 }
 
@@ -775,7 +774,7 @@ async function detectDependencyPatterns(failures: PipelineFailure[]): Promise<Fa
  */
 async function detectEnvironmentalPatterns(failures: PipelineFailure[]): Promise<FailurePattern[]> {
   const patterns: FailurePattern[] = [];
-  
+
   // Configuration-related failures
   const configFailures = failures.filter(f =>
     f.error_message?.toLowerCase().includes('config') ||
@@ -783,7 +782,7 @@ async function detectEnvironmentalPatterns(failures: PipelineFailure[]): Promise
     f.error_message?.toLowerCase().includes('variable') ||
     f.error_code?.includes('CONFIG')
   );
-  
+
   if (configFailures.length >= failures.length * 0.3) {
     patterns.push({
       id: 'environmental_config',
@@ -808,7 +807,7 @@ async function detectEnvironmentalPatterns(failures: PipelineFailure[]): Promise
       ]
     });
   }
-  
+
   return patterns;
 }
 
@@ -817,27 +816,27 @@ async function detectEnvironmentalPatterns(failures: PipelineFailure[]): Promise
  */
 async function detectBehavioralPatterns(failures: PipelineFailure[]): Promise<FailurePattern[]> {
   const patterns: FailurePattern[] = [];
-  
+
   if (failures.length < 5) return patterns;
-  
+
   // Analyze failure frequency patterns
   const dailyFailures: Record<string, number> = {};
   failures.forEach(failure => {
     const day = new Date(failure.timestamp).toISOString().split('T')[0];
     dailyFailures[day] = (dailyFailures[day] || 0) + 1;
   });
-  
+
   const failureCounts = Object.values(dailyFailures);
   const avgFailures = failureCounts.reduce((a, b) => a + b, 0) / failureCounts.length;
   const stdDev = Math.sqrt(
     failureCounts.reduce((sum, count) => sum + Math.pow(count - avgFailures, 2), 0) / failureCounts.length
   );
-  
+
   // Detect anomalous spikes
   const anomalousDays = Object.entries(dailyFailures)
     .filter(([, count]) => count > avgFailures + (2 * stdDev))
     .length;
-    
+
   if (anomalousDays > 0 && stdDev > avgFailures * 0.5) {
     patterns.push({
       id: 'behavioral_anomaly',
@@ -862,7 +861,7 @@ async function detectBehavioralPatterns(failures: PipelineFailure[]): Promise<Fa
       ]
     });
   }
-  
+
   return patterns;
 }
 
@@ -874,19 +873,19 @@ async function performIntelligentAnalysis(
   detectedPatterns: FailurePattern[]
 ): Promise<IntelligentAnalysisResult> {
   // Calculate anomaly score based on pattern confidence
-  const anomalyScore = detectedPatterns.length > 0 
+  const anomalyScore = detectedPatterns.length > 0
     ? detectedPatterns.reduce((sum, pattern) => sum + pattern.confidence, 0) / detectedPatterns.length
     : 0;
-    
+
   // Analyze failure trends
   const trendAnalysis = await analyzeTrends(failures);
-  
+
   // Find correlations between different factors
   const correlationInsights = await findCorrelations(failures, detectedPatterns);
-  
+
   // Generate AI-driven recommendations
   const aiRecommendations = await generateAIRecommendations(failures, detectedPatterns);
-  
+
   return {
     detected_patterns: detectedPatterns,
     anomaly_score: anomalyScore,
@@ -911,30 +910,30 @@ async function analyzeTrends(failures: PipelineFailure[]): Promise<{
       prediction: 'Insufficient data for trend analysis'
     };
   }
-  
+
   // Group failures by day and analyze trend
   const dailyFailures: Record<string, number> = {};
   failures.forEach(failure => {
     const day = new Date(failure.timestamp).toISOString().split('T')[0];
     dailyFailures[day] = (dailyFailures[day] || 0) + 1;
   });
-  
+
   const sortedDays = Object.keys(dailyFailures).sort();
   const failureCounts = sortedDays.map(day => dailyFailures[day]);
-  
+
   // Simple linear regression to detect trend
   const n = failureCounts.length;
-  const x = Array.from({length: n}, (_, i) => i);
+  const x = Array.from({ length: n }, (_, i) => i);
   const y = failureCounts;
-  
+
   const sumX = x.reduce((a, b) => a + b, 0);
   const sumY = y.reduce((a, b) => a + b, 0);
   const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
   const sumXX = x.reduce((sum, xi) => sum + xi * xi, 0);
-  
+
   const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
   const patternStrength = Math.abs(slope) / (sumY / n); // Normalized slope
-  
+
   let trend: 'increasing' | 'decreasing' | 'stable' | 'cyclical';
   if (Math.abs(slope) < 0.1) {
     trend = 'stable';
@@ -943,22 +942,22 @@ async function analyzeTrends(failures: PipelineFailure[]): Promise<{
   } else {
     trend = 'decreasing';
   }
-  
+
   // Check for cyclical patterns
-  if (patternStrength < 0.3 && failureCounts.some((count, i) => 
+  if (patternStrength < 0.3 && failureCounts.some((count, i) =>
     i > 0 && Math.abs(count - failureCounts[i - 1]) > failureCounts.reduce((a, b) => a + b) / failureCounts.length * 0.5
   )) {
     trend = 'cyclical';
   }
-  
-  const prediction = trend === 'increasing' 
+
+  const prediction = trend === 'increasing'
     ? `Failure rate is trending upward. Expected ${Math.round((sumY / n) + slope)} failures per day if trend continues.`
     : trend === 'decreasing'
-    ? `Failure rate is improving. Expected ${Math.round(Math.max(0, (sumY / n) + slope))} failures per day if trend continues.`
-    : trend === 'cyclical'
-    ? `Failure rate shows cyclical pattern. Monitor for recurring cycles.`
-    : `Failure rate is stable at approximately ${Math.round(sumY / n)} failures per day.`;
-  
+      ? `Failure rate is improving. Expected ${Math.round(Math.max(0, (sumY / n) + slope))} failures per day if trend continues.`
+      : trend === 'cyclical'
+        ? `Failure rate shows cyclical pattern. Monitor for recurring cycles.`
+        : `Failure rate is stable at approximately ${Math.round(sumY / n)} failures per day.`;
+
   return {
     failure_trend: trend,
     pattern_strength: Math.min(1, patternStrength),
@@ -982,7 +981,7 @@ async function findCorrelations(
     correlation_strength: number;
     description: string;
   }> = [];
-  
+
   // Correlation between time and failure type
   const timeCorrelation = analyzeTimeCorrelation(failures);
   if (timeCorrelation.strength > 0.3) {
@@ -992,7 +991,7 @@ async function findCorrelations(
       description: timeCorrelation.description
     });
   }
-  
+
   // Correlation between severity and component
   const severityCorrelation = analyzeSeverityCorrelation(failures);
   if (severityCorrelation.strength > 0.3) {
@@ -1002,7 +1001,7 @@ async function findCorrelations(
       description: severityCorrelation.description
     });
   }
-  
+
   // Pattern correlation with failure frequency
   patterns.forEach(pattern => {
     if (pattern.confidence > 0.6) {
@@ -1013,7 +1012,7 @@ async function findCorrelations(
       });
     }
   });
-  
+
   return correlations.sort((a, b) => b.correlation_strength - a.correlation_strength);
 }
 
@@ -1026,18 +1025,18 @@ function analyzeTimeCorrelation(failures: PipelineFailure[]): { strength: number
     const hour = new Date(failure.timestamp).getHours();
     hourlyFailures[hour] = (hourlyFailures[hour] || 0) + 1;
   });
-  
+
   const hours = Object.keys(hourlyFailures).map(Number);
   const counts = Object.values(hourlyFailures);
-  
+
   if (hours.length === 0) return { strength: 0, description: 'No time correlation found' };
-  
+
   const maxCount = Math.max(...counts);
   const avgCount = counts.reduce((a, b) => a + b) / counts.length;
   const strength = (maxCount - avgCount) / avgCount;
-  
+
   const peakHour = hours[counts.indexOf(maxCount)];
-  
+
   return {
     strength: Math.min(1, strength),
     description: `Peak failure time at ${peakHour}:00 with ${maxCount} failures (${Math.round(strength * 100)}% above average)`
@@ -1049,35 +1048,35 @@ function analyzeTimeCorrelation(failures: PipelineFailure[]): { strength: number
  */
 function analyzeSeverityCorrelation(failures: PipelineFailure[]): { strength: number; description: string } {
   const componentSeverity: Record<string, Record<string, number>> = {};
-  
+
   failures.forEach(failure => {
     const component = failure.step_name || 'unknown';
     const severity = failure.severity;
-    
+
     if (!componentSeverity[component]) {
       componentSeverity[component] = {};
     }
     componentSeverity[component][severity] = (componentSeverity[component][severity] || 0) + 1;
   });
-  
+
   // Find component with highest critical failure rate
   let maxCriticalRate = 0;
   let criticalComponent = '';
-  
+
   Object.entries(componentSeverity).forEach(([component, severityMap]) => {
     const total = Object.values(severityMap).reduce((a, b) => a + b, 0);
     const critical = severityMap['critical'] || 0;
     const rate = critical / total;
-    
+
     if (rate > maxCriticalRate) {
       maxCriticalRate = rate;
       criticalComponent = component;
     }
   });
-  
+
   return {
     strength: maxCriticalRate,
-    description: maxCriticalRate > 0.3 
+    description: maxCriticalRate > 0.3
       ? `Component "${criticalComponent}" has ${Math.round(maxCriticalRate * 100)}% critical failure rate`
       : 'No significant severity correlation found'
   };
@@ -1101,20 +1100,20 @@ async function generateAIRecommendations(
     description: string;
     implementation_complexity: 'low' | 'medium' | 'high';
   }> = [];
-  
+
   // High-priority recommendations based on critical patterns
   const criticalPatterns = patterns.filter(p => p.confidence > 0.7);
-  
+
   criticalPatterns.forEach((pattern, index) => {
     recommendations.push({
       type: 'preventive',
       priority: 10 - index,
       description: `Address ${pattern.name}: ${pattern.recommended_actions[0]}`,
-      implementation_complexity: pattern.pattern_type === 'temporal' ? 'low' : 
-                                 pattern.pattern_type === 'resource' ? 'medium' : 'high'
+      implementation_complexity: pattern.pattern_type === 'temporal' ? 'low' :
+        pattern.pattern_type === 'resource' ? 'medium' : 'high'
     });
   });
-  
+
   // Monitoring recommendations
   if (failures.length > 5) {
     recommendations.push({
@@ -1124,7 +1123,7 @@ async function generateAIRecommendations(
       implementation_complexity: 'high'
     });
   }
-  
+
   // Reactive recommendations based on failure frequency
   const criticalFailures = failures.filter(f => f.severity === 'critical');
   if (criticalFailures.length >= failures.length * 0.3) {
@@ -1135,7 +1134,7 @@ async function generateAIRecommendations(
       implementation_complexity: 'medium'
     });
   }
-  
+
   return recommendations.sort((a, b) => b.priority - a.priority);
 }
 
@@ -1194,11 +1193,11 @@ async function analyzeRootCauses(
       issue.last_seen = failure.timestamp;
       issue.impact_analysis.affected_runs++;
       issue.impact_analysis.time_impact += failure.duration || 0;
-      
+
       if (failure.step_name && !issue.affected_components.includes(failure.step_name)) {
         issue.affected_components.push(failure.step_name);
       }
-      
+
       if (failure.triggered_by && !issue.impact_analysis.user_impact.includes(failure.triggered_by)) {
         issue.impact_analysis.user_impact.push(failure.triggered_by);
       }
@@ -1234,11 +1233,11 @@ async function generateResolutionSuggestions(
     intelligentAnalysis.ai_recommendations.forEach((aiRec, index) => {
       suggestions.push({
         issue_id: `ai_recommendation_${index}`,
-        solution_type: aiRec.type === 'preventive' ? 'long_term' : 
-                      aiRec.type === 'reactive' ? 'immediate' : 'short_term',
+        solution_type: aiRec.type === 'preventive' ? 'long_term' :
+          aiRec.type === 'reactive' ? 'immediate' : 'short_term',
         priority: aiRec.priority >= 8 ? 'critical' :
-                 aiRec.priority >= 6 ? 'high' :
-                 aiRec.priority >= 4 ? 'medium' : 'low',
+          aiRec.priority >= 6 ? 'high' :
+            aiRec.priority >= 4 ? 'medium' : 'low',
         title: `AI-Driven: ${aiRec.description.split(':')[0]}`,
         description: aiRec.description,
         steps: [
@@ -1248,10 +1247,10 @@ async function generateResolutionSuggestions(
           'Monitor effectiveness and adjust as needed'
         ],
         estimated_effort: aiRec.implementation_complexity === 'low' ? '1-2 hours' :
-                         aiRec.implementation_complexity === 'medium' ? '1-2 days' : '1-2 weeks',
+          aiRec.implementation_complexity === 'medium' ? '1-2 days' : '1-2 weeks',
         success_probability: 0.8, // AI recommendations typically have high success rates
         prerequisites: ['Review system logs', 'Backup current configuration'],
-        risk_assessment: aiRec.implementation_complexity === 'high' 
+        risk_assessment: aiRec.implementation_complexity === 'high'
           ? 'Medium risk - requires careful testing and gradual rollout'
           : 'Low risk - can be implemented with standard testing procedures'
       });
@@ -1277,10 +1276,10 @@ async function generateResolutionSuggestions(
               'Adjust approach based on results'
             ],
             estimated_effort: pattern.pattern_type === 'temporal' ? '2-4 hours' :
-                             pattern.pattern_type === 'resource' ? '1-3 days' : '3-5 days',
+              pattern.pattern_type === 'resource' ? '1-3 days' : '3-5 days',
             success_probability: pattern.confidence,
             prerequisites: ['Pattern analysis review', 'Environment assessment'],
-            risk_assessment: pattern.confidence > 0.8 
+            risk_assessment: pattern.confidence > 0.8
               ? 'Low risk - high confidence pattern detected'
               : 'Medium risk - moderate confidence, monitor closely'
           });
@@ -1545,30 +1544,30 @@ function calculateConfidenceScore(failures: PipelineFailure[], rootCauses: any[]
   if (failures.length === 0) return 0;
   if (failures.length < 3) return 0.4;
   if (rootCauses.length === 0) return 0.3;
-  
+
   // Higher confidence with more data points and identified causes
   const baseScore = Math.min(0.9, 0.5 + (failures.length / 20));
   const causeBonus = Math.min(0.1, rootCauses.length * 0.02);
-  
+
   return Math.min(1, baseScore + causeBonus);
 }
 
 function generateNextSteps(rootCauses: any[], suggestions: any[]): string[] {
   const steps = ['Review troubleshooting report'];
-  
+
   const criticalIssues = rootCauses.filter(cause => cause.severity === 'critical');
   if (criticalIssues.length > 0) {
     steps.push('Address critical issues immediately');
   }
-  
+
   const highPrioritySuggestions = suggestions.filter(s => s.priority === 'critical' || s.priority === 'high');
   if (highPrioritySuggestions.length > 0) {
     steps.push('Implement high-priority solutions first');
   }
-  
+
   steps.push('Set up monitoring for identified failure patterns');
   steps.push('Schedule regular pipeline health reviews');
-  
+
   return steps;
 }
 
@@ -1589,7 +1588,7 @@ async function simulatePipelineFailures(
   // Simulate some common pipeline failures for demonstration
   const now = new Date().toISOString();
   const hour = 1000 * 60 * 60;
-  
+
   const failures: PipelineFailure[] = [
     {
       id: 'failure-001',
@@ -1631,11 +1630,11 @@ async function simulatePipelineFailures(
 
   // Apply filters if specified
   let filteredFailures = failures;
-  
+
   if (options.runId) {
     filteredFailures = filteredFailures.filter(f => f.run_id === options.runId);
   }
-  
+
   if (options.failureType && options.failureType !== 'all') {
     filteredFailures = filteredFailures.filter(f => {
       const category = categorizeFailure(f);

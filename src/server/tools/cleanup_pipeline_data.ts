@@ -373,9 +373,9 @@ export async function handleCleanupPipelineData(
 
         // Execute cleanup (or dry run)
         const cleanupResults = await executeCleanup(
-            targetPipelines, 
-            cleanup_config, 
-            safetyConfig, 
+            targetPipelines,
+            cleanup_config,
+            safetyConfig,
             pipelineService
         );
 
@@ -439,7 +439,7 @@ export async function handleCleanupPipelineData(
                 errors_encountered: cleanupResults.reduce((acc, result) => acc.concat(result.errors), [] as string[]),
                 next_action_required: totalErrors > 0 || recommendations.some(r => r.priority === 'high')
             },
-            message: totalErrors === 0 
+            message: totalErrors === 0
                 ? `Pipeline data cleanup ${safetyConfig.dry_run ? 'analysis' : 'operation'} completed successfully. ${safetyConfig.dry_run ? 'No data was actually deleted.' : `Freed ${beforeCleanup.total_size_mb - afterCleanup.total_size_mb} MB of storage.`}`
                 : `Pipeline data cleanup completed with ${totalErrors} errors. Review detailed results for more information.`
         };
@@ -448,7 +448,7 @@ export async function handleCleanupPipelineData(
 
     } catch (error) {
         const operationDuration = (Date.now() - startTime) / 1000;
-        
+
         return CleanupPipelineDataOutputSchema.parse({
             success: false,
             metadata: {
@@ -483,8 +483,8 @@ async function validateRepositoryAccess(repository: string, pipelineService: Pip
  * Get target pipelines based on cleanup scope and configuration
  */
 async function getTargetPipelines(
-    repository: string, 
-    cleanup_config: any, 
+    repository: string,
+    cleanup_config: any,
     pipelineService: PipelineService
 ): Promise<Pipeline[]> {
     // In a real implementation, this would fetch actual pipelines from Bitbucket
@@ -492,7 +492,7 @@ async function getTargetPipelines(
         {
             id: 'pipeline-1',
             name: 'Main Build Pipeline',
-            repository: { 
+            repository: {
                 id: 'repo-1',
                 name: 'repo-name',
                 fullName: repository
@@ -551,8 +551,8 @@ async function getTargetPipelines(
  * Analyze cleanup impact
  */
 async function analyzeCleanupImpact(
-    pipelines: Pipeline[], 
-    cleanup_config: any, 
+    pipelines: Pipeline[],
+    cleanup_config: any,
     pipelineService: PipelineService
 ): Promise<any> {
     return {
@@ -567,8 +567,8 @@ async function analyzeCleanupImpact(
  * Calculate space usage for pipelines
  */
 async function calculateSpaceUsage(
-    pipelines: Pipeline[], 
-    cleanup_config: any, 
+    pipelines: Pipeline[],
+    cleanup_config: any,
     pipelineService: PipelineService
 ): Promise<any> {
     // Mock space calculation
@@ -585,9 +585,9 @@ async function calculateSpaceUsage(
  * Execute the actual cleanup operation
  */
 async function executeCleanup(
-    pipelines: Pipeline[], 
-    cleanup_config: any, 
-    safety_config: any, 
+    pipelines: Pipeline[],
+    cleanup_config: any,
+    safety_config: any,
     pipelineService: PipelineService
 ): Promise<any[]> {
     const results = [];
@@ -640,8 +640,8 @@ async function executeCleanup(
  * Analyze retention based on cleanup configuration
  */
 async function analyzeRetention(
-    pipelines: Pipeline[], 
-    cleanup_config: any, 
+    pipelines: Pipeline[],
+    cleanup_config: any,
     pipelineService: PipelineService
 ): Promise<any> {
     return {

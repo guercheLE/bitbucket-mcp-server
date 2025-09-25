@@ -8,7 +8,6 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import { PipelineService } from '../services/pipeline-service.js';
-import { Pipeline, PipelineRun } from '../../types/pipeline.js';
 
 // Define performance analysis types
 export interface PerformanceMetrics {
@@ -376,23 +375,23 @@ async function detectPerformancePatterns(
   config: OptimizePipelinePerformanceInput['analysis_config']
 ): Promise<PerformancePattern[]> {
   const patterns: PerformancePattern[] = [];
-  
+
   // Detect resource waste patterns
   const resourcePatterns = await detectResourceWastePatterns(performanceData);
   patterns.push(...resourcePatterns);
-  
+
   // Detect time inefficiency patterns
   const timePatterns = await detectTimeInefficiencyPatterns(performanceData);
   patterns.push(...timePatterns);
-  
+
   // Detect scaling bottlenecks
   const scalingPatterns = await detectScalingPatterns(performanceData);
   patterns.push(...scalingPatterns);
-  
+
   // Detect configuration optimization opportunities
   const configPatterns = await detectConfigurationPatterns(performanceData);
   patterns.push(...configPatterns);
-  
+
   return patterns.sort((a, b) => b.impact_score - a.impact_score);
 }
 
@@ -401,11 +400,11 @@ async function detectPerformancePatterns(
  */
 async function detectResourceWastePatterns(performanceData: any[]): Promise<PerformancePattern[]> {
   const patterns: PerformancePattern[] = [];
-  
+
   // Analyze CPU utilization patterns
   const cpuUtilization = performanceData.map(d => d.cpu_usage || 0);
   const avgCpuUsage = cpuUtilization.reduce((a, b) => a + b, 0) / cpuUtilization.length;
-  
+
   if (avgCpuUsage < 30) { // Low CPU utilization indicates over-provisioning
     patterns.push({
       pattern_id: 'resource_cpu_overallocation',
@@ -422,12 +421,12 @@ async function detectResourceWastePatterns(performanceData: any[]): Promise<Perf
       ]
     });
   }
-  
+
   // Analyze memory usage patterns
   const memoryUsage = performanceData.map(d => d.memory_usage_percent || 0);
   const avgMemoryUsage = memoryUsage.reduce((a, b) => a + b, 0) / memoryUsage.length;
   const maxMemoryUsage = Math.max(...memoryUsage);
-  
+
   if (avgMemoryUsage < 40 && maxMemoryUsage < 60) {
     patterns.push({
       pattern_id: 'resource_memory_overallocation',
@@ -444,7 +443,7 @@ async function detectResourceWastePatterns(performanceData: any[]): Promise<Perf
       ]
     });
   }
-  
+
   return patterns;
 }
 
@@ -453,7 +452,7 @@ async function detectResourceWastePatterns(performanceData: any[]): Promise<Perf
  */
 async function detectTimeInefficiencyPatterns(performanceData: any[]): Promise<PerformancePattern[]> {
   const patterns: PerformancePattern[] = [];
-  
+
   // Analyze step duration distribution
   const stepDurations: Record<string, number[]> = {};
   performanceData.forEach(data => {
@@ -464,16 +463,16 @@ async function detectTimeInefficiencyPatterns(performanceData: any[]): Promise<P
       });
     }
   });
-  
+
   // Find steps with high variance (inconsistent performance)
   Object.entries(stepDurations).forEach(([stepName, durations]) => {
     if (durations.length < 3) return;
-    
+
     const avg = durations.reduce((a, b) => a + b, 0) / durations.length;
     const variance = durations.reduce((sum, duration) => sum + Math.pow(duration - avg, 2), 0) / durations.length;
     const stdDev = Math.sqrt(variance);
     const coefficientOfVariation = stdDev / avg;
-    
+
     if (coefficientOfVariation > 0.5) { // High variability
       patterns.push({
         pattern_id: `time_variability_${stepName.replace(/\s+/g, '_')}`,
@@ -492,7 +491,7 @@ async function detectTimeInefficiencyPatterns(performanceData: any[]): Promise<P
       });
     }
   });
-  
+
   // Detect sequential processing opportunities
   const totalSteps = Object.keys(stepDurations).length;
   if (totalSteps >= 3) {
@@ -513,7 +512,7 @@ async function detectTimeInefficiencyPatterns(performanceData: any[]): Promise<P
       ]
     });
   }
-  
+
   return patterns;
 }
 
@@ -522,13 +521,13 @@ async function detectTimeInefficiencyPatterns(performanceData: any[]): Promise<P
  */
 async function detectScalingPatterns(performanceData: any[]): Promise<PerformancePattern[]> {
   const patterns: PerformancePattern[] = [];
-  
+
   // Analyze queue time patterns
   const queueTimes = performanceData.map(d => d.queue_time || 0).filter(t => t > 0);
   if (queueTimes.length > 0) {
     const avgQueueTime = queueTimes.reduce((a, b) => a + b, 0) / queueTimes.length;
     const maxQueueTime = Math.max(...queueTimes);
-    
+
     if (avgQueueTime > 300) { // More than 5 minutes average queue time
       patterns.push({
         pattern_id: 'scaling_queue_bottleneck',
@@ -547,13 +546,13 @@ async function detectScalingPatterns(performanceData: any[]): Promise<Performanc
       });
     }
   }
-  
+
   // Analyze concurrent execution patterns
   const concurrencyData = performanceData.filter(d => d.concurrent_executions);
   if (concurrencyData.length > 0) {
     const avgConcurrency = concurrencyData.reduce((sum, d) => sum + (d.concurrent_executions || 0), 0) / concurrencyData.length;
     const maxConcurrency = Math.max(...concurrencyData.map(d => d.concurrent_executions || 0));
-    
+
     if (maxConcurrency - avgConcurrency > avgConcurrency * 0.5) {
       patterns.push({
         pattern_id: 'scaling_concurrency_spikes',
@@ -572,7 +571,7 @@ async function detectScalingPatterns(performanceData: any[]): Promise<Performanc
       });
     }
   }
-  
+
   return patterns;
 }
 
@@ -581,12 +580,12 @@ async function detectScalingPatterns(performanceData: any[]): Promise<Performanc
  */
 async function detectConfigurationPatterns(performanceData: any[]): Promise<PerformancePattern[]> {
   const patterns: PerformancePattern[] = [];
-  
+
   // Analyze cache hit rates
   const cacheData = performanceData.filter(d => d.cache_hit_rate !== undefined);
   if (cacheData.length > 0) {
     const avgCacheHitRate = cacheData.reduce((sum, d) => sum + (d.cache_hit_rate || 0), 0) / cacheData.length;
-    
+
     if (avgCacheHitRate < 0.6) { // Less than 60% cache hit rate
       patterns.push({
         pattern_id: 'config_cache_inefficiency',
@@ -605,13 +604,13 @@ async function detectConfigurationPatterns(performanceData: any[]): Promise<Perf
       });
     }
   }
-  
+
   // Analyze artifact management
   const artifactSizes = performanceData.map(d => d.artifact_size_mb || 0).filter(s => s > 0);
   if (artifactSizes.length > 0) {
     const avgArtifactSize = artifactSizes.reduce((a, b) => a + b, 0) / artifactSizes.length;
     const maxArtifactSize = Math.max(...artifactSizes);
-    
+
     if (avgArtifactSize > 100 || maxArtifactSize > 500) { // Large artifacts
       patterns.push({
         pattern_id: 'config_artifact_optimization',
@@ -630,7 +629,7 @@ async function detectConfigurationPatterns(performanceData: any[]): Promise<Perf
       });
     }
   }
-  
+
   return patterns;
 }
 
@@ -643,7 +642,7 @@ async function generateIntelligentOptimizations(
   benchmarks: BenchmarkComparison[]
 ): Promise<IntelligentOptimization[]> {
   const optimizations: IntelligentOptimization[] = [];
-  
+
   // Generate optimizations based on detected patterns
   patterns.forEach((pattern, index) => {
     pattern.recommended_solutions.forEach((solution, solutionIndex) => {
@@ -661,7 +660,7 @@ async function generateIntelligentOptimizations(
       });
     });
   });
-  
+
   // Generate benchmark-based optimizations
   benchmarks.filter(b => b.improvement_priority > 7).forEach(benchmark => {
     optimizations.push({
@@ -671,7 +670,7 @@ async function generateIntelligentOptimizations(
       description: `Improve ${benchmark.metric_name} to reach industry best practices`,
       implementation_approach: generateBenchmarkImplementation(benchmark),
       expected_improvement: {
-        time_reduction_percent: benchmark.metric_name.includes('duration') ? 
+        time_reduction_percent: benchmark.metric_name.includes('duration') ?
           ((benchmark.current_value - benchmark.best_practice_target) / benchmark.current_value) * 100 : 0,
         resource_savings_percent: benchmark.metric_name.includes('resource') ? 15 : 5,
         cost_reduction_percent: 10,
@@ -683,7 +682,7 @@ async function generateIntelligentOptimizations(
       validation_strategy: `Monitor ${benchmark.metric_name} improvement over 30-day period`
     });
   });
-  
+
   // Sort by priority and impact
   return optimizations
     .sort((a, b) => {
@@ -716,19 +715,19 @@ function generateImplementationApproach(solution: string, pattern: PerformancePa
     'Identify independent steps': 'Analyze pipeline dependency graph and restructure workflow for maximum parallelization',
     'Increase pipeline agent': 'Scale agent pool based on queue metrics and implement load distribution algorithms'
   };
-  
+
   for (const [key, approach] of Object.entries(approaches)) {
     if (solution.includes(key)) {
       return approach;
     }
   }
-  
+
   return `Implement ${solution.toLowerCase()} with proper testing and gradual rollout strategy`;
 }
 
 function calculateExpectedImprovement(pattern: PerformancePattern, currentMetrics: any): IntelligentOptimization['expected_improvement'] {
   const baseImprovement = pattern.optimization_potential * pattern.impact_score * 0.1;
-  
+
   return {
     time_reduction_percent: pattern.pattern_type === 'time_inefficiency' ? baseImprovement * 5 : baseImprovement * 2,
     resource_savings_percent: pattern.pattern_type === 'resource_waste' ? baseImprovement * 4 : baseImprovement,
@@ -741,9 +740,9 @@ function determineComplexity(solution: string): IntelligentOptimization['impleme
   const complexKeywords = ['implement', 'optimize', 'restructure', 'integrate'];
   const moderateKeywords = ['add', 'configure', 'adjust', 'update'];
   const simpleKeywords = ['increase', 'decrease', 'enable', 'disable'];
-  
+
   const lowerSolution = solution.toLowerCase();
-  
+
   if (complexKeywords.some(keyword => lowerSolution.includes(keyword))) return 'complex';
   if (moderateKeywords.some(keyword => lowerSolution.includes(keyword))) return 'moderate';
   return 'simple';
@@ -751,37 +750,37 @@ function determineComplexity(solution: string): IntelligentOptimization['impleme
 
 function generatePrerequisites(solution: string, pattern: PerformancePattern): string[] {
   const basePrerequisites = ['Performance baseline measurement', 'Change approval process'];
-  
+
   if (solution.includes('resource') || solution.includes('instance')) {
     basePrerequisites.push('Resource capacity planning', 'Budget approval for infrastructure changes');
   }
-  
+
   if (solution.includes('caching') || solution.includes('cache')) {
     basePrerequisites.push('Cache infrastructure setup', 'Cache key strategy design');
   }
-  
+
   if (solution.includes('parallel') || solution.includes('concurrent')) {
     basePrerequisites.push('Dependency analysis', 'Parallel execution testing environment');
   }
-  
+
   return basePrerequisites;
 }
 
 function identifyRisks(solution: string, pattern: PerformancePattern): string[] {
   const baseRisks = ['Performance regression during implementation', 'Unexpected resource usage changes'];
-  
+
   if (solution.includes('parallel') || solution.includes('concurrent')) {
     baseRisks.push('Race conditions in parallel execution', 'Dependency conflicts');
   }
-  
+
   if (solution.includes('resource') || solution.includes('scaling')) {
     baseRisks.push('Cost overruns from resource scaling', 'Resource contention issues');
   }
-  
+
   if (solution.includes('cache') || solution.includes('caching')) {
     baseRisks.push('Cache invalidation complexities', 'Memory pressure from cache growth');
   }
-  
+
   return baseRisks;
 }
 
@@ -789,15 +788,15 @@ function generateValidationStrategy(solution: string, pattern: PerformancePatter
   if (solution.includes('parallel') || solution.includes('concurrent')) {
     return 'A/B test parallel vs sequential execution, monitor for race conditions, validate output consistency';
   }
-  
+
   if (solution.includes('resource') || solution.includes('scaling')) {
     return 'Monitor resource utilization metrics, compare cost/performance ratios before and after';
   }
-  
+
   if (solution.includes('cache') || solution.includes('caching')) {
     return 'Track cache hit rates, measure cache performance impact, monitor memory usage';
   }
-  
+
   return 'Implement gradual rollout with performance monitoring and automated rollback triggers';
 }
 
@@ -836,10 +835,10 @@ export async function handleOptimizePipelinePerformance(
   try {
     // Validate input
     const validatedInput = OptimizePipelinePerformanceSchema.parse(input);
-    
+
     // Get pipeline information
     const pipeline = await pipelineService.getPipeline(validatedInput.pipeline_id);
-    
+
     if (!pipeline.success || !pipeline.data) {
       return {
         success: false,
@@ -871,7 +870,7 @@ export async function handleOptimizePipelinePerformance(
 
     // Perform advanced AI-driven pattern detection
     const detectedPatterns = await detectPerformancePatterns(
-      performanceMetrics.rawData || [], 
+      performanceMetrics.rawData || [],
       validatedInput.analysis_config
     );
 
@@ -1110,8 +1109,8 @@ async function generateOptimizationSuggestions(
         },
         implementation_effort: {
           complexity: aiOpt.implementation_complexity,
-          estimated_hours: aiOpt.implementation_complexity === 'simple' ? 8 : 
-                          aiOpt.implementation_complexity === 'moderate' ? 24 : 48,
+          estimated_hours: aiOpt.implementation_complexity === 'simple' ? 8 :
+            aiOpt.implementation_complexity === 'moderate' ? 24 : 48,
           required_skills: ['Performance optimization', 'CI/CD configuration'],
           dependencies: aiOpt.prerequisites
         },
@@ -1219,13 +1218,13 @@ async function generateOptimizationSuggestions(
   let filteredSuggestions = suggestions;
 
   if (config?.priority_filter && config.priority_filter.length > 0) {
-    filteredSuggestions = filteredSuggestions.filter(s => 
+    filteredSuggestions = filteredSuggestions.filter(s =>
       config.priority_filter!.includes(s.priority)
     );
   }
 
   if (config?.implementation_complexity && config.implementation_complexity !== 'all') {
-    filteredSuggestions = filteredSuggestions.filter(s => 
+    filteredSuggestions = filteredSuggestions.filter(s =>
       s.implementation_effort.complexity === config.implementation_complexity
     );
   }
@@ -1311,15 +1310,15 @@ function generateActionableRoadmap(suggestions: any[]): any {
  * Calculate potential savings from optimization suggestions
  */
 function calculatePotentialSavings(suggestions: any[]): any {
-  const totalDurationReduction = suggestions.reduce((sum, s) => 
+  const totalDurationReduction = suggestions.reduce((sum, s) =>
     sum + s.expected_improvement.duration_reduction_percent, 0
   ) / suggestions.length;
 
-  const totalCostSavings = suggestions.reduce((sum, s) => 
+  const totalCostSavings = suggestions.reduce((sum, s) =>
     sum + s.expected_improvement.cost_savings_percent, 0
   ) / suggestions.length;
 
-  const totalEfficiencyImprovement = suggestions.reduce((sum, s) => 
+  const totalEfficiencyImprovement = suggestions.reduce((sum, s) =>
     sum + (s.expected_improvement.duration_reduction_percent / 100), 0
   ) / suggestions.length;
 
@@ -1340,8 +1339,8 @@ function calculatePotentialSavings(suggestions: any[]): any {
 function calculateConfidenceScore(performanceMetrics: any, suggestions: any[]): number {
   // Base confidence on data quality and suggestion quality
   const dataQualityScore = Math.min(1, performanceMetrics.dataPointsCount / 100);
-  const suggestionQualityScore = suggestions.length > 0 ? 
+  const suggestionQualityScore = suggestions.length > 0 ?
     suggestions.reduce((sum, s) => sum + s.confidence_level, 0) / suggestions.length : 0;
-  
+
   return Math.round((dataQualityScore * 0.4 + suggestionQualityScore * 0.6) * 100) / 100;
 }

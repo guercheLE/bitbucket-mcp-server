@@ -94,11 +94,24 @@ For complete configuration details, see the [Environment Configuration Guide](./
 
 ### MCP Tools
 
-The server provides three main MCP tools for interacting with Bitbucket:
+The server provides comprehensive MCP tools for interacting with Bitbucket:
 
+#### Core MCP Tools
 1. **search-ids** - Semantic search across Bitbucket operations
-2. **get-id** - Get detailed information about specific operations
+2. **get-id** - Get detailed information about specific operations  
 3. **call-id** - Execute Bitbucket API operations
+
+#### Pipeline Management Tools (25+ tools)
+Complete pipeline management capabilities including:
+- **Pipeline Operations**: create_pipeline, execute_pipeline, monitor_pipeline
+- **Configuration Management**: configure_pipeline, manage_pipeline_variables, configure_pipeline_triggers
+- **Access Control**: manage_pipeline_permissions, audit_pipeline_access
+- **Analytics & Reporting**: get_pipeline_analytics, generate_pipeline_reports, track_pipeline_metrics
+- **Troubleshooting**: diagnose_pipeline_issues, troubleshoot_pipeline_failures (AI-powered)
+- **Optimization**: optimize_pipeline_performance (AI-enhanced)
+- **Maintenance**: archive_pipeline, cleanup_pipeline_data, migrate_pipeline_config
+
+For complete pipeline management documentation, see [Pipeline Management Feature Guide](./features/007-pipeline-management.md).
 
 ### Example Usage
 
