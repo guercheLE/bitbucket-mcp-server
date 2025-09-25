@@ -168,8 +168,8 @@
 - [x] Create `troubleshoot_pipeline_failures.ts` - Handle pipeline failure analysis
 - [x] Create `optimize_pipeline_performance.ts` - Suggest performance improvements
 - [x] Update `pipeline_management_index.ts` with new tools
-- [ ] Implement intelligent problem detection
-- [ ] Add performance optimization recommendations
+- [x] Implement intelligent problem detection
+- [x] Add performance optimization recommendations
 
 **Acceptance Criteria:**
 - Pipeline issues are identified accurately

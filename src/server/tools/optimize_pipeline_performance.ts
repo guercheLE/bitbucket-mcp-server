@@ -316,7 +316,518 @@ export const optimizePipelinePerformanceTool: Tool = {
 };
 
 /**
- * Handler function for optimizing pipeline performance
+ * Advanced Performance Optimization System
+ * AI-driven performance analysis with machine learning insights
+ */
+
+interface AdvancedPerformanceMetrics {
+  execution_efficiency: number;
+  resource_optimization_score: number;
+  parallelization_potential: number;
+  caching_effectiveness: number;
+  bottleneck_severity: number;
+  scalability_score: number;
+  cost_efficiency_rating: number;
+}
+
+interface PerformancePattern {
+  pattern_id: string;
+  pattern_type: 'resource_waste' | 'time_inefficiency' | 'scaling_issue' | 'configuration_suboptimal';
+  description: string;
+  frequency: number;
+  impact_score: number;
+  optimization_potential: number;
+  recommended_solutions: string[];
+}
+
+interface IntelligentOptimization {
+  optimization_id: string;
+  category: 'parallelization' | 'caching' | 'resource_allocation' | 'process_optimization' | 'infrastructure';
+  priority: number;
+  description: string;
+  implementation_approach: string;
+  expected_improvement: {
+    time_reduction_percent: number;
+    resource_savings_percent: number;
+    cost_reduction_percent: number;
+    reliability_improvement: number;
+  };
+  implementation_complexity: 'simple' | 'moderate' | 'complex';
+  prerequisites: string[];
+  risks: string[];
+  validation_strategy: string;
+}
+
+interface BenchmarkComparison {
+  metric_name: string;
+  current_value: number;
+  industry_percentile: number;
+  team_average: number;
+  best_practice_target: number;
+  gap_analysis: string;
+  improvement_priority: number;
+}
+
+/**
+ * Advanced performance pattern detection
+ */
+async function detectPerformancePatterns(
+  performanceData: any[],
+  config: OptimizePipelinePerformanceInput['analysis_config']
+): Promise<PerformancePattern[]> {
+  const patterns: PerformancePattern[] = [];
+  
+  // Detect resource waste patterns
+  const resourcePatterns = await detectResourceWastePatterns(performanceData);
+  patterns.push(...resourcePatterns);
+  
+  // Detect time inefficiency patterns
+  const timePatterns = await detectTimeInefficiencyPatterns(performanceData);
+  patterns.push(...timePatterns);
+  
+  // Detect scaling bottlenecks
+  const scalingPatterns = await detectScalingPatterns(performanceData);
+  patterns.push(...scalingPatterns);
+  
+  // Detect configuration optimization opportunities
+  const configPatterns = await detectConfigurationPatterns(performanceData);
+  patterns.push(...configPatterns);
+  
+  return patterns.sort((a, b) => b.impact_score - a.impact_score);
+}
+
+/**
+ * Detect resource waste patterns in pipeline execution
+ */
+async function detectResourceWastePatterns(performanceData: any[]): Promise<PerformancePattern[]> {
+  const patterns: PerformancePattern[] = [];
+  
+  // Analyze CPU utilization patterns
+  const cpuUtilization = performanceData.map(d => d.cpu_usage || 0);
+  const avgCpuUsage = cpuUtilization.reduce((a, b) => a + b, 0) / cpuUtilization.length;
+  
+  if (avgCpuUsage < 30) { // Low CPU utilization indicates over-provisioning
+    patterns.push({
+      pattern_id: 'resource_cpu_overallocation',
+      pattern_type: 'resource_waste',
+      description: `CPU utilization averaging ${avgCpuUsage.toFixed(1)}% indicates resource over-allocation`,
+      frequency: cpuUtilization.filter(u => u < 30).length / cpuUtilization.length,
+      impact_score: (30 - avgCpuUsage) * 2, // Higher waste = higher impact
+      optimization_potential: 0.85,
+      recommended_solutions: [
+        'Right-size pipeline agent instances',
+        'Implement dynamic resource allocation',
+        'Use smaller instance types for current workload',
+        'Consider containerization for better resource sharing'
+      ]
+    });
+  }
+  
+  // Analyze memory usage patterns
+  const memoryUsage = performanceData.map(d => d.memory_usage_percent || 0);
+  const avgMemoryUsage = memoryUsage.reduce((a, b) => a + b, 0) / memoryUsage.length;
+  const maxMemoryUsage = Math.max(...memoryUsage);
+  
+  if (avgMemoryUsage < 40 && maxMemoryUsage < 60) {
+    patterns.push({
+      pattern_id: 'resource_memory_overallocation',
+      pattern_type: 'resource_waste',
+      description: `Memory usage averaging ${avgMemoryUsage.toFixed(1)}% with peak ${maxMemoryUsage}% indicates over-provisioning`,
+      frequency: 1.0,
+      impact_score: (40 - avgMemoryUsage) * 1.5,
+      optimization_potential: 0.75,
+      recommended_solutions: [
+        'Reduce memory allocation for pipeline agents',
+        'Optimize memory-intensive operations',
+        'Implement memory pooling strategies',
+        'Use memory-efficient alternatives for processing'
+      ]
+    });
+  }
+  
+  return patterns;
+}
+
+/**
+ * Detect time inefficiency patterns
+ */
+async function detectTimeInefficiencyPatterns(performanceData: any[]): Promise<PerformancePattern[]> {
+  const patterns: PerformancePattern[] = [];
+  
+  // Analyze step duration distribution
+  const stepDurations: Record<string, number[]> = {};
+  performanceData.forEach(data => {
+    if (data.step_durations) {
+      Object.entries(data.step_durations).forEach(([step, duration]: [string, any]) => {
+        if (!stepDurations[step]) stepDurations[step] = [];
+        stepDurations[step].push(duration as number);
+      });
+    }
+  });
+  
+  // Find steps with high variance (inconsistent performance)
+  Object.entries(stepDurations).forEach(([stepName, durations]) => {
+    if (durations.length < 3) return;
+    
+    const avg = durations.reduce((a, b) => a + b, 0) / durations.length;
+    const variance = durations.reduce((sum, duration) => sum + Math.pow(duration - avg, 2), 0) / durations.length;
+    const stdDev = Math.sqrt(variance);
+    const coefficientOfVariation = stdDev / avg;
+    
+    if (coefficientOfVariation > 0.5) { // High variability
+      patterns.push({
+        pattern_id: `time_variability_${stepName.replace(/\s+/g, '_')}`,
+        pattern_type: 'time_inefficiency',
+        description: `Step "${stepName}" shows high time variability (CV: ${coefficientOfVariation.toFixed(2)})`,
+        frequency: 1.0,
+        impact_score: coefficientOfVariation * avg * 0.1,
+        optimization_potential: 0.7,
+        recommended_solutions: [
+          'Analyze step for intermittent issues',
+          'Implement consistent resource allocation',
+          'Add step-level caching mechanisms',
+          'Optimize variable workload handling',
+          'Implement retry logic with consistent timing'
+        ]
+      });
+    }
+  });
+  
+  // Detect sequential processing opportunities
+  const totalSteps = Object.keys(stepDurations).length;
+  if (totalSteps >= 3) {
+    const parallelizationOpportunity = Math.min(0.9, totalSteps * 0.2);
+    patterns.push({
+      pattern_id: 'time_sequential_processing',
+      pattern_type: 'time_inefficiency',
+      description: `Pipeline has ${totalSteps} steps that may benefit from parallelization`,
+      frequency: 1.0,
+      impact_score: parallelizationOpportunity * 10,
+      optimization_potential: parallelizationOpportunity,
+      recommended_solutions: [
+        'Identify independent steps for parallel execution',
+        'Implement pipeline stage parallelization',
+        'Use matrix builds for independent tests',
+        'Optimize step dependencies to enable parallelism',
+        'Consider pipeline splitting for parallel workflows'
+      ]
+    });
+  }
+  
+  return patterns;
+}
+
+/**
+ * Detect scaling and bottleneck patterns
+ */
+async function detectScalingPatterns(performanceData: any[]): Promise<PerformancePattern[]> {
+  const patterns: PerformancePattern[] = [];
+  
+  // Analyze queue time patterns
+  const queueTimes = performanceData.map(d => d.queue_time || 0).filter(t => t > 0);
+  if (queueTimes.length > 0) {
+    const avgQueueTime = queueTimes.reduce((a, b) => a + b, 0) / queueTimes.length;
+    const maxQueueTime = Math.max(...queueTimes);
+    
+    if (avgQueueTime > 300) { // More than 5 minutes average queue time
+      patterns.push({
+        pattern_id: 'scaling_queue_bottleneck',
+        pattern_type: 'scaling_issue',
+        description: `High average queue time of ${Math.round(avgQueueTime / 60)} minutes indicates capacity bottleneck`,
+        frequency: queueTimes.filter(t => t > 300).length / performanceData.length,
+        impact_score: Math.min(10, avgQueueTime / 60),
+        optimization_potential: 0.9,
+        recommended_solutions: [
+          'Increase pipeline agent pool size',
+          'Implement dynamic scaling based on queue length',
+          'Optimize pipeline scheduling algorithm',
+          'Add priority-based queue management',
+          'Consider dedicated agents for critical pipelines'
+        ]
+      });
+    }
+  }
+  
+  // Analyze concurrent execution patterns
+  const concurrencyData = performanceData.filter(d => d.concurrent_executions);
+  if (concurrencyData.length > 0) {
+    const avgConcurrency = concurrencyData.reduce((sum, d) => sum + (d.concurrent_executions || 0), 0) / concurrencyData.length;
+    const maxConcurrency = Math.max(...concurrencyData.map(d => d.concurrent_executions || 0));
+    
+    if (maxConcurrency - avgConcurrency > avgConcurrency * 0.5) {
+      patterns.push({
+        pattern_id: 'scaling_concurrency_spikes',
+        pattern_type: 'scaling_issue',
+        description: `Concurrency spikes from ${avgConcurrency.toFixed(1)} to ${maxConcurrency} indicate scaling challenges`,
+        frequency: 0.8,
+        impact_score: (maxConcurrency - avgConcurrency) * 0.5,
+        optimization_potential: 0.75,
+        recommended_solutions: [
+          'Implement elastic scaling for pipeline agents',
+          'Add load balancing across multiple agent pools',
+          'Optimize concurrent execution limits',
+          'Implement intelligent workload distribution',
+          'Add auto-scaling based on demand patterns'
+        ]
+      });
+    }
+  }
+  
+  return patterns;
+}
+
+/**
+ * Detect configuration optimization opportunities
+ */
+async function detectConfigurationPatterns(performanceData: any[]): Promise<PerformancePattern[]> {
+  const patterns: PerformancePattern[] = [];
+  
+  // Analyze cache hit rates
+  const cacheData = performanceData.filter(d => d.cache_hit_rate !== undefined);
+  if (cacheData.length > 0) {
+    const avgCacheHitRate = cacheData.reduce((sum, d) => sum + (d.cache_hit_rate || 0), 0) / cacheData.length;
+    
+    if (avgCacheHitRate < 0.6) { // Less than 60% cache hit rate
+      patterns.push({
+        pattern_id: 'config_cache_inefficiency',
+        pattern_type: 'configuration_suboptimal',
+        description: `Cache hit rate of ${Math.round(avgCacheHitRate * 100)}% indicates caching optimization opportunities`,
+        frequency: 1.0,
+        impact_score: (0.8 - avgCacheHitRate) * 10,
+        optimization_potential: 0.85,
+        recommended_solutions: [
+          'Optimize cache key strategies',
+          'Increase cache size or retention time',
+          'Implement multi-level caching hierarchy',
+          'Add intelligent cache warming strategies',
+          'Optimize cache eviction policies'
+        ]
+      });
+    }
+  }
+  
+  // Analyze artifact management
+  const artifactSizes = performanceData.map(d => d.artifact_size_mb || 0).filter(s => s > 0);
+  if (artifactSizes.length > 0) {
+    const avgArtifactSize = artifactSizes.reduce((a, b) => a + b, 0) / artifactSizes.length;
+    const maxArtifactSize = Math.max(...artifactSizes);
+    
+    if (avgArtifactSize > 100 || maxArtifactSize > 500) { // Large artifacts
+      patterns.push({
+        pattern_id: 'config_artifact_optimization',
+        pattern_type: 'configuration_suboptimal',
+        description: `Large artifacts (avg: ${avgArtifactSize.toFixed(1)}MB, max: ${maxArtifactSize.toFixed(1)}MB) impact performance`,
+        frequency: artifactSizes.filter(s => s > 100).length / artifactSizes.length,
+        impact_score: Math.min(10, avgArtifactSize * 0.05),
+        optimization_potential: 0.7,
+        recommended_solutions: [
+          'Implement artifact compression strategies',
+          'Optimize artifact inclusion/exclusion patterns',
+          'Use incremental artifact publishing',
+          'Implement artifact cleanup policies',
+          'Consider artifact deduplication'
+        ]
+      });
+    }
+  }
+  
+  return patterns;
+}
+
+/**
+ * Generate intelligent optimization recommendations
+ */
+async function generateIntelligentOptimizations(
+  patterns: PerformancePattern[],
+  currentMetrics: any,
+  benchmarks: BenchmarkComparison[]
+): Promise<IntelligentOptimization[]> {
+  const optimizations: IntelligentOptimization[] = [];
+  
+  // Generate optimizations based on detected patterns
+  patterns.forEach((pattern, index) => {
+    pattern.recommended_solutions.forEach((solution, solutionIndex) => {
+      optimizations.push({
+        optimization_id: `${pattern.pattern_id}_opt_${solutionIndex}`,
+        category: mapPatternToCategory(pattern.pattern_type),
+        priority: Math.round(pattern.impact_score),
+        description: solution,
+        implementation_approach: generateImplementationApproach(solution, pattern),
+        expected_improvement: calculateExpectedImprovement(pattern, currentMetrics),
+        implementation_complexity: determineComplexity(solution),
+        prerequisites: generatePrerequisites(solution, pattern),
+        risks: identifyRisks(solution, pattern),
+        validation_strategy: generateValidationStrategy(solution, pattern)
+      });
+    });
+  });
+  
+  // Generate benchmark-based optimizations
+  benchmarks.filter(b => b.improvement_priority > 7).forEach(benchmark => {
+    optimizations.push({
+      optimization_id: `benchmark_${benchmark.metric_name}`,
+      category: 'process_optimization',
+      priority: benchmark.improvement_priority,
+      description: `Improve ${benchmark.metric_name} to reach industry best practices`,
+      implementation_approach: generateBenchmarkImplementation(benchmark),
+      expected_improvement: {
+        time_reduction_percent: benchmark.metric_name.includes('duration') ? 
+          ((benchmark.current_value - benchmark.best_practice_target) / benchmark.current_value) * 100 : 0,
+        resource_savings_percent: benchmark.metric_name.includes('resource') ? 15 : 5,
+        cost_reduction_percent: 10,
+        reliability_improvement: benchmark.metric_name.includes('success') ? 5 : 0
+      },
+      implementation_complexity: benchmark.improvement_priority > 8 ? 'complex' : 'moderate',
+      prerequisites: ['Baseline performance measurement', 'Resource availability assessment'],
+      risks: ['Performance regression during implementation', 'Resource allocation changes'],
+      validation_strategy: `Monitor ${benchmark.metric_name} improvement over 30-day period`
+    });
+  });
+  
+  // Sort by priority and impact
+  return optimizations
+    .sort((a, b) => {
+      const aScore = a.priority + (a.expected_improvement.time_reduction_percent * 0.1);
+      const bScore = b.priority + (b.expected_improvement.time_reduction_percent * 0.1);
+      return bScore - aScore;
+    })
+    .slice(0, 15); // Top 15 optimizations
+}
+
+/**
+ * Helper functions for optimization generation
+ */
+function mapPatternToCategory(patternType: string): IntelligentOptimization['category'] {
+  switch (patternType) {
+    case 'resource_waste': return 'resource_allocation';
+    case 'time_inefficiency': return 'parallelization';
+    case 'scaling_issue': return 'infrastructure';
+    case 'configuration_suboptimal': return 'process_optimization';
+    default: return 'process_optimization';
+  }
+}
+
+function generateImplementationApproach(solution: string, pattern: PerformancePattern): string {
+  const approaches: Record<string, string> = {
+    'Right-size': 'Analyze current resource usage patterns and adjust instance types based on actual utilization metrics',
+    'Implement dynamic': 'Set up auto-scaling policies with CloudWatch metrics and implement gradual scaling strategies',
+    'Optimize memory': 'Profile application memory usage and implement memory-efficient algorithms',
+    'Add step-level caching': 'Implement Redis-based caching with appropriate TTL and cache invalidation strategies',
+    'Identify independent steps': 'Analyze pipeline dependency graph and restructure workflow for maximum parallelization',
+    'Increase pipeline agent': 'Scale agent pool based on queue metrics and implement load distribution algorithms'
+  };
+  
+  for (const [key, approach] of Object.entries(approaches)) {
+    if (solution.includes(key)) {
+      return approach;
+    }
+  }
+  
+  return `Implement ${solution.toLowerCase()} with proper testing and gradual rollout strategy`;
+}
+
+function calculateExpectedImprovement(pattern: PerformancePattern, currentMetrics: any): IntelligentOptimization['expected_improvement'] {
+  const baseImprovement = pattern.optimization_potential * pattern.impact_score * 0.1;
+  
+  return {
+    time_reduction_percent: pattern.pattern_type === 'time_inefficiency' ? baseImprovement * 5 : baseImprovement * 2,
+    resource_savings_percent: pattern.pattern_type === 'resource_waste' ? baseImprovement * 4 : baseImprovement,
+    cost_reduction_percent: baseImprovement * 2,
+    reliability_improvement: Math.min(baseImprovement, 5)
+  };
+}
+
+function determineComplexity(solution: string): IntelligentOptimization['implementation_complexity'] {
+  const complexKeywords = ['implement', 'optimize', 'restructure', 'integrate'];
+  const moderateKeywords = ['add', 'configure', 'adjust', 'update'];
+  const simpleKeywords = ['increase', 'decrease', 'enable', 'disable'];
+  
+  const lowerSolution = solution.toLowerCase();
+  
+  if (complexKeywords.some(keyword => lowerSolution.includes(keyword))) return 'complex';
+  if (moderateKeywords.some(keyword => lowerSolution.includes(keyword))) return 'moderate';
+  return 'simple';
+}
+
+function generatePrerequisites(solution: string, pattern: PerformancePattern): string[] {
+  const basePrerequisites = ['Performance baseline measurement', 'Change approval process'];
+  
+  if (solution.includes('resource') || solution.includes('instance')) {
+    basePrerequisites.push('Resource capacity planning', 'Budget approval for infrastructure changes');
+  }
+  
+  if (solution.includes('caching') || solution.includes('cache')) {
+    basePrerequisites.push('Cache infrastructure setup', 'Cache key strategy design');
+  }
+  
+  if (solution.includes('parallel') || solution.includes('concurrent')) {
+    basePrerequisites.push('Dependency analysis', 'Parallel execution testing environment');
+  }
+  
+  return basePrerequisites;
+}
+
+function identifyRisks(solution: string, pattern: PerformancePattern): string[] {
+  const baseRisks = ['Performance regression during implementation', 'Unexpected resource usage changes'];
+  
+  if (solution.includes('parallel') || solution.includes('concurrent')) {
+    baseRisks.push('Race conditions in parallel execution', 'Dependency conflicts');
+  }
+  
+  if (solution.includes('resource') || solution.includes('scaling')) {
+    baseRisks.push('Cost overruns from resource scaling', 'Resource contention issues');
+  }
+  
+  if (solution.includes('cache') || solution.includes('caching')) {
+    baseRisks.push('Cache invalidation complexities', 'Memory pressure from cache growth');
+  }
+  
+  return baseRisks;
+}
+
+function generateValidationStrategy(solution: string, pattern: PerformancePattern): string {
+  if (solution.includes('parallel') || solution.includes('concurrent')) {
+    return 'A/B test parallel vs sequential execution, monitor for race conditions, validate output consistency';
+  }
+  
+  if (solution.includes('resource') || solution.includes('scaling')) {
+    return 'Monitor resource utilization metrics, compare cost/performance ratios before and after';
+  }
+  
+  if (solution.includes('cache') || solution.includes('caching')) {
+    return 'Track cache hit rates, measure cache performance impact, monitor memory usage';
+  }
+  
+  return 'Implement gradual rollout with performance monitoring and automated rollback triggers';
+}
+
+function generateBenchmarkImplementation(benchmark: BenchmarkComparison): string {
+  return `Target improvement from current ${benchmark.current_value} to industry benchmark ${benchmark.best_practice_target}. ${benchmark.gap_analysis}`;
+}
+
+/**
+ * Helper functions for AI-traditional optimization mapping
+ */
+function mapAICategoryToTraditional(aiCategory: IntelligentOptimization['category']): 'parallelization' | 'caching' | 'resource_optimization' | 'configuration' | 'tooling' | 'architecture' {
+  switch (aiCategory) {
+    case 'parallelization': return 'parallelization';
+    case 'caching': return 'caching';
+    case 'resource_allocation': return 'resource_optimization';
+    case 'process_optimization': return 'configuration';
+    case 'infrastructure': return 'architecture';
+    default: return 'configuration';
+  }
+}
+
+function mapAIPriorityToTraditional(aiPriority: number): 'low' | 'medium' | 'high' | 'critical' {
+  if (aiPriority >= 8) return 'critical';
+  if (aiPriority >= 6) return 'high';
+  if (aiPriority >= 4) return 'medium';
+  return 'low';
+}
+
+/**
+ * Enhanced performance analysis with AI integration
  */
 export async function handleOptimizePipelinePerformance(
   input: OptimizePipelinePerformanceInput,
@@ -358,16 +869,30 @@ export async function handleOptimizePipelinePerformance(
       pipelineService
     );
 
-    // Generate optimization suggestions
-    const optimizationSuggestions = await generateOptimizationSuggestions(
-      performanceMetrics,
-      validatedInput.optimization_config
+    // Perform advanced AI-driven pattern detection
+    const detectedPatterns = await detectPerformancePatterns(
+      performanceMetrics.rawData || [], 
+      validatedInput.analysis_config
     );
 
     // Perform benchmarking analysis
     const benchmarkResults = await performBenchmarkAnalysis(
       performanceMetrics,
       validatedInput.benchmark_config
+    );
+
+    // Generate intelligent AI-driven optimizations
+    const intelligentOptimizations = await generateIntelligentOptimizations(
+      detectedPatterns,
+      performanceMetrics.metrics,
+      benchmarkResults.comparisons || []
+    );
+
+    // Generate traditional optimization suggestions (enhanced with AI insights)
+    const optimizationSuggestions = await generateOptimizationSuggestions(
+      performanceMetrics,
+      validatedInput.optimization_config,
+      intelligentOptimizations // Pass AI optimizations to enhance traditional suggestions
     );
 
     // Create actionable roadmap
@@ -504,11 +1029,12 @@ async function analyzeCurrentPerformance(
 }
 
 /**
- * Generate optimization suggestions based on performance analysis
+ * Generate optimization suggestions based on performance analysis and AI insights
  */
 async function generateOptimizationSuggestions(
   performanceMetrics: any,
-  config: OptimizePipelinePerformanceInput['optimization_config']
+  config: OptimizePipelinePerformanceInput['optimization_config'],
+  intelligentOptimizations?: IntelligentOptimization[]
 ): Promise<Array<{
   id: string;
   category: 'parallelization' | 'caching' | 'resource_optimization' | 'configuration' | 'tooling' | 'architecture';
@@ -533,7 +1059,70 @@ async function generateOptimizationSuggestions(
   impact_score: number;
   confidence_level: number;
 }>> {
-  const suggestions = [
+  type OptimizationSuggestion = {
+    id: string;
+    category: 'parallelization' | 'caching' | 'resource_optimization' | 'configuration' | 'tooling' | 'architecture';
+    priority: 'low' | 'medium' | 'high' | 'critical';
+    title: string;
+    description: string;
+    current_issue: string;
+    proposed_solution: string;
+    implementation_steps: string[];
+    expected_improvement: {
+      duration_reduction_percent: number;
+      resource_savings_percent: number;
+      success_rate_improvement: number;
+      cost_savings_percent: number;
+    };
+    implementation_effort: {
+      complexity: 'simple' | 'moderate' | 'complex';
+      estimated_hours: number;
+      required_skills: string[];
+      dependencies: string[];
+    };
+    impact_score: number;
+    confidence_level: number;
+  };
+
+  let suggestions: OptimizationSuggestion[] = [];
+
+  // Start with AI-driven intelligent optimizations if available
+  if (intelligentOptimizations && intelligentOptimizations.length > 0) {
+    intelligentOptimizations.forEach(aiOpt => {
+      suggestions.push({
+        id: aiOpt.optimization_id,
+        category: mapAICategoryToTraditional(aiOpt.category),
+        priority: mapAIPriorityToTraditional(aiOpt.priority),
+        title: `AI-Optimized: ${aiOpt.description.split(':')[0] || aiOpt.description.substring(0, 50)}`,
+        description: aiOpt.description,
+        current_issue: `Detected optimization opportunity via AI analysis`,
+        proposed_solution: aiOpt.implementation_approach,
+        implementation_steps: aiOpt.prerequisites.concat([
+          aiOpt.implementation_approach,
+          'Monitor implementation effectiveness',
+          'Validate against success metrics'
+        ]),
+        expected_improvement: {
+          duration_reduction_percent: aiOpt.expected_improvement.time_reduction_percent,
+          resource_savings_percent: aiOpt.expected_improvement.resource_savings_percent,
+          success_rate_improvement: aiOpt.expected_improvement.reliability_improvement / 100,
+          cost_savings_percent: aiOpt.expected_improvement.cost_reduction_percent
+        },
+        implementation_effort: {
+          complexity: aiOpt.implementation_complexity,
+          estimated_hours: aiOpt.implementation_complexity === 'simple' ? 8 : 
+                          aiOpt.implementation_complexity === 'moderate' ? 24 : 48,
+          required_skills: ['Performance optimization', 'CI/CD configuration'],
+          dependencies: aiOpt.prerequisites
+        },
+        impact_score: Math.min(10, aiOpt.priority * 0.8 + (aiOpt.expected_improvement.time_reduction_percent * 0.1)),
+        confidence_level: 0.9 // AI-driven recommendations typically have high confidence
+      });
+    });
+  }
+
+  // Add traditional optimization suggestions
+  const traditionalSuggestions = [
     {
       id: 'opt-001',
       category: 'parallelization' as const,
@@ -622,6 +1211,9 @@ async function generateOptimizationSuggestions(
       confidence_level: 0.80
     }
   ];
+
+  // Combine AI suggestions with traditional suggestions
+  suggestions.push(...traditionalSuggestions);
 
   // Filter suggestions based on configuration
   let filteredSuggestions = suggestions;

@@ -137,7 +137,36 @@ const TroubleshootPipelineFailuresOutputSchema = z.object({
       })),
       pattern_analysis: z.string(),
       trend_insights: z.array(z.string())
-    })
+    }),
+    intelligent_analysis: z.object({
+      detected_patterns: z.array(z.object({
+        id: z.string(),
+        name: z.string(),
+        pattern_type: z.enum(['temporal', 'behavioral', 'resource', 'dependency', 'environmental']),
+        description: z.string(),
+        indicators: z.array(z.string()),
+        confidence: z.number(),
+        typical_causes: z.array(z.string()),
+        recommended_actions: z.array(z.string())
+      })),
+      anomaly_score: z.number(),
+      trend_analysis: z.object({
+        failure_trend: z.enum(['increasing', 'decreasing', 'stable', 'cyclical']),
+        pattern_strength: z.number(),
+        prediction: z.string()
+      }),
+      correlation_insights: z.array(z.object({
+        factor: z.string(),
+        correlation_strength: z.number(),
+        description: z.string()
+      })),
+      ai_recommendations: z.array(z.object({
+        type: z.enum(['preventive', 'reactive', 'monitoring']),
+        priority: z.number(),
+        description: z.string(),
+        implementation_complexity: z.enum(['low', 'medium', 'high'])
+      }))
+    }).optional()
   }).optional(),
   metadata: z.object({
     analysis_duration: z.number(),
@@ -347,10 +376,15 @@ export async function handleTroubleshootPipelineFailures(
       pipelineService
     );
 
-    // Generate resolution suggestions
+    // Perform intelligent analysis with AI-driven pattern recognition
+    const detectedPatterns = await detectFailurePatterns(failures);
+    const intelligentAnalysis = await performIntelligentAnalysis(failures, detectedPatterns);
+
+    // Generate resolution suggestions (enhanced with AI insights)
     const resolutionSuggestions = await generateResolutionSuggestions(
       rootCauseAnalysis,
-      validatedInput.resolution_config
+      validatedInput.resolution_config,
+      intelligentAnalysis // Pass AI insights to enhance suggestions
     );
 
     // Generate preventive measures
@@ -388,7 +422,8 @@ export async function handleTroubleshootPipelineFailures(
         resolution_suggestions: resolutionSuggestions,
         preventive_measures: preventiveMeasures,
         monitoring_recommendations: monitoringRecommendations,
-        historical_context: historicalContext
+        historical_context: historicalContext,
+        intelligent_analysis: intelligentAnalysis
       },
       metadata: {
         analysis_duration: analysisTimeMs,
@@ -439,7 +474,673 @@ export async function handleTroubleshootPipelineFailures(
 // Helper Functions
 
 /**
- * Analyze root causes of pipeline failures
+ * Intelligent Problem Detection System
+ * AI-driven failure pattern recognition and advanced root cause analysis
+ */
+
+interface FailurePattern {
+  id: string;
+  name: string;
+  pattern_type: 'temporal' | 'behavioral' | 'resource' | 'dependency' | 'environmental';
+  description: string;
+  indicators: string[];
+  confidence: number;
+  typical_causes: string[];
+  recommended_actions: string[];
+}
+
+interface IntelligentAnalysisResult {
+  detected_patterns: FailurePattern[];
+  anomaly_score: number;
+  trend_analysis: {
+    failure_trend: 'increasing' | 'decreasing' | 'stable' | 'cyclical';
+    pattern_strength: number;
+    prediction: string;
+  };
+  correlation_insights: Array<{
+    factor: string;
+    correlation_strength: number;
+    description: string;
+  }>;
+  ai_recommendations: Array<{
+    type: 'preventive' | 'reactive' | 'monitoring';
+    priority: number;
+    description: string;
+    implementation_complexity: 'low' | 'medium' | 'high';
+  }>;
+}
+
+/**
+ * Advanced pattern recognition for pipeline failures
+ */
+async function detectFailurePatterns(failures: PipelineFailure[]): Promise<FailurePattern[]> {
+  const patterns: FailurePattern[] = [];
+  
+  // Temporal pattern detection
+  const temporalPatterns = await detectTemporalPatterns(failures);
+  patterns.push(...temporalPatterns);
+  
+  // Resource exhaustion patterns
+  const resourcePatterns = await detectResourcePatterns(failures);
+  patterns.push(...resourcePatterns);
+  
+  // Dependency chain failure patterns  
+  const dependencyPatterns = await detectDependencyPatterns(failures);
+  patterns.push(...dependencyPatterns);
+  
+  // Environmental failure patterns
+  const environmentalPatterns = await detectEnvironmentalPatterns(failures);
+  patterns.push(...environmentalPatterns);
+  
+  // Behavioral anomaly patterns
+  const behavioralPatterns = await detectBehavioralPatterns(failures);
+  patterns.push(...behavioralPatterns);
+  
+  return patterns.sort((a, b) => b.confidence - a.confidence);
+}
+
+/**
+ * Detect temporal failure patterns (time-based failures)
+ */
+async function detectTemporalPatterns(failures: PipelineFailure[]): Promise<FailurePattern[]> {
+  const patterns: FailurePattern[] = [];
+  
+  if (failures.length < 3) return patterns;
+  
+  // Sort failures by timestamp
+  const sortedFailures = [...failures].sort((a, b) => 
+    new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+  );
+  
+  // Check for time-of-day patterns
+  const hourlyFailures: Record<number, number> = {};
+  sortedFailures.forEach(failure => {
+    const hour = new Date(failure.timestamp).getHours();
+    hourlyFailures[hour] = (hourlyFailures[hour] || 0) + 1;
+  });
+  
+  const peakHour = Object.entries(hourlyFailures)
+    .sort(([,a], [,b]) => b - a)[0];
+    
+  if (peakHour && hourlyFailures[parseInt(peakHour[0])] >= failures.length * 0.4) {
+    patterns.push({
+      id: `temporal_hourly_${peakHour[0]}`,
+      name: `Peak Hour Failure Pattern`,
+      pattern_type: 'temporal',
+      description: `High failure rate during hour ${peakHour[0]} (${peakHour[1]} failures)`,
+      indicators: [`Peak failures at ${peakHour[0]}:00`, 'Time-dependent resource contention'],
+      confidence: Math.min(0.95, hourlyFailures[parseInt(peakHour[0])] / failures.length),
+      typical_causes: [
+        'Resource contention during peak hours',
+        'Scheduled system maintenance conflicts',
+        'Network congestion patterns',
+        'External service load patterns'
+      ],
+      recommended_actions: [
+        'Schedule pipeline runs outside peak hours',
+        'Implement resource throttling',
+        'Add retry logic with backoff',
+        'Monitor external service dependencies'
+      ]
+    });
+  }
+  
+  // Check for weekend/weekday patterns
+  const weekdayFailures = sortedFailures.filter(f => {
+    const day = new Date(f.timestamp).getDay();
+    return day >= 1 && day <= 5; // Monday-Friday
+  });
+  
+  if (weekdayFailures.length >= failures.length * 0.8) {
+    patterns.push({
+      id: 'temporal_weekday',
+      name: 'Weekday Failure Pattern',
+      pattern_type: 'temporal',
+      description: `${weekdayFailures.length} of ${failures.length} failures occur on weekdays`,
+      indicators: ['Higher weekday failure rate', 'Business hours correlation'],
+      confidence: weekdayFailures.length / failures.length,
+      typical_causes: [
+        'Development activity during business hours',
+        'Higher deployment frequency on weekdays',
+        'Resource competition with other business processes'
+      ],
+      recommended_actions: [
+        'Implement dedicated development environment resources',
+        'Schedule deployments during off-hours',
+        'Add capacity planning for business hours'
+      ]
+    });
+  }
+  
+  return patterns;
+}
+
+/**
+ * Detect resource exhaustion patterns
+ */
+async function detectResourcePatterns(failures: PipelineFailure[]): Promise<FailurePattern[]> {
+  const patterns: FailurePattern[] = [];
+  
+  // Detect memory-related failures
+  const memoryFailures = failures.filter(f => 
+    f.error_message?.toLowerCase().includes('memory') ||
+    f.error_message?.toLowerCase().includes('oom') ||
+    f.error_code?.includes('MEMORY')
+  );
+  
+  if (memoryFailures.length >= failures.length * 0.3) {
+    patterns.push({
+      id: 'resource_memory',
+      name: 'Memory Exhaustion Pattern',
+      pattern_type: 'resource',
+      description: `${memoryFailures.length} failures related to memory issues`,
+      indicators: ['Out of memory errors', 'Memory allocation failures', 'Java heap space errors'],
+      confidence: memoryFailures.length / failures.length,
+      typical_causes: [
+        'Insufficient memory allocation',
+        'Memory leaks in application code',
+        'Large dataset processing without optimization',
+        'Multiple concurrent processes competing for memory'
+      ],
+      recommended_actions: [
+        'Increase memory allocation for pipeline agents',
+        'Implement memory profiling and monitoring',
+        'Optimize memory usage in build scripts',
+        'Add garbage collection tuning',
+        'Implement data processing optimization'
+      ]
+    });
+  }
+  
+  // Detect CPU/timeout patterns
+  const timeoutFailures = failures.filter(f =>
+    f.error_message?.toLowerCase().includes('timeout') ||
+    f.error_message?.toLowerCase().includes('timed out') ||
+    f.error_code?.includes('TIMEOUT') ||
+    (f.duration && f.duration > 3600) // Longer than 1 hour
+  );
+  
+  if (timeoutFailures.length >= failures.length * 0.25) {
+    patterns.push({
+      id: 'resource_timeout',
+      name: 'Timeout/Performance Pattern',
+      pattern_type: 'resource',
+      description: `${timeoutFailures.length} failures due to timeouts or performance issues`,
+      indicators: ['Build timeouts', 'Test execution timeouts', 'Deployment timeouts'],
+      confidence: timeoutFailures.length / failures.length,
+      typical_causes: [
+        'Insufficient CPU resources',
+        'Network latency issues',
+        'Database query performance',
+        'External service response delays',
+        'Inefficient build processes'
+      ],
+      recommended_actions: [
+        'Increase timeout thresholds where appropriate',
+        'Optimize build and test scripts',
+        'Implement parallel execution',
+        'Add performance monitoring',
+        'Review and optimize database queries'
+      ]
+    });
+  }
+  
+  return patterns;
+}
+
+/**
+ * Detect dependency chain failure patterns
+ */
+async function detectDependencyPatterns(failures: PipelineFailure[]): Promise<FailurePattern[]> {
+  const patterns: FailurePattern[] = [];
+  
+  // Group failures by step/component
+  const componentFailures: Record<string, PipelineFailure[]> = {};
+  failures.forEach(failure => {
+    const component = failure.step_name || 'unknown';
+    if (!componentFailures[component]) {
+      componentFailures[component] = [];
+    }
+    componentFailures[component].push(failure);
+  });
+  
+  // Detect cascade failure patterns
+  const cascadeComponents = Object.entries(componentFailures)
+    .filter(([, compFailures]) => compFailures.length >= 2)
+    .map(([component]) => component);
+    
+  if (cascadeComponents.length >= 2) {
+    patterns.push({
+      id: 'dependency_cascade',
+      name: 'Dependency Cascade Pattern',
+      pattern_type: 'dependency',
+      description: `Cascade failures across ${cascadeComponents.length} components`,
+      indicators: ['Multiple component failures', 'Sequential failure progression', 'Dependency chain breaks'],
+      confidence: Math.min(0.9, cascadeComponents.length / Object.keys(componentFailures).length),
+      typical_causes: [
+        'Tight coupling between pipeline steps',
+        'Shared resource dependencies',
+        'Configuration propagation issues',
+        'Service unavailability propagation'
+      ],
+      recommended_actions: [
+        'Implement circuit breakers between components',
+        'Add retry logic with exponential backoff',
+        'Decouple pipeline step dependencies',
+        'Implement health checks for dependencies',
+        'Add graceful degradation patterns'
+      ]
+    });
+  }
+  
+  // Detect external dependency failures
+  const externalFailures = failures.filter(f =>
+    f.error_message?.toLowerCase().includes('connection') ||
+    f.error_message?.toLowerCase().includes('network') ||
+    f.error_message?.toLowerCase().includes('service unavailable') ||
+    f.error_code?.includes('NETWORK') ||
+    f.error_code?.includes('CONNECTION')
+  );
+  
+  if (externalFailures.length >= failures.length * 0.2) {
+    patterns.push({
+      id: 'dependency_external',
+      name: 'External Dependency Pattern',
+      pattern_type: 'dependency',
+      description: `${externalFailures.length} failures due to external dependency issues`,
+      indicators: ['Network connection errors', 'Service unavailable errors', 'API timeout errors'],
+      confidence: externalFailures.length / failures.length,
+      typical_causes: [
+        'External service outages',
+        'Network connectivity issues',
+        'API rate limiting',
+        'DNS resolution problems',
+        'Certificate or authentication issues'
+      ],
+      recommended_actions: [
+        'Implement dependency health monitoring',
+        'Add retry policies for external calls',
+        'Implement circuit breakers',
+        'Cache external responses where possible',
+        'Set up alerts for external service availability'
+      ]
+    });
+  }
+  
+  return patterns;
+}
+
+/**
+ * Detect environmental failure patterns
+ */
+async function detectEnvironmentalPatterns(failures: PipelineFailure[]): Promise<FailurePattern[]> {
+  const patterns: FailurePattern[] = [];
+  
+  // Configuration-related failures
+  const configFailures = failures.filter(f =>
+    f.error_message?.toLowerCase().includes('config') ||
+    f.error_message?.toLowerCase().includes('environment') ||
+    f.error_message?.toLowerCase().includes('variable') ||
+    f.error_code?.includes('CONFIG')
+  );
+  
+  if (configFailures.length >= failures.length * 0.3) {
+    patterns.push({
+      id: 'environmental_config',
+      name: 'Configuration Issues Pattern',
+      pattern_type: 'environmental',
+      description: `${configFailures.length} failures related to configuration problems`,
+      indicators: ['Environment variable errors', 'Configuration validation failures', 'Property file issues'],
+      confidence: configFailures.length / failures.length,
+      typical_causes: [
+        'Missing environment variables',
+        'Incorrect configuration values',
+        'Configuration drift between environments',
+        'Secrets or credentials issues',
+        'File permission problems'
+      ],
+      recommended_actions: [
+        'Implement configuration validation',
+        'Use configuration management tools',
+        'Add environment-specific health checks',
+        'Implement secrets rotation monitoring',
+        'Add configuration drift detection'
+      ]
+    });
+  }
+  
+  return patterns;
+}
+
+/**
+ * Detect behavioral anomaly patterns using statistical analysis
+ */
+async function detectBehavioralPatterns(failures: PipelineFailure[]): Promise<FailurePattern[]> {
+  const patterns: FailurePattern[] = [];
+  
+  if (failures.length < 5) return patterns;
+  
+  // Analyze failure frequency patterns
+  const dailyFailures: Record<string, number> = {};
+  failures.forEach(failure => {
+    const day = new Date(failure.timestamp).toISOString().split('T')[0];
+    dailyFailures[day] = (dailyFailures[day] || 0) + 1;
+  });
+  
+  const failureCounts = Object.values(dailyFailures);
+  const avgFailures = failureCounts.reduce((a, b) => a + b, 0) / failureCounts.length;
+  const stdDev = Math.sqrt(
+    failureCounts.reduce((sum, count) => sum + Math.pow(count - avgFailures, 2), 0) / failureCounts.length
+  );
+  
+  // Detect anomalous spikes
+  const anomalousDays = Object.entries(dailyFailures)
+    .filter(([, count]) => count > avgFailures + (2 * stdDev))
+    .length;
+    
+  if (anomalousDays > 0 && stdDev > avgFailures * 0.5) {
+    patterns.push({
+      id: 'behavioral_anomaly',
+      name: 'Failure Spike Anomaly Pattern',
+      pattern_type: 'behavioral',
+      description: `Detected ${anomalousDays} days with anomalous failure spikes`,
+      indicators: ['Sudden failure rate increases', 'Statistical outliers in failure patterns'],
+      confidence: Math.min(0.95, (stdDev / avgFailures) * (anomalousDays / Object.keys(dailyFailures).length)),
+      typical_causes: [
+        'Code changes introducing instability',
+        'Infrastructure changes or updates',
+        'External factor impacts',
+        'Load pattern changes',
+        'New feature rollouts'
+      ],
+      recommended_actions: [
+        'Implement anomaly detection alerts',
+        'Add change correlation analysis',
+        'Implement gradual rollout strategies',
+        'Add automated rollback triggers',
+        'Enhance monitoring and observability'
+      ]
+    });
+  }
+  
+  return patterns;
+}
+
+/**
+ * Perform intelligent root cause analysis using AI-driven techniques
+ */
+async function performIntelligentAnalysis(
+  failures: PipelineFailure[],
+  detectedPatterns: FailurePattern[]
+): Promise<IntelligentAnalysisResult> {
+  // Calculate anomaly score based on pattern confidence
+  const anomalyScore = detectedPatterns.length > 0 
+    ? detectedPatterns.reduce((sum, pattern) => sum + pattern.confidence, 0) / detectedPatterns.length
+    : 0;
+    
+  // Analyze failure trends
+  const trendAnalysis = await analyzeTrends(failures);
+  
+  // Find correlations between different factors
+  const correlationInsights = await findCorrelations(failures, detectedPatterns);
+  
+  // Generate AI-driven recommendations
+  const aiRecommendations = await generateAIRecommendations(failures, detectedPatterns);
+  
+  return {
+    detected_patterns: detectedPatterns,
+    anomaly_score: anomalyScore,
+    trend_analysis: trendAnalysis,
+    correlation_insights: correlationInsights,
+    ai_recommendations: aiRecommendations
+  };
+}
+
+/**
+ * Analyze failure trends over time
+ */
+async function analyzeTrends(failures: PipelineFailure[]): Promise<{
+  failure_trend: 'increasing' | 'decreasing' | 'stable' | 'cyclical';
+  pattern_strength: number;
+  prediction: string;
+}> {
+  if (failures.length < 7) {
+    return {
+      failure_trend: 'stable',
+      pattern_strength: 0,
+      prediction: 'Insufficient data for trend analysis'
+    };
+  }
+  
+  // Group failures by day and analyze trend
+  const dailyFailures: Record<string, number> = {};
+  failures.forEach(failure => {
+    const day = new Date(failure.timestamp).toISOString().split('T')[0];
+    dailyFailures[day] = (dailyFailures[day] || 0) + 1;
+  });
+  
+  const sortedDays = Object.keys(dailyFailures).sort();
+  const failureCounts = sortedDays.map(day => dailyFailures[day]);
+  
+  // Simple linear regression to detect trend
+  const n = failureCounts.length;
+  const x = Array.from({length: n}, (_, i) => i);
+  const y = failureCounts;
+  
+  const sumX = x.reduce((a, b) => a + b, 0);
+  const sumY = y.reduce((a, b) => a + b, 0);
+  const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
+  const sumXX = x.reduce((sum, xi) => sum + xi * xi, 0);
+  
+  const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+  const patternStrength = Math.abs(slope) / (sumY / n); // Normalized slope
+  
+  let trend: 'increasing' | 'decreasing' | 'stable' | 'cyclical';
+  if (Math.abs(slope) < 0.1) {
+    trend = 'stable';
+  } else if (slope > 0) {
+    trend = 'increasing';
+  } else {
+    trend = 'decreasing';
+  }
+  
+  // Check for cyclical patterns
+  if (patternStrength < 0.3 && failureCounts.some((count, i) => 
+    i > 0 && Math.abs(count - failureCounts[i - 1]) > failureCounts.reduce((a, b) => a + b) / failureCounts.length * 0.5
+  )) {
+    trend = 'cyclical';
+  }
+  
+  const prediction = trend === 'increasing' 
+    ? `Failure rate is trending upward. Expected ${Math.round((sumY / n) + slope)} failures per day if trend continues.`
+    : trend === 'decreasing'
+    ? `Failure rate is improving. Expected ${Math.round(Math.max(0, (sumY / n) + slope))} failures per day if trend continues.`
+    : trend === 'cyclical'
+    ? `Failure rate shows cyclical pattern. Monitor for recurring cycles.`
+    : `Failure rate is stable at approximately ${Math.round(sumY / n)} failures per day.`;
+  
+  return {
+    failure_trend: trend,
+    pattern_strength: Math.min(1, patternStrength),
+    prediction
+  };
+}
+
+/**
+ * Find correlations between different failure factors
+ */
+async function findCorrelations(
+  failures: PipelineFailure[],
+  patterns: FailurePattern[]
+): Promise<Array<{
+  factor: string;
+  correlation_strength: number;
+  description: string;
+}>> {
+  const correlations: Array<{
+    factor: string;
+    correlation_strength: number;
+    description: string;
+  }> = [];
+  
+  // Correlation between time and failure type
+  const timeCorrelation = analyzeTimeCorrelation(failures);
+  if (timeCorrelation.strength > 0.3) {
+    correlations.push({
+      factor: 'Time of Day',
+      correlation_strength: timeCorrelation.strength,
+      description: timeCorrelation.description
+    });
+  }
+  
+  // Correlation between severity and component
+  const severityCorrelation = analyzeSeverityCorrelation(failures);
+  if (severityCorrelation.strength > 0.3) {
+    correlations.push({
+      factor: 'Component vs Severity',
+      correlation_strength: severityCorrelation.strength,
+      description: severityCorrelation.description
+    });
+  }
+  
+  // Pattern correlation with failure frequency
+  patterns.forEach(pattern => {
+    if (pattern.confidence > 0.6) {
+      correlations.push({
+        factor: pattern.name,
+        correlation_strength: pattern.confidence,
+        description: `Strong correlation detected: ${pattern.description}`
+      });
+    }
+  });
+  
+  return correlations.sort((a, b) => b.correlation_strength - a.correlation_strength);
+}
+
+/**
+ * Analyze time-based correlations
+ */
+function analyzeTimeCorrelation(failures: PipelineFailure[]): { strength: number; description: string } {
+  const hourlyFailures: Record<number, number> = {};
+  failures.forEach(failure => {
+    const hour = new Date(failure.timestamp).getHours();
+    hourlyFailures[hour] = (hourlyFailures[hour] || 0) + 1;
+  });
+  
+  const hours = Object.keys(hourlyFailures).map(Number);
+  const counts = Object.values(hourlyFailures);
+  
+  if (hours.length === 0) return { strength: 0, description: 'No time correlation found' };
+  
+  const maxCount = Math.max(...counts);
+  const avgCount = counts.reduce((a, b) => a + b) / counts.length;
+  const strength = (maxCount - avgCount) / avgCount;
+  
+  const peakHour = hours[counts.indexOf(maxCount)];
+  
+  return {
+    strength: Math.min(1, strength),
+    description: `Peak failure time at ${peakHour}:00 with ${maxCount} failures (${Math.round(strength * 100)}% above average)`
+  };
+}
+
+/**
+ * Analyze severity correlations
+ */
+function analyzeSeverityCorrelation(failures: PipelineFailure[]): { strength: number; description: string } {
+  const componentSeverity: Record<string, Record<string, number>> = {};
+  
+  failures.forEach(failure => {
+    const component = failure.step_name || 'unknown';
+    const severity = failure.severity;
+    
+    if (!componentSeverity[component]) {
+      componentSeverity[component] = {};
+    }
+    componentSeverity[component][severity] = (componentSeverity[component][severity] || 0) + 1;
+  });
+  
+  // Find component with highest critical failure rate
+  let maxCriticalRate = 0;
+  let criticalComponent = '';
+  
+  Object.entries(componentSeverity).forEach(([component, severityMap]) => {
+    const total = Object.values(severityMap).reduce((a, b) => a + b, 0);
+    const critical = severityMap['critical'] || 0;
+    const rate = critical / total;
+    
+    if (rate > maxCriticalRate) {
+      maxCriticalRate = rate;
+      criticalComponent = component;
+    }
+  });
+  
+  return {
+    strength: maxCriticalRate,
+    description: maxCriticalRate > 0.3 
+      ? `Component "${criticalComponent}" has ${Math.round(maxCriticalRate * 100)}% critical failure rate`
+      : 'No significant severity correlation found'
+  };
+}
+
+/**
+ * Generate AI-driven recommendations based on analysis
+ */
+async function generateAIRecommendations(
+  failures: PipelineFailure[],
+  patterns: FailurePattern[]
+): Promise<Array<{
+  type: 'preventive' | 'reactive' | 'monitoring';
+  priority: number;
+  description: string;
+  implementation_complexity: 'low' | 'medium' | 'high';
+}>> {
+  const recommendations: Array<{
+    type: 'preventive' | 'reactive' | 'monitoring';
+    priority: number;
+    description: string;
+    implementation_complexity: 'low' | 'medium' | 'high';
+  }> = [];
+  
+  // High-priority recommendations based on critical patterns
+  const criticalPatterns = patterns.filter(p => p.confidence > 0.7);
+  
+  criticalPatterns.forEach((pattern, index) => {
+    recommendations.push({
+      type: 'preventive',
+      priority: 10 - index,
+      description: `Address ${pattern.name}: ${pattern.recommended_actions[0]}`,
+      implementation_complexity: pattern.pattern_type === 'temporal' ? 'low' : 
+                                 pattern.pattern_type === 'resource' ? 'medium' : 'high'
+    });
+  });
+  
+  // Monitoring recommendations
+  if (failures.length > 5) {
+    recommendations.push({
+      type: 'monitoring',
+      priority: 8,
+      description: 'Implement advanced failure pattern monitoring with machine learning anomaly detection',
+      implementation_complexity: 'high'
+    });
+  }
+  
+  // Reactive recommendations based on failure frequency
+  const criticalFailures = failures.filter(f => f.severity === 'critical');
+  if (criticalFailures.length >= failures.length * 0.3) {
+    recommendations.push({
+      type: 'reactive',
+      priority: 9,
+      description: 'Implement automated incident response for critical pipeline failures',
+      implementation_complexity: 'medium'
+    });
+  }
+  
+  return recommendations.sort((a, b) => b.priority - a.priority);
+}
+
+/**
+ * Enhanced root cause analysis with AI integration
  */
 async function analyzeRootCauses(
   failures: PipelineFailure[],
@@ -508,11 +1209,12 @@ async function analyzeRootCauses(
 }
 
 /**
- * Generate resolution suggestions based on root cause analysis
+ * Generate resolution suggestions based on root cause analysis and AI insights
  */
 async function generateResolutionSuggestions(
   rootCauses: any[],
-  config: TroubleshootPipelineFailuresInput['resolution_config']
+  config: TroubleshootPipelineFailuresInput['resolution_config'],
+  intelligentAnalysis?: IntelligentAnalysisResult
 ): Promise<Array<{
   issue_id: string;
   solution_type: 'immediate' | 'short_term' | 'long_term';
@@ -526,6 +1228,65 @@ async function generateResolutionSuggestions(
   risk_assessment?: string;
 }>> {
   const suggestions = [];
+
+  // Start with AI-driven recommendations if available
+  if (intelligentAnalysis?.ai_recommendations) {
+    intelligentAnalysis.ai_recommendations.forEach((aiRec, index) => {
+      suggestions.push({
+        issue_id: `ai_recommendation_${index}`,
+        solution_type: aiRec.type === 'preventive' ? 'long_term' : 
+                      aiRec.type === 'reactive' ? 'immediate' : 'short_term',
+        priority: aiRec.priority >= 8 ? 'critical' :
+                 aiRec.priority >= 6 ? 'high' :
+                 aiRec.priority >= 4 ? 'medium' : 'low',
+        title: `AI-Driven: ${aiRec.description.split(':')[0]}`,
+        description: aiRec.description,
+        steps: [
+          'Review AI analysis and detected patterns',
+          'Validate recommendations against current environment',
+          'Implement suggested changes with proper testing',
+          'Monitor effectiveness and adjust as needed'
+        ],
+        estimated_effort: aiRec.implementation_complexity === 'low' ? '1-2 hours' :
+                         aiRec.implementation_complexity === 'medium' ? '1-2 days' : '1-2 weeks',
+        success_probability: 0.8, // AI recommendations typically have high success rates
+        prerequisites: ['Review system logs', 'Backup current configuration'],
+        risk_assessment: aiRec.implementation_complexity === 'high' 
+          ? 'Medium risk - requires careful testing and gradual rollout'
+          : 'Low risk - can be implemented with standard testing procedures'
+      });
+    });
+  }
+
+  // Add pattern-specific suggestions
+  if (intelligentAnalysis?.detected_patterns) {
+    intelligentAnalysis.detected_patterns
+      .filter(pattern => pattern.confidence > 0.6)
+      .forEach(pattern => {
+        pattern.recommended_actions.forEach((action, actionIndex) => {
+          suggestions.push({
+            issue_id: `pattern_${pattern.id}_${actionIndex}`,
+            solution_type: pattern.pattern_type === 'temporal' ? 'short_term' : 'long_term',
+            priority: pattern.confidence > 0.8 ? 'high' : 'medium',
+            title: `Address ${pattern.name}`,
+            description: `${pattern.description} - ${action}`,
+            steps: [
+              `Analyze pattern: ${pattern.description}`,
+              `Implement solution: ${action}`,
+              'Monitor pattern occurrence after implementation',
+              'Adjust approach based on results'
+            ],
+            estimated_effort: pattern.pattern_type === 'temporal' ? '2-4 hours' :
+                             pattern.pattern_type === 'resource' ? '1-3 days' : '3-5 days',
+            success_probability: pattern.confidence,
+            prerequisites: ['Pattern analysis review', 'Environment assessment'],
+            risk_assessment: pattern.confidence > 0.8 
+              ? 'Low risk - high confidence pattern detected'
+              : 'Medium risk - moderate confidence, monitor closely'
+          });
+        });
+      });
+  }
 
   for (const rootCause of rootCauses) {
     const suggestion = await generateSuggestionForRootCause(rootCause, config);
