@@ -1,34 +1,3 @@
-<<<<<<< HEAD
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# Virtual environments
-venv/
-ENV/
-env/
-.venv
-
-# IDE
-=======
 node_modules/
 
 # Logs
@@ -122,23 +91,10 @@ tmp/
 temp/
 
 # Editor directories and files
->>>>>>> main
 .vscode/
 .idea/
 *.swp
 *.swo
-<<<<<<< HEAD
-.DS_Store
-
-# Project specific
-*.log
-.env
-.env.local
-*.lock
-
-# Node.js dependencies
-node_modules/
-=======
 *~
 
 # OS generated files
@@ -149,4 +105,3 @@ node_modules/
 .Trashes
 ehthumbs.db
 Thumbs.db
->>>>>>> main
