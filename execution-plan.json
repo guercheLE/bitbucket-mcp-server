@@ -266,7 +266,7 @@
     {
       "id": "007-pipeline-management",
       "name": "Pipeline Management",
-      "status": "specified",
+      "status": "implemented",
       "branch": "feature/007-pipeline-management",
       "dependencies": [
         "001-mcp-server-infrastructure",
