@@ -278,7 +278,7 @@
     {
       "id": "008-webhook-support",
       "name": "Webhook Support",
-      "status": "specified",
+      "status": "implemented",
       "branch": "feature/008-webhook-support",
       "dependencies": [
         "001-mcp-server-infrastructure",
