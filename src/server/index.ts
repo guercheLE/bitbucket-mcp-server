@@ -39,6 +39,7 @@ import {
   Tool,
   MCPErrorCode
 } from '../types/index.js';
+import { createAnalyticsTools } from '../analytics/tools/index.js';
 
 /**
  * Server Application Class
@@ -561,7 +562,39 @@ export class MCPServerApplication {
     
     await this.registerTool(healthTool);
     
+    // Register analytics tools
+    await this.registerAnalyticsTools();
+    
     console.log('✅ Default tools registered');
+  }
+
+  /**
+   * Register analytics tools
+   * Registers comprehensive analytics tools for repository insights
+   */
+  private async registerAnalyticsTools(): Promise<void> {
+    try {
+      const analyticsTools = createAnalyticsTools();
+      
+      for (const [toolName, toolConfig] of Object.entries(analyticsTools)) {
+        const tool: Tool = {
+          name: toolName,
+          description: toolConfig.description,
+          parameters: [], // MCP tools use inputSchema instead of parameters array
+          enabled: true,
+          async execute(params: Record<string, any>) {
+            return await toolConfig.handler(params);
+          }
+        };
+        
+        await this.registerTool(tool);
+      }
+      
+      console.log('✅ Analytics tools registered:', Object.keys(analyticsTools).length);
+    } catch (error) {
+      console.error('❌ Failed to register analytics tools:', error instanceof Error ? error.message : String(error));
+      throw error;
+    }
   }
 
   /**
