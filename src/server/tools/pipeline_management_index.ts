@@ -18,22 +18,46 @@
  * - configure_pipeline_triggers: Set up automated triggers
  * - manage_pipeline_permissions: Handle user and group permissions
  * - configure_pipeline_access: Set up access control policies
- * - audit_pipeline_access: Track and audit pipeline access
- * - configure_pipeline_webhooks: Set up webhook integrations
- * - manage_pipeline_integrations: Handle external tool integrations
- * - setup_pipeline_notifications: Configure alerts and notifications
- * - get_pipeline_analytics: Retrieve pipeline performance metrics
- * - generate_pipeline_reports: Generate comprehensive reports
- * - track_pipeline_metrics: Track key performance indicators
+ * - audit_pipeline_access: Audit pipeline access and permissions
+ * - configure_pipeline_webhooks: Configure webhook integrations
+ * - manage_pipeline_integrations: Handle third-party integrations
+ * - setup_pipeline_notifications: Configure notifications and alerts
+ * - get_pipeline_analytics: Retrieve pipeline analytics and insights
+ * - generate_pipeline_reports: Generate comprehensive pipeline reports
+ * - track_pipeline_metrics: Track and monitor pipeline performance metrics
+ * - analyze_pipeline_data: Analyze pipeline data for insights
+ * - export_pipeline_data: Export pipeline data for analysis
  * - diagnose_pipeline_issues: Identify and diagnose pipeline problems
  * - troubleshoot_pipeline_failures: Handle pipeline failure analysis
- * - optimize_pipeline_performance: Suggest performance improvements
- * - archive_pipeline: Archive old and unused pipelines
- * - cleanup_pipeline_data: Clean up old pipeline data
- * - migrate_pipeline_config: Migrate pipeline configurations
  * 
  * All tools support both Bitbucket Data Center and Cloud APIs.
  */
+
+// Import tools for array export
+import { createPipelineTool } from './create_pipeline.js';
+import { configurePipelineTool } from './configure_pipeline.js';
+import { executePipelineTool } from './execute_pipeline.js';
+import { monitorPipelineTool } from './monitor_pipeline.js';
+import { getPipelineStatusTool } from './get_pipeline_status.js';
+import { listPipelineRunsTool } from './list_pipeline_runs.js';
+import { getPipelineLogsTool } from './get_pipeline_logs.js';
+import { getPipelineArtifactsTool } from './get_pipeline_artifacts.js';
+import { updatePipelineConfigTool } from './update_pipeline_config.js';
+import { managePipelineVariablesTool } from './manage_pipeline_variables.js';
+import { configurePipelineTriggersTool } from './configure_pipeline_triggers.js';
+import { managePipelinePermissionsTool } from './manage_pipeline_permissions.js';
+import { configurePipelineAccessTool } from './configure_pipeline_access.js';
+import { auditPipelineAccessTool } from './audit_pipeline_access.js';
+import { configurePipelineWebhooksTool } from './configure_pipeline_webhooks.js';
+import { managePipelineIntegrationsTool } from './manage_pipeline_integrations.js';
+import { setupPipelineNotificationsTool } from './setup_pipeline_notifications.js';
+import { getPipelineAnalyticsTool } from './get_pipeline_analytics.js';
+import { generatePipelineReportsTool } from './generate_pipeline_reports.js';
+import { trackPipelineMetricsTool } from './track_pipeline_metrics.js';
+import { analyzePipelineDataTool } from './analyze_pipeline_data.js';
+import { exportPipelineDataTool } from './export_pipeline_data.js';
+import { diagnosePipelineIssuesTool } from './diagnose_pipeline_issues.js';
+import { troubleshootPipelineFailuresTool } from './troubleshoot_pipeline_failures.js';
 
 export { createPipelineTool } from './create_pipeline.js';
 export { configurePipelineTool } from './configure_pipeline.js';
@@ -58,6 +82,7 @@ export { trackPipelineMetricsTool } from './track_pipeline_metrics.js';
 export { analyzePipelineDataTool } from './analyze_pipeline_data.js';
 export { exportPipelineDataTool } from './export_pipeline_data.js';
 export { diagnosePipelineIssuesTool } from './diagnose_pipeline_issues.js';
+export { troubleshootPipelineFailuresTool } from './troubleshoot_pipeline_failures.js';
 
 // Export all tools as an array for easy registration
 export const pipelineManagementTools = [
@@ -83,7 +108,8 @@ export const pipelineManagementTools = [
   trackPipelineMetricsTool,
   analyzePipelineDataTool,
   exportPipelineDataTool,
-  diagnosePipelineIssuesTool
+  diagnosePipelineIssuesTool,
+  troubleshootPipelineFailuresTool
 ];
 
 export default pipelineManagementTools;
