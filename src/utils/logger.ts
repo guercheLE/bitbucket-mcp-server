@@ -91,7 +91,7 @@ export const createLogger = (options: LoggerOptions = {}): Logger => {
 
   return winstonCreateLogger({
     level: resolveLevel(options.level),
-    defaultMeta: { service: 'bitbucket-mcp-server', ...options.defaultMeta },
+    defaultMeta: { service: '@guerchele/bitbucket-mcp-server', ...options.defaultMeta },
     format: format.combine(
       format.timestamp(),
       format.errors({ stack: true }),

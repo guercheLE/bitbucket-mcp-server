@@ -476,7 +476,7 @@ export const createServer = (options: ServerOptions = {}): ServerInstance => {
       }));
   const logger =
     options.dependencies?.logger ??
-    loggerFactory({ level: config.logLevel, defaultMeta: { service: 'bitbucket-mcp-server' } });
+    loggerFactory({ level: config.logLevel, defaultMeta: { service: '@guerchele/bitbucket-mcp-server' } });
 
   const bitbucketServiceFactory =
     options.dependencies?.createBitbucketService ??
@@ -491,7 +491,7 @@ export const createServer = (options: ServerOptions = {}): ServerInstance => {
     ((_logger: Logger) =>
       new McpServer(
         {
-          name: 'bitbucket-mcp-server',
+          name: '@guerchele/bitbucket-mcp-server',
           version: packageJson.version,
           description: 'Bitbucket MCP Server',
         },

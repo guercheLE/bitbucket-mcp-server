@@ -64,7 +64,7 @@ export class MetricsService {
    */
   constructor(options: MetricsServiceOptions = {}) {
     this.registry = new Registry();
-    this.registry.setDefaultLabels({ service: 'bitbucket-mcp-server' });
+    this.registry.setDefaultLabels({ service: '@guerchele/bitbucket-mcp-server' });
 
     this.requestCounter = new Counter({
       name: `${options.prefix ?? ''}http_requests_total`,

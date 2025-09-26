@@ -4,7 +4,7 @@ This guide documents every runtime option that controls the Enterprise Readiness
 
 ```ts
 import { readFile } from 'node:fs/promises';
-import { createServer } from 'bitbucket-mcp-server';
+import { createServer } from '@guerchele/bitbucket-mcp-server';
 
 const main = async () => {
   const raw = await readFile('app.config.json', 'utf-8');
@@ -92,7 +92,7 @@ To add a new language:
 2. Extend the i18n service by injecting a factory:
 
    ```ts
-   import { createServer } from 'bitbucket-mcp-server';
+  import { createServer } from '@guerchele/bitbucket-mcp-server';
    import { createI18nService } from './dist/services/i18n';
 
    const server = createServer({

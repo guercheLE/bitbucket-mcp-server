@@ -124,7 +124,7 @@ All commands print structured JSON so you can pipe the output into tools such as
 You can embed the client programmatically inside another Node.js script:
 
 ```ts
-import { run } from 'bitbucket-mcp-server/dist/client';
+import { run } from '@guerchele/bitbucket-mcp-server/dist/client';
 
 await run(['node', 'mcp-client', 'search-ids', '--query', 'pull requests'], {
   endpoint: process.env.BITBUCKET_MCP_ENDPOINT,

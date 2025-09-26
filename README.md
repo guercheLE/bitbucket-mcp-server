@@ -7,6 +7,16 @@ Bitbucket MCP Server is a Model Context Protocol (MCP) integration that provides
 - Node.js 18 or later
 - npm 9 or later
 
+## Installation
+
+Install the server and client directly from npm:
+
+```bash
+npm install @guerchele/bitbucket-mcp-server
+```
+
+The package publishes the compiled CLI under `dist/cli.js` and exposes TypeScript helpers for embedding the server programmatically.
+
 ## Getting Started
 
 1. Install dependencies:

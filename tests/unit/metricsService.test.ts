@@ -92,7 +92,7 @@ describe('MetricsService', () => {
     });
 
     expect(Registry).toHaveBeenCalledTimes(1);
-    expect(registryMock.setDefaultLabels).toHaveBeenCalledWith({ service: 'bitbucket-mcp-server' });
+    expect(registryMock.setDefaultLabels).toHaveBeenCalledWith({ service: '@guerchele/bitbucket-mcp-server' });
     expect(Counter).toHaveBeenCalledWith(expect.objectContaining({ name: 'http_requests_total' }));
     expect(Histogram).toHaveBeenCalledWith(
       expect.objectContaining({ name: 'http_request_duration_seconds' }),
