@@ -12,6 +12,6 @@
 - **`zod`**: The standard for type-safe validation in the TypeScript ecosystem. Its integration with the MCP SDK is a constitutional requirement.
 
 ## Alternatives Considered
-- **`LanceDB` / `ChromaDB`**: While powerful, they were considered overkill for this project's initial needs. They introduce more complex setup and potential external dependencies compared to the simplicity of `sqlite-vec`.
+- **`@lancedb/lancedb` (LanceDB) / `ChromaDB`**: While powerful, they were considered overkill for this project's initial needs. They introduce more complex setup and potential external dependencies compared to the simplicity of `sqlite-vec`.
 - **Other HTTP Clients (`fetch`, etc.)**: `axios` was preferred for its rich feature set and established community support.
 - **Manual Validation**: Using Zod is a constitutional requirement and provides much more robust and maintainable validation than manual checks.

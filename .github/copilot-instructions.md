@@ -9,7 +9,7 @@ Auto-generated from all feature plans. Last updated: 2025-09-25
 - `sqlite-vec` file-based database (004-spec-1-2)
 - Node.js 18+, TypeScrip + `@modelcontextprotocol/sdk`, `axios`, `winston`, `jest`, `zod`, `npm-check-updates`, `winston` (009-spec-3-1)
 - `sqlite-vec` for vector embeddings (009-spec-3-1)
-- LanceDB or ChromaDB (for vector database) (001-spec-0-1)
+- @lancedb/lancedb or ChromaDB (for vector database) (001-spec-0-1)
 
 ## Project Structure
 ```

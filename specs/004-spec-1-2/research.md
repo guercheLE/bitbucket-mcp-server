@@ -6,8 +6,8 @@
 - **Decision**: Use `sqlite-vec`.
 - **Rationale**: The feature specification explicitly requires `sqlite-vec`. It's a lightweight, serverless vector database that can be embedded directly into the application, fulfilling the portability requirement. It has a simple API and is well-suited for Node.js environments.
 - **Alternatives considered**: 
-    - `ChromaDB`: More complex to set up and might require a separate server instance, violating the "no external dependencies" constraint.
-    - `LanceDB`: Another strong contender for embedded vector search, but `sqlite-vec` is simpler for this use case.
+  - `ChromaDB`: More complex to set up and might require a separate server instance, violating the "no external dependencies" constraint.
+  - `@lancedb/lancedb` (LanceDB): Another strong contender for embedded vector search, but `sqlite-vec` is simpler for this use case.
 
 ### 2. Embedding Model
 - **Decision**: Use a pre-trained model from the `sentence-transformers` library.

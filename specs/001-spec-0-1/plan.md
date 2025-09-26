@@ -36,7 +36,7 @@ This plan outlines the setup of the initial project structure and governance for
 ## Technical Context
 **Language/Version**: Node.js 18+, TypeScript
 **Primary Dependencies**: @modelcontextprotocol/sdk, jest, zod, axios, winston, commander.js
-**Storage**: LanceDB or ChromaDB (for vector database)
+**Storage**: @lancedb/lancedb or ChromaDB (for vector database)
 **Testing**: Jest
 **Target Platform**: Node.js environment
 **Project Type**: Single project (server and client)

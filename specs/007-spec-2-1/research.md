@@ -24,7 +24,7 @@ This research document outlines the technical decisions for implementing full Bi
 ### Storage
 - **Decision**: `sqlite-vec` for the file-based vector database.
 - **Rationale**: The constitution requires a portable, file-based vector DB. `sqlite-vec` is already integrated into the project and meets the requirements for storing and searching API operation embeddings. No other persistent storage is required for this feature.
-- **Alternatives considered**: `LanceDB`, `ChromaDB`. `sqlite-vec` was chosen for its simplicity and strong Node.js support.
+- **Alternatives considered**: `@lancedb/lancedb` (LanceDB), `ChromaDB`. `sqlite-vec` was chosen for its simplicity and strong Node.js support.
 
 ### Testing
 - **Decision**: `jest`.

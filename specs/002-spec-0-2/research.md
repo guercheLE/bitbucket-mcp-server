@@ -11,7 +11,7 @@ Design a 3-tool pattern for discovering and interacting with Bitbucket API endpo
 - **`call-id`**: This tool will execute the Bitbucket API operation using the provided ID and a JSON object matching the Zod schema from `get-id`.
 
 ### Technology
-- **Vector Database**: For `search-ids`, an embedded vector database like `LanceDB` or `ChromaDB` will be used to store and search embeddings of the API operation descriptions.
+- **Vector Database**: For `search-ids`, an embedded vector database like `@lancedb/lancedb` or `ChromaDB` will be used to store and search embeddings of the API operation descriptions.
 - **Embeddings**: `OpenAI embeddings` or a local model via `transformers.js` will be used to generate embeddings for the search.
 - **Schema Generation**: Zod schemas will be generated, potentially from Bitbucket's OpenAPI specifications if available, or manually defined for the MVP.
 

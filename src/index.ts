@@ -1,11 +1,22 @@
-export const bootstrap = (): string => {
-    const message = 'Bitbucket MCP Server ready';
-    if (process.env.NODE_ENV !== 'test') {
-        console.log(message);
-    }
-    return message;
+import { run } from "./cli";
+import { createServer } from "./server";
+
+export const bootstrap = async () => {
+    const server = createServer();
+    await server.start();
+    return server;
 };
 
+export * from "./server";
+export * from "./services/auth";
+export * from "./services/discovery";
+export * from "./services/execution";
+export * from "./services/search";
+
 if (require.main === module) {
-    bootstrap();
+    run().catch((error) => {
+        // eslint-disable-next-line no-console
+        console.error(error);
+        process.exit(1);
+    });
 }

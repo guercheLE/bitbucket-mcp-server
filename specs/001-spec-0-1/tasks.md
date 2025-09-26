@@ -11,7 +11,7 @@ This document outlines the tasks required to implement the initial project struc
 
 - [X] **T002: Install core dependencies**
   - **File**: `package.json`
-  - **Details**: Install `@modelcontextprotocol/sdk`, `axios`, `commander.js`, `winston`, `zod`, and `lancedb`.
+  - **Details**: Install `@modelcontextprotocol/sdk`, `axios`, `commander.js`, `winston`, `zod`, and `@lancedb/lancedb`.
   - **Dependencies**: T001
 
 - [X] **T003: Install development dependencies**

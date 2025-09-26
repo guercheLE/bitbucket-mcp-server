@@ -34,7 +34,7 @@ TDD mandatory: Tests written → Project Lead approved → Tests fail → Then i
 - **CLI**: Commander.js
 - **Authentication**: OAuth 2.0, App Passwords, API Tokens, Basic Auth
 - **Security**: Helmet, CORS, rate limiting, circuit breakers
-- **Vector Database**: LanceDB or ChromaDB (JS client) for semantic search
+- **Vector Database**: @lancedb/lancedb or ChromaDB (JS client) for semantic search
 - **Embeddings**: OpenAI embeddings or local transformers.js for text embeddings
 - **Schema Management**: Dynamic Zod schema generation from Bitbucket OpenAPI specs
 
