@@ -8,11 +8,11 @@
   },
   "dependencies": {
     "@lancedb/lancedb": "^0.22.1",
-    "@modelcontextprotocol/sdk": "^1.18.2",
+    "@modelcontextprotocol/sdk": "1.18.2",
     "axios": "^1.12.2",
     "commander": "^14.0.1",
     "winston": "^3.17.0",
-    "zod": "^3.25.76"
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.0.0",

@@ -34,7 +34,7 @@ This plan outlines the implementation of a vector database and an embedding gene
 
 ## Technical Context
 **Language/Version**: TypeScript (Node.js 18+)  
-**Primary Dependencies**: `@modelcontextprotocol/sdk`, `axios`, `winston`, `commander.js`, `jest`, `zod`, `sqlite-vec`, `sentence-transformers`  
+**Primary Dependencies**: `@modelcontextprotocol/sdk` (v1.18.2 LTS aligned with Zod 3.23.8), `axios`, `winston`, `commander.js`, `jest`, `zod`, `sqlite-vec`, `sentence-transformers`  
 **Storage**: `sqlite-vec` file-based database  
 **Testing**: Jest  
 **Target Platform**: Node.js environment  
@@ -42,6 +42,7 @@ This plan outlines the implementation of a vector database and an embedding gene
 **Performance Goals**: Embedding generation should be efficient; search queries should be fast.  
 **Constraints**: The solution must be portable and have no external runtime dependencies for the database.  
 **Scale/Scope**: All available Bitbucket API endpoints.
+**Documentation Sources**: Use Context7 to fetch current guidance for MCP SDK, embedding libraries, and vector database tooling.
 
 ## Constitution Check
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*

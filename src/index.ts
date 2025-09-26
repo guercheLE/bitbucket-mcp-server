@@ -7,6 +7,7 @@ export const bootstrap = async () => {
     return server;
 };
 
+export * from "./client";
 export * from "./server";
 export * from "./services/auth";
 export * from "./services/discovery";

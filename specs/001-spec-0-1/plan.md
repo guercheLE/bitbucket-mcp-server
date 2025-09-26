@@ -35,7 +35,7 @@ This plan outlines the setup of the initial project structure and governance for
 
 ## Technical Context
 **Language/Version**: Node.js 18+, TypeScript
-**Primary Dependencies**: @modelcontextprotocol/sdk, jest, zod, axios, winston, commander.js
+**Primary Dependencies**: @modelcontextprotocol/sdk (v1.18.2 LTS aligned with Zod 3.23.8), jest, zod, axios, winston, commander.js
 **Storage**: @lancedb/lancedb or ChromaDB (for vector database)
 **Testing**: Jest
 **Target Platform**: Node.js environment
@@ -43,6 +43,7 @@ This plan outlines the setup of the initial project structure and governance for
 **Performance Goals**: API Ops <3s p95, Admin Ops <30s p95, Semantic Search < 100ms
 **Constraints**: Code coverage >80%, LGPL-3.0 license
 **Scale/Scope**: Cover 200+ Bitbucket Data Center and Cloud APIs
+**Documentation Sources**: Use Context7 to retrieve the latest package references (especially MCP SDK) when performing research or updates.
 
 ## Constitution Check
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*

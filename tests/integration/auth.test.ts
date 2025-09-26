@@ -37,4 +37,28 @@ describe("Authentication service", () => {
         const service = new AuthenticationService();
         expect(() => service.createHttpClient()).toThrow("Authentication service is not configured");
     });
+
+    it("normalizes hosts without protocol and trims trailing slashes", () => {
+        const service = new AuthenticationService();
+        service.configure({
+            host: "bitbucket.internal.example.com/",
+            token: "demo-token"
+        });
+
+        expect(service.isConfigured()).toBe(true);
+
+        const client = service.createHttpClient();
+        expect(client.defaults.baseURL).toBe("https://bitbucket.internal.example.com");
+        expect(service.getAuthHeaders()).toEqual({ Authorization: "Bearer demo-token" });
+    });
+
+    it("rejects configuration without host or token", () => {
+        const service = new AuthenticationService();
+        expect(() =>
+            service.configure({
+                host: "",
+                token: ""
+            })
+        ).toThrow("Both host and token are required to configure authentication");
+    });
 });

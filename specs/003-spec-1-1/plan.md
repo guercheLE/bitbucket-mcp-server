@@ -35,7 +35,7 @@ This feature implements the foundational MCP server, enabling it to start and st
 
 ## Technical Context
 **Language/Version**: Node.js 18+, TypeScript
-**Primary Dependencies**: @modelcontextprotocol/sdk, axios, winston, commander.js, jest, zod
+**Primary Dependencies**: @modelcontextprotocol/sdk (v1.18.2 LTS aligned with Zod 3.23.8), axios, winston, commander.js, jest, zod
 **Storage**: N/A
 **Testing**: Jest
 **Target Platform**: Node.js Server
@@ -43,6 +43,7 @@ This feature implements the foundational MCP server, enabling it to start and st
 **Performance Goals**: API Operations: Response time <3s for 95% of requests
 **Constraints**: Retry up to 3 times on the same port with a 5-second delay if the port is in use. Immediately fail requests and return a `429 Too Many Requests` error on Bitbucket API rate limiting.
 **Scale/Scope**: Basic MCP server with `stdio` and `HTTP` transports, and Bitbucket connectivity service.
+**Documentation Sources**: Use Context7 to pull current MCP SDK and transport documentation during research and implementation.
 
 ## Constitution Check
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*

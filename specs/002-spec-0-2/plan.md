@@ -35,7 +35,7 @@ This plan outlines the design and testing strategy for the Bitbucket MCP server'
 
 ## Technical Context
 **Language/Version**: Node.js 18+, TypeScript
-**Primary Dependencies**: `@modelcontextprotocol/sdk`, `jest`, `zod`, `axios`, `winston`, `commander.js`
+**Primary Dependencies**: `@modelcontextprotocol/sdk` (v1.18.2 LTS aligned with Zod 3.23.8), `jest`, `zod`, `axios`, `winston`, `commander.js`
 **Storage**: N/A for this feature
 **Testing**: Jest
 **Target Platform**: Bitbucket Data Center (7.16+) and Cloud
@@ -43,6 +43,7 @@ This plan outlines the design and testing strategy for the Bitbucket MCP server'
 **Performance Goals**: `<100ms` response time for `search-ids`
 **Constraints**: Must adhere strictly to the MCP specification and the project's constitution.
 **Scale/Scope**: MVP covering server startup, authentication, and the 3-tool semantic discovery pattern for Pull Requests.
+**Documentation Sources**: Use Context7 to fetch the latest package documentation (especially the MCP SDK and related libraries) during research and updates.
 
 ## Constitution Check
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*

@@ -25,10 +25,10 @@ TDD mandatory: Tests written → Project Lead approved → Tests fail → Then i
 
 ### Technology Stack
 - **Runtime**: Node.js 18+
-- **SDK**: @modelcontextprotocol/sdk official (latest version with Zod schema support)
+- **SDK**: @modelcontextprotocol/sdk official LTS v1.18.2 (paired with Zod 3.23.8)
 - **Language**: TypeScript with strict typing
 - **Testing**: Jest with complete coverage
-- **Validation**: Zod for schemas (integrated with MCP SDK)
+- **Validation**: Zod v3.23.8 for schemas (integrated with MCP SDK)
 - **HTTP**: Axios with interceptors
 - **Logging**: Winston with sanitization
 - **CLI**: Commander.js
