@@ -134,6 +134,15 @@ CHECKSUM_FILE=".specify/state/api-checksum.json" \
 
 The weekly workflow triggers every Monday at 08:00 UTC and can also be launched manually from the Actions tab. It runs the dependency refresh in dry-run mode, surfaces vulnerability alerts, and records workflow artefacts to aid triage.
 
+## Release Process
+
+Automated publishing is handled by [semantic-release](https://semantic-release.gitbook.io/semantic-release/). Keep the following guardrails in mind when preparing a release:
+
+- Always fast-forward your local `main` branch to the remote before invoking the release task locally. `semantic-release` aborts if it detects that the local branch is behind the remote, which prevents conflicting history from being published.
+- Run the release workflow from CI or from a workstation that has just pulled the latest `origin/main` to guarantee the repository state matches the remote.
+- Use [Conventional Commits](https://www.conventionalcommits.org/) to communicate the desired version bump. Prefix a breaking change with `feat!` or include a `BREAKING CHANGE:` footer to request a major bump (for example, publishing `v3.0.0`).
+- After pushing the release commit to `main`, let CI execute the release job; it will tag the release and push the npm package automatically when new semantic-release-worthy commits land.
+
 ## Generating Embeddings
 
 The embedding pipeline transforms structured Bitbucket API metadata into a `sqlite-vec` database that powers semantic search.
