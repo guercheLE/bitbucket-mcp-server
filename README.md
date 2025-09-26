@@ -61,6 +61,10 @@ Bitbucket MCP Server is a Model Context Protocol (MCP) integration that provides
    ```
    You can also interrupt the `start` command with `Ctrl+C`; the CLI traps termination signals and shuts the server down cleanly.
 
+## Configuration
+
+Enterprise security, authentication, and observability settings can be tuned through the application configuration schema. See [`docs/configuration.md`](docs/configuration.md) for a comprehensive guide covering CORS, rate limiting, circuit breaker behaviour, log rotation, metrics, and localisation.
+
 ## Available Scripts
 
 - `npm test` – Runs Jest in single-run mode.

@@ -1,5 +1,11 @@
 import { randomUUID } from "node:crypto";
-import http, { type IncomingMessage, type ServerResponse } from "node:http";
+import { EventEmitter } from "node:events";
+import http from "node:http";
+import path from "node:path";
+
+import cors, { type CorsOptions } from "cors";
+import express, { type NextFunction, type Request, type Response } from "express";
+import helmet from "helmet";
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -9,7 +15,12 @@ import packageJson from "../../package.json";
 import { CallIdParams, type CallIdParamsOutput } from "../contracts/call-id";
 import { GetIdParams, type GetIdParamsInput } from "../contracts/get-id";
 import { SearchIdsParams, type SearchIdsParamsInput } from "../contracts/search-ids";
+import { AppConfigSchema, type AppConfig } from "../models/config";
+import { AuthService } from "../services/authService";
 import { BitbucketConnectionError, BitbucketRateLimitError, BitbucketService, BitbucketServiceError } from "../services/bitbucket";
+import { createI18nService, type I18nService } from "../services/i18n";
+import { createRotatingLogger } from "../services/logger";
+import { createMetricsService, type MetricsService, type MetricsServiceOptions } from "../services/metricsService";
 import { SchemaService } from "../services/SchemaService";
 import { VectorDBService } from "../services/VectorDBService";
 import { createCallIdTool } from "../tools/call-id";
@@ -18,7 +29,11 @@ import { createSearchIdsTool } from "../tools/search-ids";
 import type { BitbucketCredentials, ServerConfig } from "../types/config";
 import { BitbucketCredentialsSchema, ServerConfigSchema } from "../types/config";
 import type { BitbucketServerInfo, ServerState } from "../types/server";
-import { createLogger, type Logger, type LoggerOptions } from "../utils/logger";
+import { type Logger, type LoggerOptions } from "../utils/logger";
+import { createAuthenticationMiddleware } from "./middleware/authentication";
+import { createRateLimiter, type CombinedRateLimiterOptions } from "./security/rateLimiter";
+import { createHttpStreamTransport, type HttpStreamTransport, type HttpStreamTransportOptions } from "./transports/httpStream";
+import { createSseTransport, type SseTransport, type SseTransportOptions } from "./transports/sse";
 
 const DEFAULT_HTTP_PORT = 3000;
 const MAX_PORT_ATTEMPTS = 3;
@@ -38,6 +53,15 @@ interface HttpServerFactoryContext {
     httpTransport: StreamableHTTPServerTransport;
     onShutdown: () => Promise<void>;
     delay: DelayFn;
+    appConfig: AppConfig;
+    metricsService: MetricsService | null;
+    i18nService: I18nService | null;
+    rateLimiter: ReturnType<typeof createRateLimiter>;
+    corsOptions: CorsOptions;
+    sseTransport: SseTransport;
+    httpStreamTransport: HttpStreamTransport;
+    eventBus: EventEmitter;
+    authService: AuthService | null;
 }
 
 interface HttpServerController {
@@ -66,11 +90,25 @@ export interface ServerDependencies {
     env?: NodeJS.ProcessEnv;
     vectorDbService?: VectorDBService;
     schemaService?: SchemaService;
+    authService?: AuthService;
+    createAuthService?: (config: AppConfig["authentication"], logger: Logger) => AuthService;
+    metricsService?: MetricsService;
+    createMetricsService?: (options?: MetricsServiceOptions) => MetricsService;
+    i18nService?: I18nService;
+    createI18nService?: (options: Parameters<typeof createI18nService>[0]) => I18nService;
+    rateLimiter?: ReturnType<typeof createRateLimiter>;
+    createRateLimiter?: (options?: CombinedRateLimiterOptions) => ReturnType<typeof createRateLimiter>;
+    sseTransport?: SseTransport;
+    createSseTransport?: (options?: SseTransportOptions) => SseTransport;
+    httpStreamTransport?: HttpStreamTransport;
+    createHttpStreamTransport?: (options?: HttpStreamTransportOptions) => HttpStreamTransport;
+    eventBus?: EventEmitter;
 }
 
 export interface ServerOptions {
     config?: Partial<ServerConfig>;
     credentials?: Partial<BitbucketCredentials>;
+    appConfig?: Partial<AppConfig>;
     dependencies?: ServerDependencies;
 }
 
@@ -120,52 +158,172 @@ const resolveCredentials = (overrides: Partial<BitbucketCredentials> | undefined
     return result.data;
 };
 
-const defaultHttpServerFactory: HttpServerFactory = ({ port, logger, state, httpTransport, onShutdown, delay }) => {
+const defaultHttpServerFactory: HttpServerFactory = ({
+    port,
+    logger,
+    state,
+    httpTransport,
+    onShutdown,
+    delay,
+    appConfig,
+    metricsService,
+    i18nService,
+    rateLimiter,
+    corsOptions,
+    sseTransport,
+    httpStreamTransport,
+    eventBus,
+    authService
+}) => {
     let server: http.Server | null = null;
     let address: HttpAddress | null = null;
 
     const buildServer = () => {
-        return http.createServer(async (req: IncomingMessage, res: ServerResponse) => {
-            const origin = req.headers.host ? `http://${req.headers.host}` : "http://127.0.0.1";
-            const url = new URL(req.url ?? "/", origin);
+        const app = express();
 
-            try {
-                if (req.method === "GET" && url.pathname === "/health") {
-                    const payload = {
-                        status: state.degradedMode ? "degraded" : "ok",
-                        bitbucketConnected: state.bitbucketConnected,
-                        bitbucketServerInfo: state.bitbucketServerInfo,
-                        degradedMode: state.degradedMode
-                    };
-                    res.writeHead(200, { "Content-Type": "application/json" });
-                    res.end(JSON.stringify(payload));
-                    return;
-                }
+        app.set("trust proxy", true);
+        app.use(express.json({ limit: "1mb" }));
+        app.use(express.urlencoded({ extended: true }));
 
-                if (req.method === "POST" && url.pathname === "/shutdown") {
-                    res.writeHead(202, { "Content-Type": "application/json" });
-                    res.end(JSON.stringify({ status: "shutting down" }));
-                    onShutdown().catch((error) => {
-                        logger.error("Failed to stop server from shutdown endpoint", { error: (error as Error).message });
+        if (appConfig.security.helmet) {
+            app.use(helmet());
+        }
+
+        app.use(rateLimiter);
+
+        if (authService && authService.hasStrategies()) {
+            const authLogger = typeof logger.child === "function" ? logger.child({ scope: "auth-middleware" }) : logger;
+            const authMiddleware = createAuthenticationMiddleware(authService, {
+                logger: authLogger,
+                priority: appConfig.authentication.priority
+            });
+            app.use(authMiddleware);
+        }
+
+        if (appConfig.security.cors) {
+            app.use(cors(corsOptions));
+        }
+
+        if (metricsService) {
+            app.use((req, res, next) => {
+                const start = Date.now();
+                res.on("finish", () => {
+                    metricsService.recordHttpRequest({
+                        route: req.route?.path ?? req.path,
+                        method: req.method,
+                        statusCode: res.statusCode,
+                        durationMs: Date.now() - start
                     });
-                    return;
-                }
+                });
+                next();
+            });
+        }
 
-                if (url.pathname === "/mcp" || url.pathname.startsWith("/mcp/")) {
-                    await httpTransport.handleRequest(req, res);
-                    return;
-                }
+        if (i18nService) {
+            app.use(i18nService.middleware());
+        }
 
-                res.writeHead(404, { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ error: "Not Found" }));
+        app.get("/health", (_req, res) => {
+            const payload = {
+                status: state.degradedMode ? "degraded" : "ok",
+                bitbucketConnected: state.bitbucketConnected,
+                bitbucketServerInfo: state.bitbucketServerInfo,
+                degradedMode: state.degradedMode
+            } satisfies Record<string, unknown>;
+            res.status(200).json(payload);
+        });
+
+        if (metricsService) {
+            app.get("/metrics", metricsService.createHandler());
+        }
+
+        app.post("/shutdown", async (_req, res) => {
+            res.status(202).json({ status: "shutting down" });
+            try {
+                await onShutdown();
             } catch (error) {
-                logger.error("HTTP request handling failed", { error: (error as Error).message, path: url.pathname });
-                if (!res.headersSent) {
-                    res.writeHead(500, { "Content-Type": "application/json" });
-                }
-                res.end(JSON.stringify({ error: "Internal Server Error" }));
+                logger.error("Failed to stop server from shutdown endpoint", { error: (error as Error).message });
             }
         });
+
+        app.get("/transports/sse", async (req, res, next) => {
+            try {
+                const topic = typeof req.query.topic === "string" ? req.query.topic : "default";
+                const channel = `sse:${topic}`;
+
+                await sseTransport.handle(req, res, async (connection) => {
+                    const listener = async (payload: unknown) => {
+                        try {
+                            await connection.send({ event: "message", data: payload });
+                        } catch (error) {
+                            logger.warn("Failed to deliver SSE payload", { error: (error as Error).message });
+                        }
+                    };
+
+                    eventBus.on(channel, listener);
+                    await connection.send({ event: "ready", data: { topic } });
+
+                    await new Promise<void>((resolve) => {
+                        req.on("close", () => resolve());
+                    });
+
+                    eventBus.off(channel, listener);
+                });
+            } catch (error) {
+                next(error);
+            }
+        });
+
+        app.get("/transports/http-stream", async (req, res, next) => {
+            try {
+                const resourceId = typeof req.query.resourceId === "string" ? req.query.resourceId : "default";
+                const channel = `http-stream:${resourceId}`;
+
+                await httpStreamTransport.handle(req, res, async (stream) => {
+                    const handler = async (payload: { data: string | Buffer; isLast?: boolean }) => {
+                        try {
+                            await stream.write({ data: payload.data, isLast: payload.isLast ?? false });
+                        } catch (error) {
+                            logger.warn("Failed to deliver streaming chunk", { error: (error as Error).message });
+                        }
+                    };
+
+                    eventBus.on(channel, handler);
+                    await stream.write({ data: JSON.stringify({ status: "ready", resourceId }) + "\n", isLast: false });
+
+                    await new Promise<void>((resolve) => {
+                        req.on("close", () => resolve());
+                    });
+
+                    eventBus.off(channel, handler);
+                });
+            } catch (error) {
+                next(error);
+            }
+        });
+
+        app.all(["/mcp", "/mcp/*"], async (req: Request, res: Response, next: NextFunction) => {
+            try {
+                await httpTransport.handleRequest(req, res);
+            } catch (error) {
+                next(error);
+            }
+        });
+
+        app.use((error: unknown, req: Request, res: Response, _next: NextFunction) => {
+            logger.error("HTTP request handling failed", { error: (error as Error).message, path: req.path });
+            if (res.headersSent) {
+                res.end();
+                return;
+            }
+            res.status(500).json({ error: "Internal Server Error" });
+        });
+
+        app.use((_req, res) => {
+            res.status(404).json({ error: "Not Found" });
+        });
+
+        return http.createServer(app);
     };
 
     const listen = async (): Promise<HttpAddress> => {
@@ -253,8 +411,13 @@ export const createServer = (options: ServerOptions = {}): ServerInstance => {
     const env = options.dependencies?.env ?? process.env;
     const config = resolveConfig(options.config, env);
     const credentials = resolveCredentials(options.credentials, env);
+    const appConfig = AppConfigSchema.parse(options.appConfig ?? {});
 
-    const loggerFactory = options.dependencies?.createLogger ?? ((loggerOptions: LoggerOptions) => createLogger(loggerOptions));
+    const loggerFactory = options.dependencies?.createLogger ?? ((loggerOptions: LoggerOptions) => createRotatingLogger({
+        level: loggerOptions.level,
+        defaultMeta: loggerOptions.defaultMeta,
+        rotation: appConfig.observability.logRotation
+    }));
     const logger = options.dependencies?.logger ?? loggerFactory({ level: config.logLevel, defaultMeta: { service: "bitbucket-mcp-server" } });
 
     const bitbucketServiceFactory = options.dependencies?.createBitbucketService ?? ((creds: BitbucketCredentials, svcLogger: Logger) => new BitbucketService(creds, { logger: svcLogger }));
@@ -277,6 +440,38 @@ export const createServer = (options: ServerOptions = {}): ServerInstance => {
 
     const delay = options.dependencies?.delay ?? defaultDelay;
 
+    const corsOptions: CorsOptions = {
+        origin: appConfig.security.cors.origin,
+        methods: appConfig.security.cors.methods
+    };
+
+    const rateLimiterFactory = options.dependencies?.createRateLimiter ?? ((rateLimiterOptions?: CombinedRateLimiterOptions) => createRateLimiter(rateLimiterOptions));
+    const rateLimiter = options.dependencies?.rateLimiter ?? rateLimiterFactory({
+        windowMs: appConfig.security.rateLimit.windowMs,
+        max: appConfig.security.rateLimit.max
+    });
+
+    const metricsServiceFactory = options.dependencies?.createMetricsService ?? ((metricsOptions?: MetricsServiceOptions) => createMetricsService(metricsOptions));
+    const metricsService = appConfig.observability.enableMetrics
+        ? options.dependencies?.metricsService ?? metricsServiceFactory()
+        : null;
+
+    const defaultLocalesDir = path.resolve(process.cwd(), "locales");
+    const i18nServiceFactory = options.dependencies?.createI18nService ?? ((i18nOptions: Parameters<typeof createI18nService>[0]) => createI18nService(i18nOptions));
+    const i18nService = options.dependencies?.i18nService ?? i18nServiceFactory({
+        fallbackLng: "en",
+        supportedLngs: ["en"],
+        resourcesPath: defaultLocalesDir
+    });
+
+    const sseTransportFactory = options.dependencies?.createSseTransport ?? ((sseOptions?: SseTransportOptions) => createSseTransport(sseOptions));
+    const sseTransport = options.dependencies?.sseTransport ?? sseTransportFactory();
+
+    const httpStreamTransportFactory = options.dependencies?.createHttpStreamTransport ?? ((streamOptions?: HttpStreamTransportOptions) => createHttpStreamTransport(streamOptions));
+    const httpStreamTransport = options.dependencies?.httpStreamTransport ?? httpStreamTransportFactory();
+
+    const eventBus = options.dependencies?.eventBus ?? new EventEmitter();
+
     const vectorDbService = options.dependencies?.vectorDbService ?? new VectorDBService({
         logger: logger.child({ scope: "vector-db-service" })
     });
@@ -284,6 +479,12 @@ export const createServer = (options: ServerOptions = {}): ServerInstance => {
     const schemaService = options.dependencies?.schemaService ?? new SchemaService({
         logger: logger.child({ scope: "schema-service" })
     });
+
+    const authServiceFactory = options.dependencies?.createAuthService ?? ((config: AppConfig["authentication"], svcLogger: Logger) => new AuthService({
+        config,
+        logger: svcLogger
+    }));
+    const authService = options.dependencies?.authService ?? authServiceFactory(appConfig.authentication, logger.child({ scope: "auth-service" }));
 
     const searchIdsTool = createSearchIdsTool({
         vectorDb: vectorDbService,
@@ -403,7 +604,16 @@ export const createServer = (options: ServerOptions = {}): ServerInstance => {
                 onShutdown: async () => {
                     await instance.stop();
                 },
-                delay
+                delay,
+                appConfig,
+                metricsService,
+                i18nService,
+                rateLimiter,
+                corsOptions,
+                sseTransport,
+                httpStreamTransport,
+                eventBus,
+                authService
             });
         }
         return httpController;
@@ -457,6 +667,10 @@ export const createServer = (options: ServerOptions = {}): ServerInstance => {
             startPromise = (async () => {
                 await startTransports();
 
+                if (i18nService) {
+                    await i18nService.init();
+                }
+
                 const controller = getHttpController();
                 const startResult = await controller.start();
                 httpAddress = controller.getAddress() ?? (typeof startResult === "number"
@@ -493,9 +707,12 @@ export const createServer = (options: ServerOptions = {}): ServerInstance => {
             }
 
             stopPromise = (async () => {
-                const controller = getHttpController();
-                await controller.stop();
+                const controller = httpController;
+                if (controller) {
+                    await controller.stop();
+                }
                 httpAddress = null;
+                httpController = null;
 
                 if (typeof stdioTransport.close === "function") {
                     await stdioTransport.close();
