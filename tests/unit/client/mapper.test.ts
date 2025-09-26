@@ -29,7 +29,8 @@ describe("DefaultCommandMapper", () => {
                 description: "Search Bitbucket operations",
                 parameters: [
                     { name: "query", type: "string", required: true, description: "Search term" },
-                    { name: "limit", type: "number", required: false, description: "Maximum results" }
+                    { name: "limit", type: "number", required: false, description: "Maximum results" },
+                    { name: "include-archived", type: "boolean", required: false, description: "Include archived results" }
                 ]
             },
             {
@@ -80,7 +81,11 @@ describe("DefaultCommandMapper", () => {
 
         const searchCommand = program.commands.find((cmd) => cmd.name() === "search-ids");
         expect(searchCommand?.description()).toContain("Semantic Search");
-        expect(searchCommand?.options.map((opt) => opt.flags)).toEqual(["--query <query>", "--limit <limit>"]);
+        expect(searchCommand?.options.map((opt) => opt.flags)).toEqual([
+            "--query <query>",
+            "--limit <limit>",
+            "--include-archived <include-archived>"
+        ]);
     });
 
     it("invokes the MCP service when a registered command is executed", async () => {
@@ -89,8 +94,38 @@ describe("DefaultCommandMapper", () => {
         const mapper = new DefaultCommandMapper(program, service);
         mapper.registerCapabilities(capabilities);
 
-        await program.parseAsync(["node", "cli", "search-ids", "--query", "projects", "--limit", "5"]);
+        await program.parseAsync([
+            "node",
+            "cli",
+            "search-ids",
+            "--query",
+            "projects",
+            "--limit",
+            "5",
+            "--include-archived",
+            "true"
+        ]);
 
-        expect(service.executeTool).toHaveBeenCalledWith("search-ids", { query: "projects", limit: 5 });
+        expect(service.executeTool).toHaveBeenCalledWith("search-ids", {
+            "include-archived": true,
+            limit: 5,
+            query: "projects"
+        });
+    });
+
+    it("surfaces MCP execution errors to stderr and rethrows them", async () => {
+        const { program, stderr } = createProgram();
+        const service = createService();
+        const failure = new Error("tool execution failed");
+        service.executeTool.mockRejectedValue(failure);
+
+        const mapper = new DefaultCommandMapper(program, service, undefined, stderr.writable);
+        mapper.registerCapabilities(capabilities);
+
+        await expect(
+            program.parseAsync(["node", "cli", "search-ids", "--query", "projects", "--limit", "5"])
+        ).rejects.toThrow(failure);
+
+        expect(stderr.value()).toContain("tool execution failed");
     });
 });

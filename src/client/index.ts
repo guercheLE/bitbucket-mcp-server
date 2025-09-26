@@ -1,5 +1,7 @@
 import { Command, CommanderError } from "commander";
 
+import pkg from "../../package.json";
+
 import { DefaultCommandMapper, type CommandMapper } from "./command-mapper";
 import { createMcpService, type McpService, type McpServiceDependencies } from "./mcp-service";
 import type { CapabilityDiscoveryResult, ConsoleClientConfig } from "./types";
@@ -30,7 +32,10 @@ export const buildClient = (
     const stderr = dependencies.stderr ?? process.stderr;
 
     const program = new Command();
-    program.name("bitbucket-mcp-client").description("Console client for the Bitbucket MCP server");
+    program.name("mcp-client").description("Console client for the Bitbucket MCP server");
+    if (pkg.version) {
+        program.version(pkg.version);
+    }
     program.exitOverride((err) => {
         throw err;
     });

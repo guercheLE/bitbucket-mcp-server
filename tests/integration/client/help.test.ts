@@ -80,6 +80,7 @@ describe("console client --help output", () => {
         const getIndex = output.indexOf("get-id");
         const searchIndex = output.indexOf("search-ids");
 
+        expect(output).toContain("Usage: mcp-client");
         expect(callIndex).toBeGreaterThan(-1);
         expect(getIndex).toBeGreaterThan(-1);
         expect(searchIndex).toBeGreaterThan(-1);
