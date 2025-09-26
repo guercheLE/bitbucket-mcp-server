@@ -6,7 +6,15 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 
 import packageJson from "../../package.json";
+import { CallIdParams, type CallIdParamsOutput } from "../contracts/call-id";
+import { GetIdParams, type GetIdParamsInput } from "../contracts/get-id";
+import { SearchIdsParams, type SearchIdsParamsInput } from "../contracts/search-ids";
 import { BitbucketConnectionError, BitbucketRateLimitError, BitbucketService, BitbucketServiceError } from "../services/bitbucket";
+import { SchemaService } from "../services/SchemaService";
+import { VectorDBService } from "../services/VectorDBService";
+import { createCallIdTool } from "../tools/call-id";
+import { createGetIdTool } from "../tools/get-id";
+import { createSearchIdsTool } from "../tools/search-ids";
 import type { BitbucketCredentials, ServerConfig } from "../types/config";
 import { BitbucketCredentialsSchema, ServerConfigSchema } from "../types/config";
 import type { BitbucketServerInfo, ServerState } from "../types/server";
@@ -56,6 +64,8 @@ export interface ServerDependencies {
     createHttpServer?: HttpServerFactory;
     delay?: DelayFn;
     env?: NodeJS.ProcessEnv;
+    vectorDbService?: VectorDBService;
+    schemaService?: SchemaService;
 }
 
 export interface ServerOptions {
@@ -267,6 +277,109 @@ export const createServer = (options: ServerOptions = {}): ServerInstance => {
 
     const delay = options.dependencies?.delay ?? defaultDelay;
 
+    const vectorDbService = options.dependencies?.vectorDbService ?? new VectorDBService({
+        logger: logger.child({ scope: "vector-db-service" })
+    });
+
+    const schemaService = options.dependencies?.schemaService ?? new SchemaService({
+        logger: logger.child({ scope: "schema-service" })
+    });
+
+    const searchIdsTool = createSearchIdsTool({
+        vectorDb: vectorDbService,
+        logger: logger.child({ scope: "tool:search-ids" })
+    });
+
+    const getIdTool = createGetIdTool({
+        schemaService,
+        logger: logger.child({ scope: "tool:get-id" })
+    });
+
+    const callIdTool = createCallIdTool({
+        schemaService,
+        baseUrl: credentials.host,
+        logger: logger.child({ scope: "tool:call-id" })
+    });
+
+    type ToolTextContent = {
+        type: "text";
+        text: string;
+        _meta?: Record<string, unknown>;
+    };
+
+    interface ToolResult {
+        [key: string]: unknown;
+        content: ToolTextContent[];
+        structuredContent?: Record<string, unknown>;
+        isError?: boolean;
+    }
+
+    const buildToolResult = (payload: unknown): ToolResult => {
+        const text = typeof payload === "string" ? payload : JSON.stringify(payload, null, 2) ?? "";
+        return {
+            content: [
+                {
+                    type: "text",
+                    text
+                }
+            ],
+            structuredContent: {
+                data: payload
+            }
+        } satisfies ToolResult;
+    };
+
+    const registerTools = () => {
+        mcpServer.registerTool(
+            searchIdsTool.name,
+            {
+                title: searchIdsTool.config.title,
+                description: searchIdsTool.config.description
+            },
+            async (args) => {
+                const parsed = SearchIdsParams.parse(args) as SearchIdsParamsInput;
+                const result = await searchIdsTool.handler(parsed);
+                return buildToolResult(result);
+            }
+        );
+
+        mcpServer.registerTool(
+            getIdTool.name,
+            {
+                title: getIdTool.config.title,
+                description: getIdTool.config.description
+            },
+            async (args) => {
+                const parsed = GetIdParams.parse(args) as GetIdParamsInput;
+                const result = await getIdTool.handler(parsed);
+                return buildToolResult(result);
+            }
+        );
+
+        mcpServer.registerTool(
+            callIdTool.name,
+            {
+                title: callIdTool.config.title,
+                description: callIdTool.config.description
+            },
+            async (args) => {
+                const parsed = CallIdParams.parse(args) as CallIdParamsOutput;
+                const normalized = {
+                    id: parsed.id,
+                    parameters: parsed.parameters ?? {}
+                } satisfies CallIdParamsOutput;
+                const result = await callIdTool.handler(normalized);
+                return buildToolResult(result);
+            }
+        );
+
+        if (typeof mcpServer.sendToolListChanged === "function") {
+            mcpServer.sendToolListChanged();
+        }
+    };
+
+    registerTools();
+
     const state: ServerState = {
         isRunning: false,
         bitbucketConnected: false,
@@ -395,6 +508,7 @@ export const createServer = (options: ServerOptions = {}): ServerInstance => {
                 await mcpServer.close();
 
                 bitbucketService.dispose();
+                vectorDbService.dispose();
 
                 state.isRunning = false;
                 state.bitbucketConnected = false;

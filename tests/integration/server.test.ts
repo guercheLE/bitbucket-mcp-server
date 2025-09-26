@@ -86,7 +86,13 @@ const createHttpControllerStub = () => ({
 
 const createMcpServerStub = () => ({
     connect: jest.fn().mockResolvedValue(undefined),
-    close: jest.fn().mockResolvedValue(undefined)
+    close: jest.fn().mockResolvedValue(undefined),
+    registerTool: jest.fn().mockReturnValue({
+        enable: jest.fn(),
+        disable: jest.fn(),
+        remove: jest.fn()
+    }),
+    sendToolListChanged: jest.fn()
 });
 
 describeServerIntegration("Server lifecycle", () => {
@@ -121,6 +127,8 @@ describeServerIntegration("Server lifecycle", () => {
         await server.start();
 
         expect(mcpServer.connect).toHaveBeenCalledTimes(2);
+        expect(mcpServer.registerTool).toHaveBeenCalledTimes(3);
+        expect(mcpServer.sendToolListChanged).toHaveBeenCalledTimes(1);
         expect(bitbucketService.connect).toHaveBeenCalled();
 
         const state = server.getState();

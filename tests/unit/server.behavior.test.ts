@@ -39,7 +39,13 @@ const createHttpControllerStub = () => ({
 
 const createMcpServerStub = () => ({
     connect: jest.fn().mockResolvedValue(undefined),
-    close: jest.fn().mockResolvedValue(undefined)
+    close: jest.fn().mockResolvedValue(undefined),
+    registerTool: jest.fn().mockReturnValue({
+        enable: jest.fn(),
+        disable: jest.fn(),
+        remove: jest.fn()
+    }),
+    sendToolListChanged: jest.fn()
 });
 
 const createBitbucketServiceMock = () => {

@@ -6,6 +6,11 @@
   "engines": {
     "node": ">=18"
   },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
   "dependencies": {
     "@lancedb/lancedb": "^0.22.1",
     "@modelcontextprotocol/sdk": "1.18.2",
@@ -15,7 +20,7 @@
     "sentence-transformers": "npm:@xenova/transformers@^2.17.2",
     "sqlite-vec": "^0.1.7-alpha.2",
     "winston": "^3.17.0",
-    "zod": "3.23.8"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.0.0",
@@ -36,7 +41,8 @@
     "typescript": "^5.9.2"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && npm run generate-embeddings",
+    "prepack": "npm run build",
     "test": "jest",
     "lint": "eslint . --ext .ts",
     "lint:fix": "npm run lint -- --fix",

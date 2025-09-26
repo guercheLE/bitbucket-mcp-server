@@ -5,7 +5,8 @@ import type { Database as BetterSqlite3Database, Statement } from "better-sqlite
 import Database from "better-sqlite3";
 import { load as loadVecExtension } from "sqlite-vec";
 
-import { ApiOperationSourceSchema } from "../models/api-operation-source";
+import { OPERATION_CONTRACTS, type OperationContract } from "../contracts/operations";
+import { ApiOperationSourceSchema, type ApiOperationSource } from "../models/api-operation-source";
 import { createLogger, type Logger } from "../utils/logger";
 
 /**
@@ -19,6 +20,8 @@ export interface GenerateEmbeddingsOptions {
     embeddingDimensions?: number;
     embedder?: Embedder;
     logger?: Pick<Logger, "info" | "warn" | "error">;
+    sources?: ApiOperationSource[];
+    progressInterval?: number;
 }
 
 /**
@@ -36,11 +39,149 @@ export type Embedder = (input: string) => Promise<number[]>;
 const DEFAULT_SOURCE_PATH = "data/bitbucket-api.json";
 const DEFAULT_DATABASE_PATH = "dist/db/bitbucket-embeddings.db";
 const DEFAULT_MODEL_ID = "sentence-transformers/all-MiniLM-L6-v2";
+const DETERMINISTIC_EMBEDDING_DIMENSIONS = 384;
 
 let cachedEmbedder: Embedder | undefined;
 let cachedModelId: string | undefined;
 
 const resolvePath = (filePath: string): string => (isAbsolute(filePath) ? filePath : join(process.cwd(), filePath));
+
+interface OperationCandidate {
+    id: string;
+    record: unknown;
+    isFallback: boolean;
+}
+
+const toTitleCase = (value: string): string =>
+    value
+        .split(/[-_.]/)
+        .filter(Boolean)
+        .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+        .join(" ");
+
+const inferTags = (operation: OperationContract): string[] => {
+    const segments = operation.id.split(".").slice(1);
+    const tags = segments.filter(Boolean);
+    if (tags.length > 0) {
+        return Array.from(new Set(tags));
+    }
+
+    const pathSegments = operation.path
+        .split("/")
+        .filter((segment) => segment && !segment.startsWith("{"));
+    if (pathSegments.length > 0) {
+        return Array.from(new Set(pathSegments));
+    }
+
+    return ["bitbucket"];
+};
+
+const normalizeWhitespace = (value: string): string => value.replace(/\s+/g, " ").trim();
+
+const stripTrailingPeriod = (value: string): string => value.replace(/\.$/, "");
+
+const createDeterministicEmbedder = (dimensions: number = DETERMINISTIC_EMBEDDING_DIMENSIONS): Embedder => {
+    return async (text: string): Promise<number[]> => {
+        const vector = new Array<number>(dimensions).fill(0);
+        for (let index = 0; index < text.length; index += 1) {
+            const codePoint = text.charCodeAt(index);
+            vector[index % dimensions] += codePoint;
+        }
+
+        const normalizer = text.length === 0 ? 1 : text.length;
+        return vector.map((value) => value / normalizer);
+    };
+};
+
+const shouldUseDeterministicEmbedder = (): boolean => {
+    const mode = process.env.EMBEDDINGS_MODE?.toLowerCase();
+    const offline = process.env.OFFLINE_EMBEDDINGS?.toLowerCase();
+
+    if (!mode && !offline) {
+        return false;
+    }
+
+    return (
+        mode === "deterministic" ||
+        mode === "hash" ||
+        mode === "offline" ||
+        offline === "1" ||
+        offline === "true"
+    );
+};
+
+const buildFallbackRecord = (operation: OperationContract): ApiOperationSource => {
+    const normalizedDescription = normalizeWhitespace(operation.description ?? "");
+    const cleaned = normalizedDescription.length > 0 ? stripTrailingPeriod(normalizedDescription) : toTitleCase(operation.id);
+
+    return {
+        id: operation.id,
+        operationName: cleaned,
+        summary: normalizedDescription.length > 0 ? cleaned : undefined,
+        endpoint: operation.path,
+        type: operation.method,
+        tags: inferTags(operation),
+        description: cleaned,
+        compatibility: { cloud: true }
+    };
+};
+
+const readMetadataFile = async (filePath: string): Promise<Map<string, unknown>> => {
+    const rawContent = await fs.readFile(filePath, "utf-8");
+    const parsed = JSON.parse(rawContent);
+
+    if (!Array.isArray(parsed)) {
+        throw new Error("Source data must be an array of API operation objects");
+    }
+
+    const entries = new Map<string, unknown>();
+    for (const candidate of parsed) {
+        if (candidate && typeof candidate === "object") {
+            const id = (candidate as { id?: unknown }).id;
+            if (typeof id === "string" && id.length > 0) {
+                entries.set(id, candidate);
+            }
+        }
+    }
+
+    return entries;
+};
+
+const resolveOperationCandidates = async (
+    options: GenerateEmbeddingsOptions,
+    logger: Pick<Logger, "info" | "warn" | "error">
+): Promise<OperationCandidate[]> => {
+    if (options.sources) {
+        return options.sources.map((source) => ({ id: source.id, record: source, isFallback: false }));
+    }
+
+    const operations = Array.from(OPERATION_CONTRACTS.values());
+    const sourcePath = resolvePath(options.sourcePath ?? DEFAULT_SOURCE_PATH);
+
+    let metadataById: Map<string, unknown> = new Map();
+    try {
+        metadataById = await readMetadataFile(sourcePath);
+    } catch (error) {
+        logger.warn(`Unable to load metadata file at ${sourcePath}: ${error instanceof Error ? error.message : error}`);
+    }
+
+    return operations.map((operation) => {
+        const metadata = metadataById.get(operation.id);
+        if (!metadata) {
+            logger.warn(`No metadata found for operation ${operation.id}, using fallback values.`);
+            return { id: operation.id, record: buildFallbackRecord(operation), isFallback: true };
+        }
+
+        const enriched = {
+            ...metadata,
+            id: operation.id,
+            endpoint: operation.path,
+            type: operation.method
+        };
+
+        return { id: operation.id, record: enriched, isFallback: false };
+    });
+};
 
 const getDefaultEmbedder = async (modelId: string): Promise<Embedder> => {
     if (cachedEmbedder && cachedModelId === modelId) {
@@ -131,33 +272,38 @@ const ensureDirectory = async (filePath: string): Promise<void> => {
  */
 export const generateEmbeddings = async (options: GenerateEmbeddingsOptions = {}): Promise<GenerateEmbeddingsSummary> => {
     const logger = options.logger ?? createLogger({ level: "info" });
-    const sourcePath = resolvePath(options.sourcePath ?? DEFAULT_SOURCE_PATH);
     const databasePath = resolvePath(options.databasePath ?? DEFAULT_DATABASE_PATH);
     const modelId = options.model ?? DEFAULT_MODEL_ID;
 
-    logger.info(`Reading API operation data from ${sourcePath}`);
+    let usingDeterministicEmbedder = false;
+    let embedder: Embedder;
 
-    const rawContent = await fs.readFile(sourcePath, "utf-8").catch((error: unknown) => {
-        const message = error instanceof Error ? error.message : String(error);
-        logger.error(`Failed to read source file ${sourcePath}: ${message}`);
-        throw error;
-    });
-
-    let rawRecords: unknown;
-
-    try {
-        rawRecords = JSON.parse(rawContent);
-    } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        logger.error(`Source file ${sourcePath} contained invalid JSON: ${message}`);
-        throw error;
+    if (options.embedder) {
+        embedder = options.embedder;
+    } else if (shouldUseDeterministicEmbedder()) {
+        usingDeterministicEmbedder = true;
+        const dimensionsHint = options.embeddingDimensions && options.embeddingDimensions > 0
+            ? options.embeddingDimensions
+            : DETERMINISTIC_EMBEDDING_DIMENSIONS;
+        embedder = createDeterministicEmbedder(dimensionsHint);
+        logger.warn(
+            "Deterministic fallback embedder enabled via environment settings; semantic embeddings will not be generated."
+        );
+    } else {
+        try {
+            embedder = await getDefaultEmbedder(modelId);
+        } catch (error) {
+            usingDeterministicEmbedder = true;
+            const message = error instanceof Error ? error.message : String(error);
+            logger.warn(
+                `Unable to load embedding model "${modelId}" (${message}). Falling back to deterministic local embedder. Set EMBEDDINGS_MODE=deterministic to suppress this warning.`
+            );
+            const dimensionsHint = options.embeddingDimensions && options.embeddingDimensions > 0
+                ? options.embeddingDimensions
+                : DETERMINISTIC_EMBEDDING_DIMENSIONS;
+            embedder = createDeterministicEmbedder(dimensionsHint);
+        }
     }
-
-    if (!Array.isArray(rawRecords)) {
-        throw new Error("Source data must be an array of API operation objects");
-    }
-
-    const embedder = options.embedder ?? (await getDefaultEmbedder(modelId));
 
     await ensureDirectory(databasePath);
 
@@ -174,26 +320,64 @@ export const generateEmbeddings = async (options: GenerateEmbeddingsOptions = {}
         database.exec("DROP TABLE IF EXISTS bitbucket_api_embeddings;");
     }
 
+    const candidates = await resolveOperationCandidates(options, logger);
+
     const summary: GenerateEmbeddingsSummary = {
-        total: 0,
+        total: candidates.length,
         successes: 0,
         failures: 0,
         databasePath
     };
 
-    try {
-        for (const record of rawRecords) {
-            summary.total += 1;
+    if (summary.total === 0) {
+        logger.warn("No operations available to generate embeddings.");
+    } else {
+        if (usingDeterministicEmbedder) {
+            logger.info(`Generating embeddings for ${summary.total} operations using deterministic local vectors.`);
+        } else {
+            logger.info(`Generating embeddings for ${summary.total} operations using model ${modelId}.`);
+        }
+    }
 
-            const parsed = ApiOperationSourceSchema.safeParse(record);
+    const progressInterval = Math.max(
+        1,
+        options.progressInterval ?? Math.max(1, Math.floor(summary.total / 10))
+    );
+
+    const reportProgress = (processed: number): void => {
+        if (processed === 0) {
+            return;
+        }
+
+        if (processed === summary.total || processed % progressInterval === 0) {
+            logger.info(
+                `Processed ${processed}/${summary.total} operations (successes: ${summary.successes}, failures: ${summary.failures}).`
+            );
+        }
+    };
+
+    const fallbackOperationIds = new Set<string>();
+
+    try {
+        let processed = 0;
+
+        for (const candidate of candidates) {
+            const currentIndex = processed + 1;
+            const parsed = ApiOperationSourceSchema.safeParse(candidate.record);
             if (!parsed.success) {
                 summary.failures += 1;
-                logger.error(`Validation failed for record at index ${summary.total - 1}: ${parsed.error.message}`);
+                logger.error(`Validation failed for operation ${candidate.id}: ${parsed.error.message}`);
+                processed = currentIndex;
+                reportProgress(processed);
                 continue;
             }
 
             const operation = parsed.data;
             const serialized = JSON.stringify(operation);
+
+            if (candidate.isFallback) {
+                fallbackOperationIds.add(operation.id);
+            }
 
             let vector: number[];
             try {
@@ -202,6 +386,8 @@ export const generateEmbeddings = async (options: GenerateEmbeddingsOptions = {}
                 summary.failures += 1;
                 const message = error instanceof Error ? error.message : String(error);
                 logger.error(`Embedding generation failed for operation ${operation.id}: ${message}`);
+                processed = currentIndex;
+                reportProgress(processed);
                 continue;
             }
 
@@ -215,6 +401,8 @@ export const generateEmbeddings = async (options: GenerateEmbeddingsOptions = {}
                     logger.error(
                         `Embedding dimension mismatch for ${operation.id}. Expected ${dimensions}, received ${vector.length}`
                     );
+                    processed = currentIndex;
+                    reportProgress(processed);
                     continue;
                 }
 
@@ -224,6 +412,8 @@ export const generateEmbeddings = async (options: GenerateEmbeddingsOptions = {}
                 logger.error(
                     `Embedding dimension mismatch for ${operation.id}. Expected ${insert.dimensions}, received ${vector.length}`
                 );
+                processed = currentIndex;
+                reportProgress(processed);
                 continue;
             }
 
@@ -239,6 +429,20 @@ export const generateEmbeddings = async (options: GenerateEmbeddingsOptions = {}
                 const message = error instanceof Error ? error.message : String(error);
                 logger.error(`Failed to persist embedding for operation ${operation.id}: ${message}`);
             }
+
+            processed = currentIndex;
+            reportProgress(processed);
+        }
+
+        if (fallbackOperationIds.size === 0) {
+            logger.info("All operations had metadata in the source; no fallbacks were required.");
+        } else {
+            const fallbackList = Array.from(fallbackOperationIds);
+            const preview = fallbackList.slice(0, 10).join(", ");
+            const suffix = fallbackOperationIds.size > 10 ? "…" : "";
+            logger.warn(
+                `Fallback metadata used for ${fallbackOperationIds.size} operations: ${preview}${suffix}`
+            );
         }
 
         logger.info(
