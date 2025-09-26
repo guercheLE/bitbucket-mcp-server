@@ -5,6 +5,7 @@
 This is the primary entity for the MVP. The data model will be based on the response from the Bitbucket Cloud and Data Center APIs for pull requests.
 
 ### Key Attributes (common across Cloud and DC)
+
 - `id`: number (unique identifier)
 - `title`: string
 - `description`: string
@@ -17,22 +18,26 @@ This is the primary entity for the MVP. The data model will be based on the resp
 - `links`: object (for HATEOAS)
 
 ## 2. User Entity
+
 - `name`: string
 - `emailAddress`: string
 - `displayName`: string
 
 ## 3. Branch Entity
+
 - `id`: string
 - `displayId`: string
 - `latestCommit`: string
 - `repository`: Repository object
 
 ## 4. Repository Entity
+
 - `slug`: string
 - `name`: string
 - `project`: Project object
 
 ## 5. Project Entity
+
 - `key`: string
 - `name`: string
 

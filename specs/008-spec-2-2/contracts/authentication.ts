@@ -30,4 +30,4 @@ export const authFallbackContract = {
     authenticated: z.boolean(),
   }),
 };
-```
+```;

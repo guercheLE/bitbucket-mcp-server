@@ -6,6 +6,7 @@
 **Input**: User description: "Spec 0.1: Governance & Project Setup"
 
 ## Execution Flow (main)
+
 ```
 1. Parse user description from Input
    → If empty: ERROR "No feature description provided"
@@ -28,22 +29,28 @@
 ---
 
 ## Clarifications
+
 ### Session 2025-09-25
+
 - Q: How should branch protection rules on the `main` branch apply to repository administrators? → A: Administrators can bypass all protection rules (e.g., force push, merge without checks).
 - Q: What specific action should be taken if the CI/CD pipeline fails at any stage? → A: Halt the process and require manual intervention to fix and restart the pipeline.
 
 ## ⚡ Quick Guidelines
+
 - ✅ Focus on WHAT users need and WHY
 - ❌ Avoid HOW to implement (no tech stack, APIs, code structure)
 - 👥 Written for business stakeholders, not developers
 
 ### Section Requirements
+
 - **Mandatory sections**: Must be completed for every feature
 - **Optional sections**: Include only when relevant to the feature
 - When a section doesn't apply, remove it entirely (don't leave as "N/A")
 
 ### For AI Generation
+
 When creating this spec from a user prompt:
+
 1. **Mark all ambiguities**: Use [NEEDS CLARIFICATION: specific question] for any assumption you'd need to make
 2. **Don't guess**: If the prompt doesn't specify something (e.g., "login system" without auth method), mark it
 3. **Think like a tester**: Every vague requirement should fail the "testable and unambiguous" checklist item
@@ -57,22 +64,26 @@ When creating this spec from a user prompt:
 
 ---
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### Primary User Story
+
 As a project administrator, I want to set up the initial project structure and governance to ensure a consistent and high-quality development process from the start.
 
 ### Acceptance Scenarios
+
 1. **Given** a new project, **When** the setup is complete, **Then** the repository will have a `main` branch with protection rules, a standard directory structure, `LICENSE`, `CHANGELOG.md`, `README.md`, and an architecture document.
 2. **Given** the project is set up, **When** code is pushed, **Then** a CI/CD pipeline will run linting, testing, and code coverage checks, failing if coverage is below 80%.
 3. **Given** the project is set up, **When** a developer commits code, **Then** commit messages must follow semantic conventions.
 
 ### Edge Cases
+
 - If the CI/CD pipeline fails, the process is halted, requiring manual intervention.
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
+
 - **FR-001**: The system MUST have a Git repository initialized with a `main` branch.
 - **FR-002**: The system MUST have branch protection rules configured for the `main` branch. Administrators can bypass these rules.
 - **FR-003**: The system MUST have the following directory structure: `src`, `tests`, `docs`.
@@ -83,6 +94,7 @@ As a project administrator, I want to set up the initial project structure and g
 - **FR-008**: If the CI/CD pipeline fails, it MUST halt the process and require manual intervention for a fix and restart.
 
 ### Non-Functional Requirements
+
 - **NFR-001**: **Documentation:** The system MUST include an initial `README.md`.
 - **NFR-002**: **Documentation:** The system MUST include an architecture document in `/docs` that outlines the 3-tool semantic discovery pattern.
 - **NFR-003**: **Compliance:** The system MUST be configured with ESLint and Prettier to enforce code style standards.
@@ -91,32 +103,36 @@ As a project administrator, I want to set up the initial project structure and g
 ---
 
 ## Review & Acceptance Checklist
-*GATE: Automated checks run during main() execution*
+
+_GATE: Automated checks run during main() execution_
 
 ### Content Quality
-- [X] No implementation details (languages, frameworks, APIs)
-- [X] Focused on user value and business needs
-- [X] Written for non-technical stakeholders
-- [X] All mandatory sections completed
+
+- [x] No implementation details (languages, frameworks, APIs)
+- [x] Focused on user value and business needs
+- [x] Written for non-technical stakeholders
+- [x] All mandatory sections completed
 
 ### Requirement Completeness
-- [X] No [NEEDS CLARIFICATION] markers remain
-- [X] Requirements are testable and unambiguous
-- [X] Success criteria are measurable
-- [X] Scope is clearly bounded
-- [X] Dependencies and assumptions identified
+
+- [x] No [NEEDS CLARIFICATION] markers remain
+- [x] Requirements are testable and unambiguous
+- [x] Success criteria are measurable
+- [x] Scope is clearly bounded
+- [x] Dependencies and assumptions identified
 
 ---
 
 ## Execution Status
-*Updated by main() during processing*
 
-- [X] User description parsed
-- [X] Key concepts extracted
-- [X] Ambiguities marked
-- [X] User scenarios defined
-- [X] Requirements generated
+_Updated by main() during processing_
+
+- [x] User description parsed
+- [x] Key concepts extracted
+- [x] Ambiguities marked
+- [x] User scenarios defined
+- [x] Requirements generated
 - [ ] Entities identified
-- [X] Review checklist passed
+- [x] Review checklist passed
 
 ---

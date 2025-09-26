@@ -5,11 +5,13 @@ This document outlines the tasks required to implement the Enterprise Readiness 
 ## Task List
 
 ### Phase 0: Setup
+
 - **[X] T001**: Install new dependencies: `helmet`, `cors`, `express-rate-limit`, `opossum`, `prom-client`, `i18next`, `i18next-fs-backend`, `i18next-http-middleware`, `winston-daily-rotate-file`.
   - **File**: `package.json`
   - **Command**: `npm install helmet cors express-rate-limit opossum prom-client i18next i18next-fs-backend i18next-http-middleware winston-daily-rotate-file`
 
 ### Phase 1: Core Implementation
+
 - **[X] T002**: **[P]** Create configuration schemas in `src/models/config.ts` based on `data-model.md`.
   - **Files**: `src/models/config.ts`
   - **Depends on**: T001
@@ -60,6 +62,7 @@ This document outlines the tasks required to implement the Enterprise Readiness 
   - **Depends on**: T016
 
 ### Phase 2: Integration & Polish
+
 - **[X] T018**: **[P]** Write integration tests to verify all security middleware work together.
   - **File**: `tests/integration/security.test.ts`
   - **Depends on**: T008, T009, T010, T011

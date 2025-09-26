@@ -7,6 +7,7 @@ This quickstart demonstrates the end-to-end flow of using the 3-tool semantic di
 First, use the `search-ids` tool to find a relevant Bitbucket API operation. Let's say we want to find out how to get a list of projects.
 
 **Request:**
+
 ```json
 {
   "tool": "search-ids",
@@ -17,6 +18,7 @@ First, use the `search-ids` tool to find a relevant Bitbucket API operation. Let
 ```
 
 **Response:**
+
 ```json
 [
   {
@@ -32,6 +34,7 @@ First, use the `search-ids` tool to find a relevant Bitbucket API operation. Let
 Now that we have the `OperationID` (`GET /rest/api/1.0/projects`), use the `get-id` tool to retrieve its parameter schema.
 
 **Request:**
+
 ```json
 {
   "tool": "get-id",
@@ -43,6 +46,7 @@ Now that we have the `OperationID` (`GET /rest/api/1.0/projects`), use the `get-
 
 **Response (conceptual):**
 This will return a Zod schema. For this specific endpoint, the schema would be empty as it takes no parameters.
+
 ```typescript
 z.object({});
 ```
@@ -52,6 +56,7 @@ z.object({});
 Finally, use the `call-id` tool to execute the operation. Since there are no parameters, we pass an empty object.
 
 **Request:**
+
 ```json
 {
   "tool": "call-id",
@@ -64,6 +69,7 @@ Finally, use the `call-id` tool to execute the operation. Since there are no par
 
 **Response:**
 The response will be the direct output from the Bitbucket API.
+
 ```json
 {
   "size": 1,

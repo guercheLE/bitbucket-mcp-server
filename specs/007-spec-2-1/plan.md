@@ -1,10 +1,10 @@
-
 # Implementation Plan: Complete API Operation Implementation
 
 **Branch**: `007-spec-2-1` | **Date**: 2025-09-25 | **Spec**: [link](./spec.md)
 **Input**: Feature specification from `/Users/lucianoguerche/Documents/GitHub/bitbucket-mcp-server/specs/007-spec-2-1/spec.md`
 
 ## Execution Flow (/plan command scope)
+
 ```
 1. Load feature spec from Input path
    → If not found: ERROR "No feature spec at {path}"
@@ -27,13 +27,16 @@
 ```
 
 **IMPORTANT**: The /plan command STOPS at step 7. Phases 2-4 are executed by other commands:
+
 - Phase 2: /tasks command creates tasks.md
 - Phase 3-4: Implementation execution (manual or via tools)
 
 ## Summary
+
 This plan outlines the implementation of full Bitbucket API coverage, enabling the server to support all 200+ endpoints through the existing 3-tool semantic discovery pattern (`search-ids`, `get-id`, `call-id`). The approach involves systematically writing a contract test for each endpoint, implementing the internal operation to make the test pass, and finally generating embeddings for all new operations. This adheres strictly to the Test-Driven Development (TDD) process and architectural principles mandated by the project constitution.
 
 ## Technical Context
+
 **Language/Version**: TypeScript (Node.js 18+)
 **Primary Dependencies**: `@modelcontextprotocol/sdk`, `axios`, `zod`, `jest`, `winston`, `sqlite-vec`, `sentence-transformers`
 **Storage**: `sqlite-vec` file-based database
@@ -45,7 +48,8 @@ This plan outlines the implementation of full Bitbucket API coverage, enabling t
 **Scale/Scope**: 200+ Bitbucket API endpoints.
 
 ## Constitution Check
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
 - **MCP Protocol First**: PASS. The implementation uses the official SDK and exposes functionality via the 3-tool pattern.
 - **Multi-Transport Protocol**: PASS. No changes to transport layers.
@@ -58,6 +62,7 @@ This plan outlines the implementation of full Bitbucket API coverage, enabling t
 ## Project Structure
 
 ### Documentation (this feature)
+
 ```
 specs/007-spec-2-1/
 ├── plan.md              # This file (/plan command output)
@@ -69,6 +74,7 @@ specs/007-spec-2-1/
 ```
 
 ### Source Code (repository root)
+
 ```
 # Option 1: Single project (DEFAULT)
 src/
@@ -86,6 +92,7 @@ tests/
 **Structure Decision**: Option 1: Single project. The feature expands existing functionality within the established project structure.
 
 ## Phase 0: Outline & Research
+
 1. **Extract unknowns from Technical Context**: All technical context items are resolved and aligned with the project constitution and existing specs. No new research is required.
 2. **Generate and dispatch research agents**: Not applicable.
 3. **Consolidate findings** in `research.md`: The `research.md` file has been created to document the confirmation of existing technical decisions.
@@ -93,7 +100,8 @@ tests/
 **Output**: `research.md`
 
 ## Phase 1: Design & Contracts
-*Prerequisites: research.md complete*
+
+_Prerequisites: research.md complete_
 
 1. **Extract entities from feature spec** → `data-model.md`: The key entities (`API Operation`, `Contract Test`, `Embedding`) have been defined in `data-model.md`.
 2. **Generate API contracts**: No new public-facing API contracts will be created. The feature uses the existing `call-id` tool. The "contracts" for the internal operations are the Zod schemas defined within the operation implementation files themselves. The `contracts/` directory will remain empty for this feature.
@@ -104,16 +112,19 @@ tests/
 **Output**: `data-model.md`, `quickstart.md`, updated `.github/copilot-instructions.md`.
 
 ## Phase 2: Task Planning Approach
-*This section describes what the /tasks command will do - DO NOT execute during /plan*
+
+_This section describes what the /tasks command will do - DO NOT execute during /plan_
 
 **Task Generation Strategy**:
+
 - The `/tasks` command will generate a comprehensive list of tasks based on the requirement to implement 200+ API endpoints.
 - For each endpoint, the following tasks will be created:
-    1.  `Create contract test for [Endpoint Name] API`.
-    2.  `Implement internal operation for [Endpoint Name] API`.
+  1.  `Create contract test for [Endpoint Name] API`.
+  2.  `Implement internal operation for [Endpoint Name] API`.
 - A final task will be created for the embedding generation: `Generate and package embeddings for all implemented endpoints`.
 
 **Ordering Strategy**:
+
 - Tasks will be grouped by API resource (e.g., Repositories, Pull Requests) for logical organization.
 - Within each group, the TDD order will be respected: contract test task first, then implementation task.
 - The embedding generation task will be the final task.
@@ -123,36 +134,41 @@ tests/
 **IMPORTANT**: This phase is executed by the /tasks command, NOT by /plan
 
 ## Phase 3+: Future Implementation
-*These phases are beyond the scope of the /plan command*
+
+_These phases are beyond the scope of the /plan command_
 
 **Phase 3**: Task execution (/tasks command creates tasks.md)
 **Phase 4**: Implementation (execute tasks.md following constitutional principles)
 **Phase 5**: Validation (run tests, execute quickstart.md, performance validation)
 
 ## Complexity Tracking
-*Fill ONLY if Constitution Check has violations that must be justified*
+
+_Fill ONLY if Constitution Check has violations that must be justified_
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| N/A       | N/A        | N/A                                 |
-
+| --------- | ---------- | ------------------------------------ |
+| N/A       | N/A        | N/A                                  |
 
 ## Progress Tracking
-*This checklist is updated during execution flow*
+
+_This checklist is updated during execution flow_
 
 **Phase Status**:
-- [X] Phase 0: Research complete (/plan command)
-- [X] Phase 1: Design complete (/plan command)
-- [X] Phase 2: Task planning complete (/plan command - describe approach only)
+
+- [x] Phase 0: Research complete (/plan command)
+- [x] Phase 1: Design complete (/plan command)
+- [x] Phase 2: Task planning complete (/plan command - describe approach only)
 - [ ] Phase 3: Tasks generated (/tasks command)
 - [ ] Phase 4: Implementation complete
 - [ ] Phase 5: Validation passed
 
 **Gate Status**:
-- [X] Initial Constitution Check: PASS
-- [X] Post-Design Constitution Check: PASS
-- [X] All NEEDS CLARIFICATION resolved
-- [X] Complexity deviations documented
+
+- [x] Initial Constitution Check: PASS
+- [x] Post-Design Constitution Check: PASS
+- [x] All NEEDS CLARIFICATION resolved
+- [x] Complexity deviations documented
 
 ---
-*Based on Constitution v2.1.1 - See `/memory/constitution.md`*
+
+_Based on Constitution v2.1.1 - See `/memory/constitution.md`_

@@ -13,4 +13,4 @@ export const i18nContract = {
     translatedText: z.string(),
   }),
 };
-```
+```;

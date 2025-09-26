@@ -5,13 +5,19 @@ This feature focuses on infrastructure and server enhancements rather than intro
 ## 1. Configuration Schemas (Zod)
 
 ### Security Configuration (`SecurityConfig`)
+
 - **Purpose**: To configure all security-related middleware.
 - **Schema**:
+
   ```typescript
   import { z } from 'zod';
 
   export const CorsConfigSchema = z.object({
-    origin: z.union([z.string(), z.instanceof(RegExp), z.array(z.union([z.string(), z.instanceof(RegExp)]))]),
+    origin: z.union([
+      z.string(),
+      z.instanceof(RegExp),
+      z.array(z.union([z.string(), z.instanceof(RegExp)])),
+    ]),
     methods: z.array(z.string()).default(['GET', 'POST', 'PUT', 'DELETE']),
   });
 
@@ -37,8 +43,10 @@ This feature focuses on infrastructure and server enhancements rather than intro
   ```
 
 ### Observability Configuration (`ObservabilityConfig`)
+
 - **Purpose**: To configure logging and metrics.
 - **Schema**:
+
   ```typescript
   import { z } from 'zod';
 
@@ -59,8 +67,10 @@ This feature focuses on infrastructure and server enhancements rather than intro
   ```
 
 ### Authentication Configuration (`AuthConfig`)
+
 - **Purpose**: To define the authentication methods and their priority.
 - **Schema**:
+
   ```typescript
   import { z } from 'zod';
 
@@ -74,6 +84,7 @@ This feature focuses on infrastructure and server enhancements rather than intro
   ```
 
 ## 2. Relationships
+
 - The main server configuration will be extended to include these new models.
 - `SecurityConfig`, `ObservabilityConfig`, and `AuthConfig` will be nested within a global `AppConfig` object.
 - No new database tables or persistent data entities are required.

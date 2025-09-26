@@ -12,6 +12,7 @@ This structure represents the JSON output from the `npm audit` command. The main
 **Consumed by**: `monitor-vulnerabilities.sh`
 
 **Schema (Simplified)**:
+
 ```json
 {
   "auditReportVersion": 2,
@@ -31,9 +32,7 @@ This structure represents the JSON output from the `npm audit` command. The main
       ],
       "effects": [],
       "range": "<=1.2.3",
-      "nodes": [
-        "node_modules/some-dependency"
-      ],
+      "nodes": ["node_modules/some-dependency"],
       "fixAvailable": true
     }
   },
@@ -58,6 +57,7 @@ A simple structure to store the checksum of the fetched API documentation to det
 **Consumed by**: `regenerate-embeddings.sh`
 
 **Schema**:
+
 ```json
 {
   "url": "https://developer.atlassian.com",
@@ -65,6 +65,7 @@ A simple structure to store the checksum of the fetched API documentation to det
   "lastChecked": "2025-09-25T10:00:00Z"
 }
 ```
+
 This file will be stored locally within the project, for example at `.specify/state/api-checksum.json`.
 
 ### 3. Health Metrics
@@ -75,6 +76,7 @@ The structure of the metrics exposed by the `/health` endpoint for Prometheus.
 **Consumed by**: Prometheus scraper
 
 **Example Prometheus Exposition Format**:
+
 ```
 # HELP mcp_server_health_status Current health status of the server. 1 for healthy, 0 for unhealthy.
 # TYPE mcp_server_health_status gauge

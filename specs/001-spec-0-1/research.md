@@ -1,6 +1,7 @@
 # Research: Spec 0.1: Governance & Project Setup
 
 ## Decision: Technology Stack
+
 - **Language**: TypeScript
 - **Runtime**: Node.js 18+
 - **Testing**: Jest
@@ -9,6 +10,7 @@
 - **Alternatives considered**: `ChromaDB` was considered for the vector database, but `@lancedb/lancedb` (LanceDB) has better-perceived Node.js support.
 
 ## Decision: Project Structure
+
 - **Structure**: A single project structure will be used, containing both the server and a console client.
 - **Rationale**: The project is self-contained, and a monorepo structure with `backend`/`frontend` is not necessary at this stage. This simplifies the initial setup and build process.
 - **Alternatives considered**: A multi-project structure was considered but deemed overly complex for the initial setup.

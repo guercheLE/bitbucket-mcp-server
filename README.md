@@ -29,6 +29,7 @@ Bitbucket MCP Server is a Model Context Protocol (MCP) integration that provides
 ## Running the Server
 
 1. Configure Bitbucket credentials via environment variables (recommended):
+
    ```bash
    export BITBUCKET_HOST="https://your-bitbucket-instance.com"
    export BITBUCKET_USERNAME="your-username"
@@ -36,29 +37,37 @@ Bitbucket MCP Server is a Model Context Protocol (MCP) integration that provides
    export LOG_LEVEL=info
    export HTTP_PORT=3000
    ```
+
    Alternatively, you can pass the same values as CLI flags when starting the server.
 
 2. Build the project if you have not already done so:
+
    ```bash
    npm run build
    ```
 
 3. Start the MCP server using the compiled CLI:
+
    ```bash
    node dist/cli.js start --host "$BITBUCKET_HOST" --username "$BITBUCKET_USERNAME" --password "$BITBUCKET_PASSWORD" --port "${HTTP_PORT:-3000}" --log-level "${LOG_LEVEL:-info}"
    ```
+
    The CLI prints the resolved HTTP address once the server is ready. If Bitbucket is temporarily unavailable, the server enters a degraded mode and schedules automatic reconnection attempts.
 
 4. Verify the server is responding over HTTP:
+
    ```bash
    curl http://127.0.0.1:${HTTP_PORT:-3000}/health
    ```
+
    A healthy response returns HTTP 200 with details about the Bitbucket connection status. When the Bitbucket API is unavailable the endpoint reports a `degraded` status so automation can pause risky tasks. Metrics from each probe, including response latency, are forwarded to Prometheus under the `health_check_success_rate` gauge.
 
    You can also scrape Prometheus metrics at:
+
    ```bash
    curl http://127.0.0.1:${HTTP_PORT:-3000}/metrics
    ```
+
    The payload aggregates request counts, request durations, health check signals, and internal API latencies.
 
 5. Stop the server gracefully:

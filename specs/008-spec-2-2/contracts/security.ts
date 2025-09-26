@@ -25,4 +25,4 @@ export const circuitBreakerContract = {
     message: z.string(),
   }),
 };
-```
+```;

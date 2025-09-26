@@ -3,6 +3,7 @@
 This guide provides a quick way to test the core functionality of the implemented Bitbucket API operations using the 3-tool semantic discovery pattern.
 
 ## Prerequisites
+
 - A running instance of the Bitbucket MCP Server.
 - The server is configured with valid Bitbucket credentials (e.g., via environment variables).
 - The vector database has been generated and is accessible to the server.
@@ -16,6 +17,7 @@ This quickstart follows the primary user story: discovering and executing an API
 Use a natural language query to find the operation related to listing repositories.
 
 **Request:**
+
 ```json
 {
   "tool": "search-ids",
@@ -47,13 +49,15 @@ The server should return a paginated list of matching operation summaries. The t
   }
 }
 ```
-*(Note: The exact `id` may vary based on final implementation, but it should be clear and descriptive.)*
+
+_(Note: The exact `id` may vary based on final implementation, but it should be clear and descriptive.)_
 
 ### Step 2: Get Operation Details using `get-id`
 
 Use the `id` from the previous step to get the detailed schema for the operation.
 
 **Request:**
+
 ```json
 {
   "tool": "get-id",
@@ -90,6 +94,7 @@ The server should return the full details of the operation, including its Zod sc
 Finally, execute the operation with the required parameters.
 
 **Request:**
+
 ```json
 {
   "tool": "call-id",

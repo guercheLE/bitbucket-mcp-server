@@ -3,6 +3,7 @@
 This guide provides the steps to generate and verify the vector database.
 
 ## Prerequisites
+
 - Node.js 18+ installed
 - Project dependencies installed (`npm install`)
 
@@ -12,6 +13,7 @@ This guide provides the steps to generate and verify the vector database.
 2.  This file should contain an array of `ApiOperationSource` objects, as defined in `data-model.md`.
 
     **Example `data/bitbucket-api.json`:**
+
     ```json
     [
       {
@@ -36,10 +38,10 @@ Execute the script to process the source file and create the vector database.
 npm run generate-embeddings
 ```
 
--   **Expected Output**:
-    -   A log message indicating the number of embeddings generated.
-    -   A new file created at `dist/db/bitbucket-embeddings.db`.
-    -   A log message for any endpoints that failed to process.
+- **Expected Output**:
+  - A log message indicating the number of embeddings generated.
+  - A new file created at `dist/db/bitbucket-embeddings.db`.
+  - A log message for any endpoints that failed to process.
 
 ## Step 3: Verify the Database
 
@@ -52,13 +54,14 @@ A simple verification script or a test can be run to ensure the database is vali
     ```
 
 2.  **Expected Test Output**:
-    -   The test should pass, confirming:
-        -   The database file exists.
-        -   The database can be opened.
-        -   A sample query for a known API operation (e.g., "get repository") returns the correct ID.
+    - The test should pass, confirming:
+      - The database file exists.
+      - The database can be opened.
+      - A sample query for a known API operation (e.g., "get repository") returns the correct ID.
 
 ## Success Criteria
 
 The quickstart is successful if:
+
 - The `bitbucket-embeddings.db` file is created.
 - The verification test passes, demonstrating that the database is queryable and returns relevant results.

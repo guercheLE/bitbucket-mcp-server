@@ -1,10 +1,10 @@
-
 # Implementation Plan: Maintenance & Updates
 
 **Branch**: `009-spec-3-1` | **Date**: 2025-09-25 | **Spec**: [spec.md](spec.md)
 **Input**: Feature specification from `/Users/lucianoguerche/Documents/GitHub/bitbucket-mcp-server/specs/009-spec-3-1/spec.md`
 
 ## Execution Flow (/plan command scope)
+
 ```
 1. Load feature spec from Input path
    → If not found: ERROR "No feature spec at {path}"
@@ -27,13 +27,16 @@
 ```
 
 **IMPORTANT**: The /plan command STOPS at step 7. Phases 2-4 are executed by other commands:
+
 - Phase 2: /tasks command creates tasks.md
 - Phase 3-4: Implementation execution (manual or via tools)
 
 ## Summary
+
 This feature implements a robust maintenance and update process for the Bitbucket MCP Server. The technical approach involves creating automated scripts and CI/CD jobs to handle dependency updates, re-generation of vector embeddings from the latest Bitbucket API documentation, and continuous security monitoring. The goal is to ensure the server remains secure, reliable, and up-to-date with minimal manual intervention.
 
 ## Technical Context
+
 **Language/Version**: Node.js 18+, TypeScript
 **Primary Dependencies**: `@modelcontextprotocol/sdk`, `axios`, `winston`, `jest`, `zod`, `npm-check-updates`, `winston`
 **Storage**: `sqlite-vec` for vector embeddings
@@ -45,7 +48,8 @@ This feature implements a robust maintenance and update process for the Bitbucke
 **Scale/Scope**: Processes must handle all existing third-party dependencies and support re-embedding for 200+ API endpoints.
 
 ## Constitution Check
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
 - **MCP Protocol First**: PASS. This feature focuses on maintenance, not new MCP tools.
 - **Multi-Transport Protocol**: PASS. No changes to transport layers.
@@ -56,6 +60,7 @@ This feature implements a robust maintenance and update process for the Bitbucke
 ## Project Structure
 
 ### Documentation (this feature)
+
 ```
 specs/009-spec-3-1/
 ├── plan.md              # This file (/plan command output)
@@ -67,6 +72,7 @@ specs/009-spec-3-1/
 ```
 
 ### Source Code (repository root)
+
 ```
 # Option 1: Single project (DEFAULT)
 src/
@@ -106,6 +112,7 @@ ios/ or android/
 **Structure Decision**: Option 1: Single project
 
 ## Phase 0: Outline & Research
+
 1. **Extract unknowns from Technical Context**: None. All items are defined.
 2. **Generate and dispatch research agents**:
    - Task: "Research best practices for automating dependency updates in a Node.js project using `npm-check-updates` and `npm audit`."
@@ -116,7 +123,8 @@ ios/ or android/
 **Output**: research.md with all NEEDS CLARIFICATION resolved
 
 ## Phase 1: Design & Contracts
-*Prerequisites: research.md complete*
+
+_Prerequisites: research.md complete_
 
 1. **Extract entities from feature spec** → `data-model.md`:
    - No new persistent data models. The feature focuses on processes. The data model will document the transient data structures, such as the output of `npm audit` or the structure of API documentation to be parsed.
@@ -133,12 +141,14 @@ ios/ or android/
 5. **Update agent file incrementally**:
    - Run `.specify/scripts/bash/update-agent-context.sh copilot` to add new dependencies (`npm-check-updates`) and concepts to the Copilot instructions.
 
-**Output**: data-model.md, /contracts/*, failing tests, quickstart.md, .github/copilot-instructions.md
+**Output**: data-model.md, /contracts/\*, failing tests, quickstart.md, .github/copilot-instructions.md
 
 ## Phase 2: Task Planning Approach
-*This section describes what the /tasks command will do - DO NOT execute during /plan*
+
+_This section describes what the /tasks command will do - DO NOT execute during /plan_
 
 **Task Generation Strategy**:
+
 - Load `.specify/templates/tasks-template.md` as base.
 - Generate tasks from the design artifacts:
   - For each script in `/contracts`, create a task to implement the script.
@@ -147,6 +157,7 @@ ios/ or android/
   - Create a task to implement the health/metrics endpoint.
 
 **Ordering Strategy**:
+
 - TDD order: Tests for scripts before implementation.
 - Dependency order: Implement scripts first, then configure CI/CD jobs.
 
@@ -155,36 +166,41 @@ ios/ or android/
 **IMPORTANT**: This phase is executed by the /tasks command, NOT by /plan
 
 ## Phase 3+: Future Implementation
-*These phases are beyond the scope of the /plan command*
+
+_These phases are beyond the scope of the /plan command_
 
 **Phase 3**: Task execution (/tasks command creates tasks.md)  
 **Phase 4**: Implementation (execute tasks.md following constitutional principles)  
 **Phase 5**: Validation (run tests, execute quickstart.md, performance validation)
 
 ## Complexity Tracking
-*Fill ONLY if Constitution Check has violations that must be justified*
+
+_Fill ONLY if Constitution Check has violations that must be justified_
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| N/A       | N/A        | N/A                                 |
-
+| --------- | ---------- | ------------------------------------ |
+| N/A       | N/A        | N/A                                  |
 
 ## Progress Tracking
-*This checklist is updated during execution flow*
+
+_This checklist is updated during execution flow_
 
 **Phase Status**:
-- [X] Phase 0: Research complete (/plan command)
-- [X] Phase 1: Design complete (/plan command)
-- [X] Phase 2: Task planning complete (/plan command - describe approach only)
+
+- [x] Phase 0: Research complete (/plan command)
+- [x] Phase 1: Design complete (/plan command)
+- [x] Phase 2: Task planning complete (/plan command - describe approach only)
 - [ ] Phase 3: Tasks generated (/tasks command)
 - [ ] Phase 4: Implementation complete
 - [ ] Phase 5: Validation passed
 
 **Gate Status**:
-- [X] Initial Constitution Check: PASS
-- [X] Post-Design Constitution Check: PASS
-- [X] All NEEDS CLARIFICATION resolved
-- [X] Complexity deviations documented
+
+- [x] Initial Constitution Check: PASS
+- [x] Post-Design Constitution Check: PASS
+- [x] All NEEDS CLARIFICATION resolved
+- [x] Complexity deviations documented
 
 ---
-*Based on Constitution v2.1.1 - See `/memory/constitution.md`*
+
+_Based on Constitution v2.1.1 - See `/memory/constitution.md`_

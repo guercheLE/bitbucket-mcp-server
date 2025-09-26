@@ -37,27 +37,26 @@ This guide demonstrates how to use the console client to interact with the Bitbu
 2.  **Use the Semantic Discovery Workflow**
 
     Follow the three-tool pattern to find and execute an operation.
+    - **Step 2a: Search for an operation**
+      Use `search-ids` to find operations related to "list projects".
 
-    *   **Step 2a: Search for an operation**
-        Use `search-ids` to find operations related to "list projects".
+      ```bash
+      mcp-client search-ids --query "list projects"
+      ```
 
-        ```bash
-        mcp-client search-ids --query "list projects"
-        ```
+    - **Step 2b: Get operation details**
+      Use `get-id` with an ID from the search results to see its schema.
 
-    *   **Step 2b: Get operation details**
-        Use `get-id` with an ID from the search results to see its schema.
+      ```bash
+      mcp-client get-id --endpoint-id "bitbucket.list-projects"
+      ```
 
-        ```bash
-        mcp-client get-id --endpoint-id "bitbucket.list-projects"
-        ```
+    - **Step 2c: Call the operation**
+      Use `call-id` to execute the operation.
 
-    *   **Step 2c: Call the operation**
-        Use `call-id` to execute the operation.
-
-        ```bash
-        mcp-client call-id --endpoint-id "bitbucket.list-projects"
-        ```
+      ```bash
+      mcp-client call-id --endpoint-id "bitbucket.list-projects"
+      ```
 
 3.  **Verify Documentation**
 

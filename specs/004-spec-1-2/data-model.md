@@ -54,11 +54,11 @@ This represents the data that will be stored in the `sqlite-vec` database for ea
 - **Database**: `sqlite-vec`
 - **Table**: `bitbucket_api_embeddings`
 
-| Column | Type | Description |
-|---|---|---|
-| `id` | TEXT (Primary Key) | The unique identifier from `ApiOperationSource`. |
-| `embedding` | BLOB | The vector embedding generated from the source data. (Managed by `sqlite-vec`) |
-| `metadata` | TEXT | A JSON string containing the full `ApiOperationSource` object for retrieval. |
+| Column      | Type               | Description                                                                    |
+| ----------- | ------------------ | ------------------------------------------------------------------------------ |
+| `id`        | TEXT (Primary Key) | The unique identifier from `ApiOperationSource`.                               |
+| `embedding` | BLOB               | The vector embedding generated from the source data. (Managed by `sqlite-vec`) |
+| `metadata`  | TEXT               | A JSON string containing the full `ApiOperationSource` object for retrieval.   |
 
 ### Rationale
 

@@ -2,2693 +2,2023 @@
   {
     "method": "DELETE",
     "path": "/addon",
-    "tags": [
-      "Addon"
-    ],
+    "tags": ["Addon"],
     "summary": "Delete an app"
   },
   {
     "method": "PUT",
     "path": "/addon",
-    "tags": [
-      "Addon"
-    ],
+    "tags": ["Addon"],
     "summary": "Update an installed app"
   },
   {
     "method": "GET",
     "path": "/addon/linkers",
-    "tags": [
-      "Addon"
-    ],
+    "tags": ["Addon"],
     "summary": "List linkers for an app"
   },
   {
     "method": "GET",
     "path": "/addon/linkers/{linker_key}",
-    "tags": [
-      "Addon"
-    ],
+    "tags": ["Addon"],
     "summary": "Get a linker for an app"
   },
   {
     "method": "DELETE",
     "path": "/addon/linkers/{linker_key}/values",
-    "tags": [
-      "Addon"
-    ],
+    "tags": ["Addon"],
     "summary": "Delete all linker values"
   },
   {
     "method": "GET",
     "path": "/addon/linkers/{linker_key}/values",
-    "tags": [
-      "Addon"
-    ],
+    "tags": ["Addon"],
     "summary": "List linker values for a linker"
   },
   {
     "method": "POST",
     "path": "/addon/linkers/{linker_key}/values",
-    "tags": [
-      "Addon"
-    ],
+    "tags": ["Addon"],
     "summary": "Create a linker value"
   },
   {
     "method": "PUT",
     "path": "/addon/linkers/{linker_key}/values",
-    "tags": [
-      "Addon"
-    ],
+    "tags": ["Addon"],
     "summary": "Update a linker value"
   },
   {
     "method": "DELETE",
     "path": "/addon/linkers/{linker_key}/values/{value_id}",
-    "tags": [
-      "Addon"
-    ],
+    "tags": ["Addon"],
     "summary": "Delete a linker value"
   },
   {
     "method": "GET",
     "path": "/addon/linkers/{linker_key}/values/{value_id}",
-    "tags": [
-      "Addon"
-    ],
+    "tags": ["Addon"],
     "summary": "Get a linker value"
   },
   {
     "method": "GET",
     "path": "/hook_events",
-    "tags": [
-      "Webhooks"
-    ],
+    "tags": ["Webhooks"],
     "summary": "Get a webhook resource"
   },
   {
     "method": "GET",
     "path": "/hook_events/{subject_type}",
-    "tags": [
-      "Webhooks"
-    ],
+    "tags": ["Webhooks"],
     "summary": "List subscribable webhook types"
   },
   {
     "method": "GET",
     "path": "/repositories",
-    "tags": [
-      "Repositories"
-    ],
+    "tags": ["Repositories"],
     "summary": "List public repositories"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}",
-    "tags": [
-      "Repositories"
-    ],
+    "tags": ["Repositories"],
     "summary": "List repositories in a workspace"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}",
-    "tags": [
-      "Repositories"
-    ],
+    "tags": ["Repositories"],
     "summary": "Delete a repository"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}",
-    "tags": [
-      "Repositories"
-    ],
+    "tags": ["Repositories"],
     "summary": "Get a repository"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}",
-    "tags": [
-      "Repositories"
-    ],
+    "tags": ["Repositories"],
     "summary": "Create a repository"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}",
-    "tags": [
-      "Repositories"
-    ],
+    "tags": ["Repositories"],
     "summary": "Update a repository"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/branch-restrictions",
-    "tags": [
-      "Branch restrictions"
-    ],
+    "tags": ["Branch restrictions"],
     "summary": "List branch restrictions"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/branch-restrictions",
-    "tags": [
-      "Branch restrictions"
-    ],
+    "tags": ["Branch restrictions"],
     "summary": "Create a branch restriction rule"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/branch-restrictions/{id}",
-    "tags": [
-      "Branch restrictions"
-    ],
+    "tags": ["Branch restrictions"],
     "summary": "Delete a branch restriction rule"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/branch-restrictions/{id}",
-    "tags": [
-      "Branch restrictions"
-    ],
+    "tags": ["Branch restrictions"],
     "summary": "Get a branch restriction rule"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/branch-restrictions/{id}",
-    "tags": [
-      "Branch restrictions"
-    ],
+    "tags": ["Branch restrictions"],
     "summary": "Update a branch restriction rule"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/branching-model",
-    "tags": [
-      "Branching model"
-    ],
+    "tags": ["Branching model"],
     "summary": "Get the branching model for a repository"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/branching-model/settings",
-    "tags": [
-      "Branching model"
-    ],
+    "tags": ["Branching model"],
     "summary": "Get the branching model config for a repository"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/branching-model/settings",
-    "tags": [
-      "Branching model"
-    ],
+    "tags": ["Branching model"],
     "summary": "Update the branching model config for a repository"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/commit/{commit}",
-    "tags": [
-      "Commits"
-    ],
+    "tags": ["Commits"],
     "summary": "Get a commit"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/commit/{commit}/approve",
-    "tags": [
-      "Commits"
-    ],
+    "tags": ["Commits"],
     "summary": "Unapprove a commit"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/commit/{commit}/approve",
-    "tags": [
-      "Commits"
-    ],
+    "tags": ["Commits"],
     "summary": "Approve a commit"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/commit/{commit}/comments",
-    "tags": [
-      "Commits"
-    ],
+    "tags": ["Commits"],
     "summary": "List a commit's comments"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/commit/{commit}/comments",
-    "tags": [
-      "Commits"
-    ],
+    "tags": ["Commits"],
     "summary": "Create comment for a commit"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/commit/{commit}/comments/{comment_id}",
-    "tags": [
-      "Commits"
-    ],
+    "tags": ["Commits"],
     "summary": "Delete a commit comment"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/commit/{commit}/comments/{comment_id}",
-    "tags": [
-      "Commits"
-    ],
+    "tags": ["Commits"],
     "summary": "Get a commit comment"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/commit/{commit}/comments/{comment_id}",
-    "tags": [
-      "Commits"
-    ],
+    "tags": ["Commits"],
     "summary": "Update a commit comment"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/commit/{commit}/properties/{app_key}/{property_name}",
     "operationId": "updateCommitHostedPropertyValue",
-    "tags": [
-      "properties"
-    ],
+    "tags": ["properties"],
     "summary": "Update a commit application property"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/commit/{commit}/properties/{app_key}/{property_name}",
     "operationId": "deleteCommitHostedPropertyValue",
-    "tags": [
-      "properties"
-    ],
+    "tags": ["properties"],
     "summary": "Delete a commit application property"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/commit/{commit}/properties/{app_key}/{property_name}",
     "operationId": "getCommitHostedPropertyValue",
-    "tags": [
-      "properties"
-    ],
+    "tags": ["properties"],
     "summary": "Get a commit application property"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/commit/{commit}/pullrequests",
     "operationId": "getPullrequestsForCommit",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "List pull requests that contain a commit"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/commit/{commit}/reports",
     "operationId": "getReportsForCommit",
-    "tags": [
-      "Reports",
-      "Commits"
-    ],
+    "tags": ["Reports", "Commits"],
     "summary": "List reports"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/commit/{commit}/reports/{reportId}",
     "operationId": "createOrUpdateReport",
-    "tags": [
-      "Reports",
-      "Commits"
-    ],
+    "tags": ["Reports", "Commits"],
     "summary": "Create or update a report"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/commit/{commit}/reports/{reportId}",
     "operationId": "getReport",
-    "tags": [
-      "Reports",
-      "Commits"
-    ],
+    "tags": ["Reports", "Commits"],
     "summary": "Get a report"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/commit/{commit}/reports/{reportId}",
     "operationId": "deleteReport",
-    "tags": [
-      "Reports",
-      "Commits"
-    ],
+    "tags": ["Reports", "Commits"],
     "summary": "Delete a report"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/commit/{commit}/reports/{reportId}/annotations",
     "operationId": "getAnnotationsForReport",
-    "tags": [
-      "Reports",
-      "Commits"
-    ],
+    "tags": ["Reports", "Commits"],
     "summary": "List annotations"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/commit/{commit}/reports/{reportId}/annotations",
     "operationId": "bulkCreateOrUpdateAnnotations",
-    "tags": [
-      "Reports",
-      "Commits"
-    ],
+    "tags": ["Reports", "Commits"],
     "summary": "Bulk create or update annotations"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/commit/{commit}/reports/{reportId}/annotations/{annotationId}",
     "operationId": "getAnnotation",
-    "tags": [
-      "Reports",
-      "Commits"
-    ],
+    "tags": ["Reports", "Commits"],
     "summary": "Get an annotation"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/commit/{commit}/reports/{reportId}/annotations/{annotationId}",
     "operationId": "createOrUpdateAnnotation",
-    "tags": [
-      "Reports",
-      "Commits"
-    ],
+    "tags": ["Reports", "Commits"],
     "summary": "Create or update an annotation"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/commit/{commit}/reports/{reportId}/annotations/{annotationId}",
     "operationId": "deleteAnnotation",
-    "tags": [
-      "Reports",
-      "Commits"
-    ],
+    "tags": ["Reports", "Commits"],
     "summary": "Delete an annotation"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/commit/{commit}/statuses",
-    "tags": [
-      "Commit statuses"
-    ],
+    "tags": ["Commit statuses"],
     "summary": "List commit statuses for a commit"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/commit/{commit}/statuses/build",
-    "tags": [
-      "Commit statuses"
-    ],
+    "tags": ["Commit statuses"],
     "summary": "Create a build status for a commit"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/commit/{commit}/statuses/build/{key}",
-    "tags": [
-      "Commit statuses"
-    ],
+    "tags": ["Commit statuses"],
     "summary": "Get a build status for a commit"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/commit/{commit}/statuses/build/{key}",
-    "tags": [
-      "Commit statuses"
-    ],
+    "tags": ["Commit statuses"],
     "summary": "Update a build status for a commit"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/commits",
-    "tags": [
-      "Commits"
-    ],
+    "tags": ["Commits"],
     "summary": "List commits"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/commits",
-    "tags": [
-      "Commits"
-    ],
+    "tags": ["Commits"],
     "summary": "List commits with include/exclude"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/commits/{revision}",
-    "tags": [
-      "Commits"
-    ],
+    "tags": ["Commits"],
     "summary": "List commits for revision"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/commits/{revision}",
-    "tags": [
-      "Commits"
-    ],
+    "tags": ["Commits"],
     "summary": "List commits for revision using include/exclude"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/components",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "List components"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/components/{component_id}",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "Get a component for issues"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/default-reviewers",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "List default reviewers"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/default-reviewers/{target_username}",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "Remove a user from the default reviewers"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/default-reviewers/{target_username}",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "Get a default reviewer"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/default-reviewers/{target_username}",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "Add a user to the default reviewers"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/deploy-keys",
-    "tags": [
-      "Deployments"
-    ],
+    "tags": ["Deployments"],
     "summary": "List repository deploy keys"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/deploy-keys",
-    "tags": [
-      "Deployments"
-    ],
+    "tags": ["Deployments"],
     "summary": "Add a repository deploy key"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/deploy-keys/{key_id}",
-    "tags": [
-      "Deployments"
-    ],
+    "tags": ["Deployments"],
     "summary": "Delete a repository deploy key"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/deploy-keys/{key_id}",
-    "tags": [
-      "Deployments"
-    ],
+    "tags": ["Deployments"],
     "summary": "Get a repository deploy key"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/deploy-keys/{key_id}",
-    "tags": [
-      "Deployments"
-    ],
+    "tags": ["Deployments"],
     "summary": "Update a repository deploy key"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/deployments",
     "operationId": "getDeploymentsForRepository",
-    "tags": [
-      "Deployments"
-    ],
+    "tags": ["Deployments"],
     "summary": "List deployments"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/deployments/{deployment_uuid}",
     "operationId": "getDeploymentForRepository",
-    "tags": [
-      "Deployments"
-    ],
+    "tags": ["Deployments"],
     "summary": "Get a deployment"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/deployments_config/environments/{environment_uuid}/variables",
     "operationId": "getDeploymentVariables",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "List variables for an environment"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/deployments_config/environments/{environment_uuid}/variables",
     "operationId": "createDeploymentVariable",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Create a variable for an environment"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/deployments_config/environments/{environment_uuid}/variables/{variable_uuid}",
     "operationId": "updateDeploymentVariable",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Update a variable for an environment"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/deployments_config/environments/{environment_uuid}/variables/{variable_uuid}",
     "operationId": "deleteDeploymentVariable",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Delete a variable for an environment"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/diff/{spec}",
-    "tags": [
-      "Commits"
-    ],
+    "tags": ["Commits"],
     "summary": "Compare two commits"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/diffstat/{spec}",
-    "tags": [
-      "Commits"
-    ],
+    "tags": ["Commits"],
     "summary": "Compare two commit diff stats"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/downloads",
-    "tags": [
-      "Downloads"
-    ],
+    "tags": ["Downloads"],
     "summary": "List download artifacts"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/downloads",
-    "tags": [
-      "Downloads"
-    ],
+    "tags": ["Downloads"],
     "summary": "Upload a download artifact"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/downloads/{filename}",
-    "tags": [
-      "Downloads"
-    ],
+    "tags": ["Downloads"],
     "summary": "Delete a download artifact"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/downloads/{filename}",
-    "tags": [
-      "Downloads"
-    ],
+    "tags": ["Downloads"],
     "summary": "Get a download artifact link"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/effective-branching-model",
-    "tags": [
-      "Branching model"
-    ],
+    "tags": ["Branching model"],
     "summary": "Get the effective, or currently applied, branching model for a repository"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/effective-default-reviewers",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "List effective default reviewers"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/environments",
     "operationId": "getEnvironmentsForRepository",
-    "tags": [
-      "Deployments"
-    ],
+    "tags": ["Deployments"],
     "summary": "List environments"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/environments",
     "operationId": "createEnvironment",
-    "tags": [
-      "Deployments"
-    ],
+    "tags": ["Deployments"],
     "summary": "Create an environment"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/environments/{environment_uuid}",
     "operationId": "getEnvironmentForRepository",
-    "tags": [
-      "Deployments"
-    ],
+    "tags": ["Deployments"],
     "summary": "Get an environment"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/environments/{environment_uuid}",
     "operationId": "deleteEnvironmentForRepository",
-    "tags": [
-      "Deployments"
-    ],
+    "tags": ["Deployments"],
     "summary": "Delete an environment"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/environments/{environment_uuid}/changes",
     "operationId": "updateEnvironmentForRepository",
-    "tags": [
-      "Deployments"
-    ],
+    "tags": ["Deployments"],
     "summary": "Update an environment"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/filehistory/{commit}/{path}",
-    "tags": [
-      "Source",
-      "Repositories"
-    ],
+    "tags": ["Source", "Repositories"],
     "summary": "List commits that modified a file"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/forks",
-    "tags": [
-      "Repositories"
-    ],
+    "tags": ["Repositories"],
     "summary": "List repository forks"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/forks",
-    "tags": [
-      "Repositories"
-    ],
+    "tags": ["Repositories"],
     "summary": "Fork a repository"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/hooks",
-    "tags": [
-      "Repositories",
-      "Webhooks"
-    ],
+    "tags": ["Repositories", "Webhooks"],
     "summary": "List webhooks for a repository"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/hooks",
-    "tags": [
-      "Repositories",
-      "Webhooks"
-    ],
+    "tags": ["Repositories", "Webhooks"],
     "summary": "Create a webhook for a repository"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/hooks/{uid}",
-    "tags": [
-      "Repositories",
-      "Webhooks"
-    ],
+    "tags": ["Repositories", "Webhooks"],
     "summary": "Delete a webhook for a repository"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/hooks/{uid}",
-    "tags": [
-      "Repositories",
-      "Webhooks"
-    ],
+    "tags": ["Repositories", "Webhooks"],
     "summary": "Get a webhook for a repository"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/hooks/{uid}",
-    "tags": [
-      "Repositories",
-      "Webhooks"
-    ],
+    "tags": ["Repositories", "Webhooks"],
     "summary": "Update a webhook for a repository"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/issues",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "List issues"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/issues",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "Create an issue"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/issues/export",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "Export issues"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/issues/export/{repo_name}-issues-{task_id}.zip",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "Check issue export status"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/issues/import",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "Check issue import status"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/issues/import",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "Import issues"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/issues/{issue_id}",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "Delete an issue"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/issues/{issue_id}",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "Get an issue"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/issues/{issue_id}",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "Update an issue"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/issues/{issue_id}/attachments",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "List attachments for an issue"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/issues/{issue_id}/attachments",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "Upload an attachment to an issue"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/issues/{issue_id}/attachments/{path}",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "Delete an attachment for an issue"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/issues/{issue_id}/attachments/{path}",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "Get attachment for an issue"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/issues/{issue_id}/changes",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "List changes on an issue"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/issues/{issue_id}/changes",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "Modify the state of an issue"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/issues/{issue_id}/changes/{change_id}",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "Get issue change object"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/issues/{issue_id}/comments",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "List comments on an issue"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/issues/{issue_id}/comments",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "Create a comment on an issue"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/issues/{issue_id}/comments/{comment_id}",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "Delete a comment on an issue"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/issues/{issue_id}/comments/{comment_id}",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "Get a comment on an issue"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/issues/{issue_id}/comments/{comment_id}",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "Update a comment on an issue"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/issues/{issue_id}/vote",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "Remove vote for an issue"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/issues/{issue_id}/vote",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "Check if current user voted for an issue"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/issues/{issue_id}/vote",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "Vote for an issue"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/issues/{issue_id}/watch",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "Stop watching an issue"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/issues/{issue_id}/watch",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "Check if current user is watching a issue"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/issues/{issue_id}/watch",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "Watch an issue"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/merge-base/{revspec}",
-    "tags": [
-      "Commits"
-    ],
+    "tags": ["Commits"],
     "summary": "Get the common ancestor between two commits"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/milestones",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "List milestones"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/milestones/{milestone_id}",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "Get a milestone"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/override-settings",
-    "tags": [
-      "Repositories"
-    ],
+    "tags": ["Repositories"],
     "summary": "Retrieve the inheritance state for repository settings"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/override-settings",
-    "tags": [
-      "Repositories"
-    ],
+    "tags": ["Repositories"],
     "summary": "Set the inheritance state for repository settings\n                "
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/patch/{spec}",
-    "tags": [
-      "Commits"
-    ],
+    "tags": ["Commits"],
     "summary": "Get a patch for two commits"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/permissions-config/groups",
-    "tags": [
-      "Repositories"
-    ],
+    "tags": ["Repositories"],
     "summary": "List explicit group permissions for a repository"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/permissions-config/groups/{group_slug}",
-    "tags": [
-      "Repositories"
-    ],
+    "tags": ["Repositories"],
     "summary": "Delete an explicit group permission for a repository"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/permissions-config/groups/{group_slug}",
-    "tags": [
-      "Repositories"
-    ],
+    "tags": ["Repositories"],
     "summary": "Get an explicit group permission for a repository"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/permissions-config/groups/{group_slug}",
-    "tags": [
-      "Repositories"
-    ],
+    "tags": ["Repositories"],
     "summary": "Update an explicit group permission for a repository"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/permissions-config/users",
-    "tags": [
-      "Repositories"
-    ],
+    "tags": ["Repositories"],
     "summary": "List explicit user permissions for a repository"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/permissions-config/users/{selected_user_id}",
-    "tags": [
-      "Repositories"
-    ],
+    "tags": ["Repositories"],
     "summary": "Delete an explicit user permission for a repository"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/permissions-config/users/{selected_user_id}",
-    "tags": [
-      "Repositories"
-    ],
+    "tags": ["Repositories"],
     "summary": "Get an explicit user permission for a repository"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/permissions-config/users/{selected_user_id}",
-    "tags": [
-      "Repositories"
-    ],
+    "tags": ["Repositories"],
     "summary": "Update an explicit user permission for a repository"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines",
     "operationId": "getPipelinesForRepository",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "List pipelines"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines",
     "operationId": "createPipelineForRepository",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Run a pipeline"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines-config/caches",
     "operationId": "getRepositoryPipelineCaches",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "List caches"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines-config/caches",
     "operationId": "deleteRepositoryPipelineCaches",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Delete caches"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines-config/caches/{cache_uuid}",
     "operationId": "deleteRepositoryPipelineCache",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Delete a cache"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines-config/caches/{cache_uuid}/content-uri",
     "operationId": "getRepositoryPipelineCacheContentURI",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Get cache content URI"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines/{pipeline_uuid}",
     "operationId": "getPipelineForRepository",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Get a pipeline"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines/{pipeline_uuid}/steps",
     "operationId": "getPipelineStepsForRepository",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "List steps for a pipeline"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines/{pipeline_uuid}/steps/{step_uuid}",
     "operationId": "getPipelineStepForRepository",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Get a step of a pipeline"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines/{pipeline_uuid}/steps/{step_uuid}/log",
     "operationId": "getPipelineStepLogForRepository",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Get log file for a step"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines/{pipeline_uuid}/steps/{step_uuid}/logs/{log_uuid}",
     "operationId": "getPipelineContainerLog",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Get the logs for the build container or a service container for a given step of a pipeline."
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines/{pipeline_uuid}/steps/{step_uuid}/test_reports",
     "operationId": "getPipelineTestReports",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Get a summary of test reports for a given step of a pipeline."
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines/{pipeline_uuid}/steps/{step_uuid}/test_reports/test_cases",
     "operationId": "getPipelineTestReportTestCases",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Get test cases for a given step of a pipeline."
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines/{pipeline_uuid}/steps/{step_uuid}/test_reports/test_cases/{test_case_uuid}/test_case_reasons",
     "operationId": "getPipelineTestReportTestCaseReasons",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Get test case reasons (output) for a given test case in a step of a pipeline."
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines/{pipeline_uuid}/stopPipeline",
     "operationId": "stopPipeline",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Stop a pipeline"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines_config",
     "operationId": "getRepositoryPipelineConfig",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Get configuration"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines_config",
     "operationId": "updateRepositoryPipelineConfig",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Update configuration"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines_config/build_number",
     "operationId": "updateRepositoryBuildNumber",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Update the next build number"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines_config/schedules",
     "operationId": "createRepositoryPipelineSchedule",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Create a schedule"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines_config/schedules",
     "operationId": "getRepositoryPipelineSchedules",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "List schedules"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines_config/schedules/{schedule_uuid}",
     "operationId": "getRepositoryPipelineSchedule",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Get a schedule"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines_config/schedules/{schedule_uuid}",
     "operationId": "updateRepositoryPipelineSchedule",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Update a schedule"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines_config/schedules/{schedule_uuid}",
     "operationId": "deleteRepositoryPipelineSchedule",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Delete a schedule"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines_config/schedules/{schedule_uuid}/executions",
     "operationId": "getRepositoryPipelineScheduleExecutions",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "List executions of a schedule"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines_config/ssh/key_pair",
     "operationId": "getRepositoryPipelineSshKeyPair",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Get SSH key pair"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines_config/ssh/key_pair",
     "operationId": "updateRepositoryPipelineKeyPair",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Update SSH key pair"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines_config/ssh/key_pair",
     "operationId": "deleteRepositoryPipelineKeyPair",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Delete SSH key pair"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines_config/ssh/known_hosts",
     "operationId": "getRepositoryPipelineKnownHosts",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "List known hosts"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines_config/ssh/known_hosts",
     "operationId": "createRepositoryPipelineKnownHost",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Create a known host"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines_config/ssh/known_hosts/{known_host_uuid}",
     "operationId": "getRepositoryPipelineKnownHost",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Get a known host"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines_config/ssh/known_hosts/{known_host_uuid}",
     "operationId": "updateRepositoryPipelineKnownHost",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Update a known host"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines_config/ssh/known_hosts/{known_host_uuid}",
     "operationId": "deleteRepositoryPipelineKnownHost",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Delete a known host"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines_config/variables",
     "operationId": "getRepositoryPipelineVariables",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "List variables for a repository"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines_config/variables",
     "operationId": "createRepositoryPipelineVariable",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Create a variable for a repository"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines_config/variables/{variable_uuid}",
     "operationId": "getRepositoryPipelineVariable",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Get a variable for a repository"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines_config/variables/{variable_uuid}",
     "operationId": "updateRepositoryPipelineVariable",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Update a variable for a repository"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/pipelines_config/variables/{variable_uuid}",
     "operationId": "deleteRepositoryPipelineVariable",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Delete a variable for a repository"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/properties/{app_key}/{property_name}",
     "operationId": "updateRepositoryHostedPropertyValue",
-    "tags": [
-      "properties"
-    ],
+    "tags": ["properties"],
     "summary": "Update a repository application property"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/properties/{app_key}/{property_name}",
     "operationId": "deleteRepositoryHostedPropertyValue",
-    "tags": [
-      "properties"
-    ],
+    "tags": ["properties"],
     "summary": "Delete a repository application property"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/properties/{app_key}/{property_name}",
     "operationId": "getRepositoryHostedPropertyValue",
-    "tags": [
-      "properties"
-    ],
+    "tags": ["properties"],
     "summary": "Get a repository application property"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "List pull requests"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "Create a pull request"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/activity",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "List a pull request activity log"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pull_request_id}",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "Get a pull request"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pull_request_id}",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "Update a pull request"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pull_request_id}/activity",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "List a pull request activity log"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pull_request_id}/approve",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "Unapprove a pull request"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pull_request_id}/approve",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "Approve a pull request"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pull_request_id}/comments",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "List comments on a pull request"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pull_request_id}/comments",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "Create a comment on a pull request"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pull_request_id}/comments/{comment_id}",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "Delete a comment on a pull request"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pull_request_id}/comments/{comment_id}",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "Get a comment on a pull request"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pull_request_id}/comments/{comment_id}",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "Update a comment on a pull request"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pull_request_id}/comments/{comment_id}/resolve",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "Reopen a comment thread"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pull_request_id}/comments/{comment_id}/resolve",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "Resolve a comment thread"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pull_request_id}/commits",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "List commits on a pull request"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pull_request_id}/decline",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "Decline a pull request"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pull_request_id}/diff",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "List changes in a pull request"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pull_request_id}/diffstat",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "Get the diff stat for a pull request"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pull_request_id}/merge",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "Merge a pull request"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pull_request_id}/merge/task-status/{task_id}",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "Get the merge task status for a pull request"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pull_request_id}/patch",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "Get the patch for a pull request"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pull_request_id}/request-changes",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "Remove change request for a pull request"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pull_request_id}/request-changes",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "Request changes for a pull request"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pull_request_id}/statuses",
-    "tags": [
-      "Pullrequests",
-      "Commit statuses"
-    ],
+    "tags": ["Pullrequests", "Commit statuses"],
     "summary": "List commit statuses for a pull request"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pull_request_id}/tasks",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "List tasks on a pull request"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pull_request_id}/tasks",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "Create a task on a pull request"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pull_request_id}/tasks/{task_id}",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "Delete a task on a pull request"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pull_request_id}/tasks/{task_id}",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "Get a task on a pull request"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pull_request_id}/tasks/{task_id}",
-    "tags": [
-      "Pullrequests"
-    ],
+    "tags": ["Pullrequests"],
     "summary": "Update a task on a pull request"
   },
   {
     "method": "PUT",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pullrequest_id}/properties/{app_key}/{property_name}",
     "operationId": "updatePullRequestHostedPropertyValue",
-    "tags": [
-      "properties"
-    ],
+    "tags": ["properties"],
     "summary": "Update a pull request application property"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pullrequest_id}/properties/{app_key}/{property_name}",
     "operationId": "deletePullRequestHostedPropertyValue",
-    "tags": [
-      "properties"
-    ],
+    "tags": ["properties"],
     "summary": "Delete a pull request application property"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/pullrequests/{pullrequest_id}/properties/{app_key}/{property_name}",
     "operationId": "getPullRequestHostedPropertyValue",
-    "tags": [
-      "properties"
-    ],
+    "tags": ["properties"],
     "summary": "Get a pull request application property"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/refs",
-    "tags": [
-      "Refs"
-    ],
+    "tags": ["Refs"],
     "summary": "List branches and tags"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/refs/branches",
-    "tags": [
-      "Refs"
-    ],
+    "tags": ["Refs"],
     "summary": "List open branches"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/refs/branches",
-    "tags": [
-      "Refs"
-    ],
+    "tags": ["Refs"],
     "summary": "Create a branch"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/refs/branches/{name}",
-    "tags": [
-      "Refs"
-    ],
+    "tags": ["Refs"],
     "summary": "Delete a branch"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/refs/branches/{name}",
-    "tags": [
-      "Refs"
-    ],
+    "tags": ["Refs"],
     "summary": "Get a branch"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/refs/tags",
-    "tags": [
-      "Refs"
-    ],
+    "tags": ["Refs"],
     "summary": "List tags"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/refs/tags",
-    "tags": [
-      "Refs"
-    ],
+    "tags": ["Refs"],
     "summary": "Create a tag"
   },
   {
     "method": "DELETE",
     "path": "/repositories/{workspace}/{repo_slug}/refs/tags/{name}",
-    "tags": [
-      "Refs"
-    ],
+    "tags": ["Refs"],
     "summary": "Delete a tag"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/refs/tags/{name}",
-    "tags": [
-      "Refs"
-    ],
+    "tags": ["Refs"],
     "summary": "Get a tag"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/src",
-    "tags": [
-      "Source",
-      "Repositories"
-    ],
+    "tags": ["Source", "Repositories"],
     "summary": "Get the root directory of the main branch"
   },
   {
     "method": "POST",
     "path": "/repositories/{workspace}/{repo_slug}/src",
-    "tags": [
-      "Source",
-      "Repositories"
-    ],
+    "tags": ["Source", "Repositories"],
     "summary": "Create a commit by uploading a file"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/src/{commit}/{path}",
-    "tags": [
-      "Source",
-      "Repositories"
-    ],
+    "tags": ["Source", "Repositories"],
     "summary": "Get file or directory contents"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/versions",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "List defined versions for issues"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/versions/{version_id}",
-    "tags": [
-      "Issue tracker"
-    ],
+    "tags": ["Issue tracker"],
     "summary": "Get a defined version for issues"
   },
   {
     "method": "GET",
     "path": "/repositories/{workspace}/{repo_slug}/watchers",
-    "tags": [
-      "Repositories"
-    ],
+    "tags": ["Repositories"],
     "summary": "List repositories watchers"
   },
   {
     "method": "GET",
     "path": "/snippets",
-    "tags": [
-      "Snippets"
-    ],
+    "tags": ["Snippets"],
     "summary": "List snippets"
   },
   {
     "method": "POST",
     "path": "/snippets",
-    "tags": [
-      "Snippets"
-    ],
+    "tags": ["Snippets"],
     "summary": "Create a snippet"
   },
   {
     "method": "GET",
     "path": "/snippets/{workspace}",
-    "tags": [
-      "Snippets"
-    ],
+    "tags": ["Snippets"],
     "summary": "List snippets in a workspace"
   },
   {
     "method": "POST",
     "path": "/snippets/{workspace}",
-    "tags": [
-      "Snippets"
-    ],
+    "tags": ["Snippets"],
     "summary": "Create a snippet for a workspace"
   },
   {
     "method": "DELETE",
     "path": "/snippets/{workspace}/{encoded_id}",
-    "tags": [
-      "Snippets"
-    ],
+    "tags": ["Snippets"],
     "summary": "Delete a snippet"
   },
   {
     "method": "GET",
     "path": "/snippets/{workspace}/{encoded_id}",
-    "tags": [
-      "Snippets"
-    ],
+    "tags": ["Snippets"],
     "summary": "Get a snippet"
   },
   {
     "method": "PUT",
     "path": "/snippets/{workspace}/{encoded_id}",
-    "tags": [
-      "Snippets"
-    ],
+    "tags": ["Snippets"],
     "summary": "Update a snippet"
   },
   {
     "method": "GET",
     "path": "/snippets/{workspace}/{encoded_id}/comments",
-    "tags": [
-      "Snippets"
-    ],
+    "tags": ["Snippets"],
     "summary": "List comments on a snippet"
   },
   {
     "method": "POST",
     "path": "/snippets/{workspace}/{encoded_id}/comments",
-    "tags": [
-      "Snippets"
-    ],
+    "tags": ["Snippets"],
     "summary": "Create a comment on a snippet"
   },
   {
     "method": "DELETE",
     "path": "/snippets/{workspace}/{encoded_id}/comments/{comment_id}",
-    "tags": [
-      "Snippets"
-    ],
+    "tags": ["Snippets"],
     "summary": "Delete a comment on a snippet"
   },
   {
     "method": "GET",
     "path": "/snippets/{workspace}/{encoded_id}/comments/{comment_id}",
-    "tags": [
-      "Snippets"
-    ],
+    "tags": ["Snippets"],
     "summary": "Get a comment on a snippet"
   },
   {
     "method": "PUT",
     "path": "/snippets/{workspace}/{encoded_id}/comments/{comment_id}",
-    "tags": [
-      "Snippets"
-    ],
+    "tags": ["Snippets"],
     "summary": "Update a comment on a snippet"
   },
   {
     "method": "GET",
     "path": "/snippets/{workspace}/{encoded_id}/commits",
-    "tags": [
-      "Snippets"
-    ],
+    "tags": ["Snippets"],
     "summary": "List snippet changes"
   },
   {
     "method": "GET",
     "path": "/snippets/{workspace}/{encoded_id}/commits/{revision}",
-    "tags": [
-      "Snippets"
-    ],
+    "tags": ["Snippets"],
     "summary": "Get a previous snippet change"
   },
   {
     "method": "GET",
     "path": "/snippets/{workspace}/{encoded_id}/files/{path}",
-    "tags": [
-      "Snippets"
-    ],
+    "tags": ["Snippets"],
     "summary": "Get a snippet's raw file at HEAD"
   },
   {
     "method": "DELETE",
     "path": "/snippets/{workspace}/{encoded_id}/watch",
-    "tags": [
-      "Snippets"
-    ],
+    "tags": ["Snippets"],
     "summary": "Stop watching a snippet"
   },
   {
     "method": "GET",
     "path": "/snippets/{workspace}/{encoded_id}/watch",
-    "tags": [
-      "Snippets"
-    ],
+    "tags": ["Snippets"],
     "summary": "Check if the current user is watching a snippet"
   },
   {
     "method": "PUT",
     "path": "/snippets/{workspace}/{encoded_id}/watch",
-    "tags": [
-      "Snippets"
-    ],
+    "tags": ["Snippets"],
     "summary": "Watch a snippet"
   },
   {
     "method": "GET",
     "path": "/snippets/{workspace}/{encoded_id}/watchers",
-    "tags": [
-      "Snippets"
-    ],
+    "tags": ["Snippets"],
     "summary": "List users watching a snippet"
   },
   {
     "method": "DELETE",
     "path": "/snippets/{workspace}/{encoded_id}/{node_id}",
-    "tags": [
-      "Snippets"
-    ],
+    "tags": ["Snippets"],
     "summary": "Delete a previous revision of a snippet"
   },
   {
     "method": "GET",
     "path": "/snippets/{workspace}/{encoded_id}/{node_id}",
-    "tags": [
-      "Snippets"
-    ],
+    "tags": ["Snippets"],
     "summary": "Get a previous revision of a snippet"
   },
   {
     "method": "PUT",
     "path": "/snippets/{workspace}/{encoded_id}/{node_id}",
-    "tags": [
-      "Snippets"
-    ],
+    "tags": ["Snippets"],
     "summary": "Update a previous revision of a snippet"
   },
   {
     "method": "GET",
     "path": "/snippets/{workspace}/{encoded_id}/{node_id}/files/{path}",
-    "tags": [
-      "Snippets"
-    ],
+    "tags": ["Snippets"],
     "summary": "Get a snippet's raw file"
   },
   {
     "method": "GET",
     "path": "/snippets/{workspace}/{encoded_id}/{revision}/diff",
-    "tags": [
-      "Snippets"
-    ],
+    "tags": ["Snippets"],
     "summary": "Get snippet changes between versions"
   },
   {
     "method": "GET",
     "path": "/snippets/{workspace}/{encoded_id}/{revision}/patch",
-    "tags": [
-      "Snippets"
-    ],
+    "tags": ["Snippets"],
     "summary": "Get snippet patch between versions"
   },
   {
     "method": "GET",
     "path": "/teams/{username}/pipelines_config/variables",
     "operationId": "getPipelineVariablesForTeam",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "List variables for an account"
   },
   {
     "method": "POST",
     "path": "/teams/{username}/pipelines_config/variables",
     "operationId": "createPipelineVariableForTeam",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Create a variable for a user"
   },
   {
     "method": "GET",
     "path": "/teams/{username}/pipelines_config/variables/{variable_uuid}",
     "operationId": "getPipelineVariableForTeam",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Get a variable for a team"
   },
   {
     "method": "PUT",
     "path": "/teams/{username}/pipelines_config/variables/{variable_uuid}",
     "operationId": "updatePipelineVariableForTeam",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Update a variable for a team"
   },
   {
     "method": "DELETE",
     "path": "/teams/{username}/pipelines_config/variables/{variable_uuid}",
     "operationId": "deletePipelineVariableForTeam",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Delete a variable for a team"
   },
   {
     "method": "GET",
     "path": "/teams/{username}/search/code",
     "operationId": "searchTeam",
-    "tags": [
-      "Search"
-    ],
+    "tags": ["Search"],
     "summary": "Search for code in a team's repositories"
   },
   {
     "method": "GET",
     "path": "/user",
-    "tags": [
-      "Users"
-    ],
+    "tags": ["Users"],
     "summary": "Get current user"
   },
   {
     "method": "GET",
     "path": "/user/emails",
-    "tags": [
-      "Users"
-    ],
+    "tags": ["Users"],
     "summary": "List email addresses for current user"
   },
   {
     "method": "GET",
     "path": "/user/emails/{email}",
-    "tags": [
-      "Users"
-    ],
+    "tags": ["Users"],
     "summary": "Get an email address for current user"
   },
   {
     "method": "GET",
     "path": "/user/permissions/repositories",
-    "tags": [
-      "Repositories"
-    ],
+    "tags": ["Repositories"],
     "summary": "List repository permissions for a user"
   },
   {
     "method": "GET",
     "path": "/user/permissions/workspaces",
-    "tags": [
-      "Workspaces"
-    ],
+    "tags": ["Workspaces"],
     "summary": "List workspaces for the current user"
   },
   {
     "method": "GET",
     "path": "/users/{selected_user}",
-    "tags": [
-      "Users"
-    ],
+    "tags": ["Users"],
     "summary": "Get a user"
   },
   {
     "method": "GET",
     "path": "/users/{selected_user}/gpg-keys",
-    "tags": [
-      "GPG"
-    ],
+    "tags": ["GPG"],
     "summary": "List GPG keys"
   },
   {
     "method": "POST",
     "path": "/users/{selected_user}/gpg-keys",
-    "tags": [
-      "GPG"
-    ],
+    "tags": ["GPG"],
     "summary": "Add a new GPG key"
   },
   {
     "method": "DELETE",
     "path": "/users/{selected_user}/gpg-keys/{fingerprint}",
-    "tags": [
-      "GPG"
-    ],
+    "tags": ["GPG"],
     "summary": "Delete a GPG key"
   },
   {
     "method": "GET",
     "path": "/users/{selected_user}/gpg-keys/{fingerprint}",
-    "tags": [
-      "GPG"
-    ],
+    "tags": ["GPG"],
     "summary": "Get a GPG key"
   },
   {
     "method": "GET",
     "path": "/users/{selected_user}/pipelines_config/variables",
     "operationId": "getPipelineVariablesForUser",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "List variables for a user"
   },
   {
     "method": "POST",
     "path": "/users/{selected_user}/pipelines_config/variables",
     "operationId": "createPipelineVariableForUser",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Create a variable for a user"
   },
   {
     "method": "GET",
     "path": "/users/{selected_user}/pipelines_config/variables/{variable_uuid}",
     "operationId": "getPipelineVariableForUser",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Get a variable for a user"
   },
   {
     "method": "PUT",
     "path": "/users/{selected_user}/pipelines_config/variables/{variable_uuid}",
     "operationId": "updatePipelineVariableForUser",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Update a variable for a user"
   },
   {
     "method": "DELETE",
     "path": "/users/{selected_user}/pipelines_config/variables/{variable_uuid}",
     "operationId": "deletePipelineVariableForUser",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Delete a variable for a user"
   },
   {
     "method": "PUT",
     "path": "/users/{selected_user}/properties/{app_key}/{property_name}",
     "operationId": "updateUserHostedPropertyValue",
-    "tags": [
-      "properties"
-    ],
+    "tags": ["properties"],
     "summary": "Update a user application property"
   },
   {
     "method": "DELETE",
     "path": "/users/{selected_user}/properties/{app_key}/{property_name}",
     "operationId": "deleteUserHostedPropertyValue",
-    "tags": [
-      "properties"
-    ],
+    "tags": ["properties"],
     "summary": "Delete a user application property"
   },
   {
     "method": "GET",
     "path": "/users/{selected_user}/properties/{app_key}/{property_name}",
     "operationId": "retrieveUserHostedPropertyValue",
-    "tags": [
-      "properties"
-    ],
+    "tags": ["properties"],
     "summary": "Get a user application property"
   },
   {
     "method": "GET",
     "path": "/users/{selected_user}/search/code",
     "operationId": "searchAccount",
-    "tags": [
-      "Search"
-    ],
+    "tags": ["Search"],
     "summary": "Search for code in a user's repositories"
   },
   {
     "method": "GET",
     "path": "/users/{selected_user}/ssh-keys",
-    "tags": [
-      "SSH"
-    ],
+    "tags": ["SSH"],
     "summary": "List SSH keys"
   },
   {
     "method": "POST",
     "path": "/users/{selected_user}/ssh-keys",
-    "tags": [
-      "SSH"
-    ],
+    "tags": ["SSH"],
     "summary": "Add a new SSH key"
   },
   {
     "method": "DELETE",
     "path": "/users/{selected_user}/ssh-keys/{key_id}",
-    "tags": [
-      "SSH"
-    ],
+    "tags": ["SSH"],
     "summary": "Delete a SSH key"
   },
   {
     "method": "GET",
     "path": "/users/{selected_user}/ssh-keys/{key_id}",
-    "tags": [
-      "SSH"
-    ],
+    "tags": ["SSH"],
     "summary": "Get a SSH key"
   },
   {
     "method": "PUT",
     "path": "/users/{selected_user}/ssh-keys/{key_id}",
-    "tags": [
-      "SSH"
-    ],
+    "tags": ["SSH"],
     "summary": "Update a SSH key"
   },
   {
     "method": "GET",
     "path": "/workspaces",
-    "tags": [
-      "Workspaces"
-    ],
+    "tags": ["Workspaces"],
     "summary": "List workspaces for user"
   },
   {
     "method": "GET",
     "path": "/workspaces/{workspace}",
-    "tags": [
-      "Workspaces"
-    ],
+    "tags": ["Workspaces"],
     "summary": "Get a workspace"
   },
   {
     "method": "GET",
     "path": "/workspaces/{workspace}/hooks",
-    "tags": [
-      "Workspaces",
-      "Webhooks"
-    ],
+    "tags": ["Workspaces", "Webhooks"],
     "summary": "List webhooks for a workspace"
   },
   {
     "method": "POST",
     "path": "/workspaces/{workspace}/hooks",
-    "tags": [
-      "Workspaces",
-      "Webhooks"
-    ],
+    "tags": ["Workspaces", "Webhooks"],
     "summary": "Create a webhook for a workspace"
   },
   {
     "method": "DELETE",
     "path": "/workspaces/{workspace}/hooks/{uid}",
-    "tags": [
-      "Workspaces",
-      "Webhooks"
-    ],
+    "tags": ["Workspaces", "Webhooks"],
     "summary": "Delete a webhook for a workspace"
   },
   {
     "method": "GET",
     "path": "/workspaces/{workspace}/hooks/{uid}",
-    "tags": [
-      "Workspaces",
-      "Webhooks"
-    ],
+    "tags": ["Workspaces", "Webhooks"],
     "summary": "Get a webhook for a workspace"
   },
   {
     "method": "PUT",
     "path": "/workspaces/{workspace}/hooks/{uid}",
-    "tags": [
-      "Workspaces",
-      "Webhooks"
-    ],
+    "tags": ["Workspaces", "Webhooks"],
     "summary": "Update a webhook for a workspace"
   },
   {
     "method": "GET",
     "path": "/workspaces/{workspace}/members",
-    "tags": [
-      "Workspaces"
-    ],
+    "tags": ["Workspaces"],
     "summary": "List users in a workspace"
   },
   {
     "method": "GET",
     "path": "/workspaces/{workspace}/members/{member}",
-    "tags": [
-      "Workspaces"
-    ],
+    "tags": ["Workspaces"],
     "summary": "Get user membership for a workspace"
   },
   {
     "method": "GET",
     "path": "/workspaces/{workspace}/permissions",
-    "tags": [
-      "Workspaces"
-    ],
+    "tags": ["Workspaces"],
     "summary": "List user permissions in a workspace"
   },
   {
     "method": "GET",
     "path": "/workspaces/{workspace}/permissions/repositories",
-    "tags": [
-      "Workspaces"
-    ],
+    "tags": ["Workspaces"],
     "summary": "List all repository permissions for a workspace"
   },
   {
     "method": "GET",
     "path": "/workspaces/{workspace}/permissions/repositories/{repo_slug}",
-    "tags": [
-      "Workspaces"
-    ],
+    "tags": ["Workspaces"],
     "summary": "List a repository permissions for a workspace"
   },
   {
     "method": "GET",
     "path": "/workspaces/{workspace}/pipelines-config/identity/oidc/.well-known/openid-configuration",
     "operationId": "getOIDCConfiguration",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Get OpenID configuration for OIDC in Pipelines"
   },
   {
     "method": "GET",
     "path": "/workspaces/{workspace}/pipelines-config/identity/oidc/keys.json",
     "operationId": "getOIDCKeys",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Get keys for OIDC in Pipelines"
   },
   {
     "method": "GET",
     "path": "/workspaces/{workspace}/pipelines-config/variables",
     "operationId": "getPipelineVariablesForWorkspace",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "List variables for a workspace"
   },
   {
     "method": "POST",
     "path": "/workspaces/{workspace}/pipelines-config/variables",
     "operationId": "createPipelineVariableForWorkspace",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Create a variable for a workspace"
   },
   {
     "method": "GET",
     "path": "/workspaces/{workspace}/pipelines-config/variables/{variable_uuid}",
     "operationId": "getPipelineVariableForWorkspace",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Get variable for a workspace"
   },
   {
     "method": "PUT",
     "path": "/workspaces/{workspace}/pipelines-config/variables/{variable_uuid}",
     "operationId": "updatePipelineVariableForWorkspace",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Update variable for a workspace"
   },
   {
     "method": "DELETE",
     "path": "/workspaces/{workspace}/pipelines-config/variables/{variable_uuid}",
     "operationId": "deletePipelineVariableForWorkspace",
-    "tags": [
-      "Pipelines"
-    ],
+    "tags": ["Pipelines"],
     "summary": "Delete a variable for a workspace"
   },
   {
     "method": "GET",
     "path": "/workspaces/{workspace}/projects",
-    "tags": [
-      "Workspaces"
-    ],
+    "tags": ["Workspaces"],
     "summary": "List projects in a workspace"
   },
   {
     "method": "POST",
     "path": "/workspaces/{workspace}/projects",
-    "tags": [
-      "Projects"
-    ],
+    "tags": ["Projects"],
     "summary": "Create a project in a workspace"
   },
   {
     "method": "DELETE",
     "path": "/workspaces/{workspace}/projects/{project_key}",
-    "tags": [
-      "Projects"
-    ],
+    "tags": ["Projects"],
     "summary": "Delete a project for a workspace"
   },
   {
     "method": "GET",
     "path": "/workspaces/{workspace}/projects/{project_key}",
-    "tags": [
-      "Projects",
-      "Workspaces"
-    ],
+    "tags": ["Projects", "Workspaces"],
     "summary": "Get a project for a workspace"
   },
   {
     "method": "PUT",
     "path": "/workspaces/{workspace}/projects/{project_key}",
-    "tags": [
-      "Projects"
-    ],
+    "tags": ["Projects"],
     "summary": "Update a project for a workspace"
   },
   {
     "method": "GET",
     "path": "/workspaces/{workspace}/projects/{project_key}/branching-model",
-    "tags": [
-      "Branching model"
-    ],
+    "tags": ["Branching model"],
     "summary": "Get the branching model for a project"
   },
   {
     "method": "GET",
     "path": "/workspaces/{workspace}/projects/{project_key}/branching-model/settings",
-    "tags": [
-      "Branching model"
-    ],
+    "tags": ["Branching model"],
     "summary": "Get the branching model config for a project"
   },
   {
     "method": "PUT",
     "path": "/workspaces/{workspace}/projects/{project_key}/branching-model/settings",
-    "tags": [
-      "Branching model"
-    ],
+    "tags": ["Branching model"],
     "summary": "Update the branching model config for a project"
   },
   {
     "method": "GET",
     "path": "/workspaces/{workspace}/projects/{project_key}/default-reviewers",
-    "tags": [
-      "Projects"
-    ],
+    "tags": ["Projects"],
     "summary": "List the default reviewers in a project"
   },
   {
     "method": "DELETE",
     "path": "/workspaces/{workspace}/projects/{project_key}/default-reviewers/{selected_user}",
-    "tags": [
-      "Projects"
-    ],
+    "tags": ["Projects"],
     "summary": "Remove the specific user from the project's default reviewers"
   },
   {
     "method": "GET",
     "path": "/workspaces/{workspace}/projects/{project_key}/default-reviewers/{selected_user}",
-    "tags": [
-      "Projects"
-    ],
+    "tags": ["Projects"],
     "summary": "Get a default reviewer"
   },
   {
     "method": "PUT",
     "path": "/workspaces/{workspace}/projects/{project_key}/default-reviewers/{selected_user}",
-    "tags": [
-      "Projects"
-    ],
+    "tags": ["Projects"],
     "summary": "Add the specific user as a default reviewer for the project"
   },
   {
     "method": "GET",
     "path": "/workspaces/{workspace}/projects/{project_key}/deploy-keys",
-    "tags": [
-      "Deployments"
-    ],
+    "tags": ["Deployments"],
     "summary": "List project deploy keys"
   },
   {
     "method": "POST",
     "path": "/workspaces/{workspace}/projects/{project_key}/deploy-keys",
-    "tags": [
-      "Deployments"
-    ],
+    "tags": ["Deployments"],
     "summary": "Create a project deploy key"
   },
   {
     "method": "DELETE",
     "path": "/workspaces/{workspace}/projects/{project_key}/deploy-keys/{key_id}",
-    "tags": [
-      "Deployments"
-    ],
+    "tags": ["Deployments"],
     "summary": "Delete a deploy key from a project"
   },
   {
     "method": "GET",
     "path": "/workspaces/{workspace}/projects/{project_key}/deploy-keys/{key_id}",
-    "tags": [
-      "Deployments"
-    ],
+    "tags": ["Deployments"],
     "summary": "Get a project deploy key"
   },
   {
     "method": "GET",
     "path": "/workspaces/{workspace}/projects/{project_key}/permissions-config/groups",
-    "tags": [
-      "Projects"
-    ],
+    "tags": ["Projects"],
     "summary": "List explicit group permissions for a project"
   },
   {
     "method": "DELETE",
     "path": "/workspaces/{workspace}/projects/{project_key}/permissions-config/groups/{group_slug}",
-    "tags": [
-      "Projects"
-    ],
+    "tags": ["Projects"],
     "summary": "Delete an explicit group permission for a project"
   },
   {
     "method": "GET",
     "path": "/workspaces/{workspace}/projects/{project_key}/permissions-config/groups/{group_slug}",
-    "tags": [
-      "Projects"
-    ],
+    "tags": ["Projects"],
     "summary": "Get an explicit group permission for a project"
   },
   {
     "method": "PUT",
     "path": "/workspaces/{workspace}/projects/{project_key}/permissions-config/groups/{group_slug}",
-    "tags": [
-      "Projects"
-    ],
+    "tags": ["Projects"],
     "summary": "Update an explicit group permission for a project"
   },
   {
     "method": "GET",
     "path": "/workspaces/{workspace}/projects/{project_key}/permissions-config/users",
-    "tags": [
-      "Projects"
-    ],
+    "tags": ["Projects"],
     "summary": "List explicit user permissions for a project"
   },
   {
     "method": "DELETE",
     "path": "/workspaces/{workspace}/projects/{project_key}/permissions-config/users/{selected_user_id}",
-    "tags": [
-      "Projects"
-    ],
+    "tags": ["Projects"],
     "summary": "Delete an explicit user permission for a project"
   },
   {
     "method": "GET",
     "path": "/workspaces/{workspace}/projects/{project_key}/permissions-config/users/{selected_user_id}",
-    "tags": [
-      "Projects"
-    ],
+    "tags": ["Projects"],
     "summary": "Get an explicit user permission for a project"
   },
   {
     "method": "PUT",
     "path": "/workspaces/{workspace}/projects/{project_key}/permissions-config/users/{selected_user_id}",
-    "tags": [
-      "Projects"
-    ],
+    "tags": ["Projects"],
     "summary": "Update an explicit user permission for a project"
   },
   {
     "method": "GET",
     "path": "/workspaces/{workspace}/pullrequests/{selected_user}",
-    "tags": [
-      "Workspaces",
-      "Pullrequests"
-    ],
+    "tags": ["Workspaces", "Pullrequests"],
     "summary": "List workspace pull requests for a user"
   },
   {
     "method": "GET",
     "path": "/workspaces/{workspace}/search/code",
     "operationId": "searchWorkspace",
-    "tags": [
-      "Search"
-    ],
+    "tags": ["Search"],
     "summary": "Search for code in a workspace"
   }
 ]
