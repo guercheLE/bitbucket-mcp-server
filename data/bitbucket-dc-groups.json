@@ -1,0 +1,1188 @@
+{
+  "admin": [
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/admin/groups"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/admin/groups"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/admin/groups"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/admin/groups/add-user"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/admin/groups/add-users"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/admin/groups/more-members"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/admin/groups/more-non-members"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/admin/groups/remove-user"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/admin/users"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/admin/users"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/admin/users"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/admin/users"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/admin/users/add-group"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/admin/users/add-groups"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/admin/users/captcha"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/admin/users/credentials"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/admin/users/erasure"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/admin/users/erasure"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/admin/users/more-members"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/admin/users/more-non-members"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/admin/users/remove-group"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/admin/users/rename"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/admin/banner"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/admin/banner"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/admin/banner"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/admin/cluster"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/admin/default-branch"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/admin/default-branch"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/admin/default-branch"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/admin/license"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/admin/license"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/admin/mail-server"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/admin/mail-server"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/admin/mail-server"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/admin/mail-server/sender-address"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/admin/mail-server/sender-address"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/admin/mail-server/sender-address"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/admin/permissions/groups"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/admin/permissions/groups"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/admin/permissions/groups"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/admin/permissions/groups/none"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/admin/permissions/users"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/admin/permissions/users"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/admin/permissions/users"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/admin/permissions/users/none"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/admin/pull-requests/{scmId}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/admin/pull-requests/{scmId}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/admin/rate-limit/history"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/admin/rate-limit/settings"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/admin/rate-limit/settings"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/admin/rate-limit/settings/users"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/admin/rate-limit/settings/users"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/admin/rate-limit/settings/users/{userSlug}"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/admin/rate-limit/settings/users/{userSlug}"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/admin/rate-limit/settings/users/{userSlug}"
+    }
+  ],
+  "application-properties": [
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/application-properties"
+    }
+  ],
+  "build": [
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/build/capabilities"
+    }
+  ],
+  "dashboard": [
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/dashboard/pull-request-suggestions"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/dashboard/pull-requests"
+    }
+  ],
+  "deployment": [
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/deployment/capabilities"
+    }
+  ],
+  "groups": [
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/groups"
+    }
+  ],
+  "hooks": [
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/hooks/{hookKey}/avatar"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/settings/hooks"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/settings/hooks/{hookKey}"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/settings/hooks/{hookKey}"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/settings/hooks/{hookKey}/enabled"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/settings/hooks/{hookKey}/enabled"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/settings/hooks/{hookKey}/settings"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/settings/hooks/{hookKey}/settings"
+    }
+  ],
+  "inbox": [
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/inbox/pull-requests"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/inbox/pull-requests/count"
+    }
+  ],
+  "labels": [
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/labels"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/labels/{labelName}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/labels/{labelName}/labeled"
+    }
+  ],
+  "logs": [
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/logs/logger/{loggerName}"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/logs/logger/{loggerName}/{levelName}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/logs/rootLogger"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/logs/rootLogger/{levelName}"
+    }
+  ],
+  "markup": [
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/markup/preview"
+    }
+  ],
+  "migration": [
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/migration/exports"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/migration/exports/preview"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/migration/exports/{jobId}"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/migration/exports/{jobId}/cancel"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/migration/exports/{jobId}/messages"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/migration/imports"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/migration/imports/{jobId}"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/migration/imports/{jobId}/cancel"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/migration/imports/{jobId}/messages"
+    }
+  ],
+  "profile": [
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/profile/recent/repos"
+    }
+  ],
+  "projects": [
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/projects/{projectKey}"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/avatar.png"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/avatar.png"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/permissions/groups"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/projects/{projectKey}/permissions/groups"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/permissions/groups"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/permissions/groups/none"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/permissions/users"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/projects/{projectKey}/permissions/users"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/permissions/users"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/permissions/users/none"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/permissions/{permission}/all"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/permissions/{permission}/all"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/settings/pull-requests/{scmId}"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/settings/pull-requests/{scmId}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/settings/auto-decline"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/settings/auto-decline"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/projects/{projectKey}/settings/auto-decline"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/settings/hooks"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/settings/hooks/{hookKey}"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/settings/hooks/{hookKey}/enabled"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/projects/{projectKey}/settings/hooks/{hookKey}/enabled"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/settings/hooks/{hookKey}/settings"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/projects/{projectKey}/settings/hooks/{hookKey}/settings"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/settings/reviewer-groups"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/settings/reviewer-groups"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/settings/reviewer-groups/{id}"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/projects/{projectKey}/settings/reviewer-groups/{id}"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/settings/reviewer-groups/{id}"
+    }
+  ],
+  "repositories": [
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/contributing"
+    },
+    {
+      "method": "HEAD",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/contributing"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/default-branch"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/default-branch"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/forks"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/license"
+    },
+    {
+      "method": "HEAD",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/license"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/readme"
+    },
+    {
+      "method": "HEAD",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/readme"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/recreate"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/related"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/archive"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/attachments/{attachmentId}"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/attachments/{attachmentId}"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/attachments/{attachmentId}/metadata"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/attachments/{attachmentId}/metadata"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/attachments/{attachmentId}/metadata"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/compare/changes"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/compare/commits"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/compare/diff{path:.*}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/diff"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/diff"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/diff/{path:.*}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/diff/{path:.*}"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/labels"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/labels"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/labels/{labelName}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/last-modified"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/last-modified/{path:.*}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/participants"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/patch"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/ref-change-activities"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/ref-change-activities/branches"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/settings/pull-requests"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/settings/pull-requests"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/settings/auto-decline"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/settings/auto-decline"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/settings/auto-decline"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/settings/reviewer-groups"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/settings/reviewer-groups"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/settings/reviewer-groups/{id}"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/settings/reviewer-groups/{id}"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/settings/reviewer-groups/{id}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/settings/reviewer-groups/{id}/users"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/watch"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/watch"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/webhooks"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/webhooks"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/webhooks/test"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/webhooks/{webhookId}"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/webhooks/{webhookId}"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/webhooks/{webhookId}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/webhooks/{webhookId}/latest"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/webhooks/{webhookId}/statistics"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/webhooks/{webhookId}/statistics/summary"
+    }
+  ],
+  "branches": [
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/branches"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/branches"
+    }
+  ],
+  "default-branch": [
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/branches/default"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/branches/default"
+    }
+  ],
+  "source": [
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/browse"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/browse/{path:.*}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/browse/{path:.*}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/files"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/files/{path:.*}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/raw"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/raw/{path:.*}"
+    }
+  ],
+  "changes": [
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/changes"
+    }
+  ],
+  "commits": [
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/commits"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/builds"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/builds"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/builds"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/changes"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/comments"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/comments"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/comments/{commentId}"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/comments/{commentId}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/comments/{commentId}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/deployments"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/deployments"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/deployments"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/diff"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/diff"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/diff/{path:.*}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/diff/{path:.*}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/pull-requests"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/watch"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/watch"
+    }
+  ],
+  "repo-permissions.groups": [
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/permissions/groups"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/permissions/groups"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/permissions/groups"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/permissions/groups/none"
+    }
+  ],
+  "repo-permissions.users": [
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/permissions/users"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/permissions/users"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/permissions/users"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/permissions/users/none"
+    }
+  ],
+  "pull-requests": [
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}.diff"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}.patch"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/activities"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/decline"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/merge"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/merge"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/reopen"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/approve"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/approve"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/blocker-comments"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/blocker-comments"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/blocker-comments/{commentId}"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/blocker-comments/{commentId}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/blocker-comments/{commentId}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/changes"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/comments"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/comments"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/comments/{commentId}"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/comments/{commentId}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/comments/{commentId}"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/comments/{commentId}/apply-suggestion"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/commits"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/diff"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/diff"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/diff/{path:.*}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/diff/{path:.*}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/participants"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/participants"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/participants"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/participants/{userSlug}"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/participants/{userSlug}"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/review"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/review"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/review"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/tasks"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/tasks/count"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/watch"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/watch"
+    }
+  ],
+  "tags": [
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/tags"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/tags"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/tags/{name:.*}"
+    }
+  ],
+  "repos": [
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/repos"
+    }
+  ],
+  "tasks": [
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/tasks"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/tasks/{taskId}"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/tasks/{taskId}"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/tasks/{taskId}"
+    }
+  ],
+  "users": [
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/users"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/users"
+    },
+    {
+      "method": "PUT",
+      "path": "/rest/api/1.0/users/credentials"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/users/{userSlug}"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/users/{userSlug}/avatar.png"
+    },
+    {
+      "method": "DELETE",
+      "path": "/rest/api/1.0/users/{userSlug}/avatar.png"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/api/1.0/users/{userSlug}/settings"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/api/1.0/users/{userSlug}/settings"
+    }
+  ]
+}
