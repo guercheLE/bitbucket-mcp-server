@@ -29,3 +29,29 @@ This file lists the tasks for implementing the **Webhooks and Hooks** API endpoi
 - [ ] **T150**: Implement `bitbucket.dc.hooks.enable` in `src/tools/operations/hooks/enable.ts`.
 - [ ] **T151** [P]: Write contract test for `bitbucket.dc.hooks.updateSettings` in `tests/contract/operations/hooks/updateSettings.test.ts`.
 - [ ] **T152**: Implement `bitbucket.dc.hooks.updateSettings` in `src/tools/operations/hooks/updateSettings.ts`.
+
+## Extended Coverage
+
+### Cloud · Webhooks Operations
+- [ ] **T444** [P]: Write contract test for `bitbucket.hook-events.get` in `tests/contract/operations/hook-events/get.test.ts`.
+- [ ] **T445**: Implement `bitbucket.hook-events.get` in `src/tools/operations/hook-events/get.ts`.
+- [ ] **T446** [P]: Write contract test for `bitbucket.hook-events.get` in `tests/contract/operations/hook-events/get.test.ts`.
+- [ ] **T447**: Implement `bitbucket.hook-events.get` in `src/tools/operations/hook-events/get.ts`.
+
+### Data Center · Hooks Operations
+- [ ] **T448** [P]: Write contract test for `bitbucket.dc.hooks.avatar.list` in `tests/contract/operations/data-center/hooks/avatar/list.test.ts`.
+- [ ] **T449**: Implement `bitbucket.dc.hooks.avatar.list` in `src/tools/operations/data-center/hooks/avatar/list.ts`.
+- [ ] **T450** [P]: Write contract test for `bitbucket.dc.projects.repos.settings.hooks.delete` in `tests/contract/operations/data-center/projects/repos/settings/hooks/delete.test.ts`.
+- [ ] **T451**: Implement `bitbucket.dc.projects.repos.settings.hooks.delete` in `src/tools/operations/data-center/projects/repos/settings/hooks/delete.ts`.
+- [ ] **T452** [P]: Write contract test for `bitbucket.dc.projects.repos.settings.hooks.enabled.delete` in `tests/contract/operations/data-center/projects/repos/settings/hooks/enabled/delete.test.ts`.
+- [ ] **T453**: Implement `bitbucket.dc.projects.repos.settings.hooks.enabled.delete` in `src/tools/operations/data-center/projects/repos/settings/hooks/enabled/delete.ts`.
+- [ ] **T454** [P]: Write contract test for `bitbucket.dc.projects.repos.settings.hooks.enabled.update` in `tests/contract/operations/data-center/projects/repos/settings/hooks/enabled/update.test.ts`.
+- [ ] **T455**: Implement `bitbucket.dc.projects.repos.settings.hooks.enabled.update` in `src/tools/operations/data-center/projects/repos/settings/hooks/enabled/update.ts`.
+- [ ] **T456** [P]: Write contract test for `bitbucket.dc.projects.repos.settings.hooks.get` in `tests/contract/operations/data-center/projects/repos/settings/hooks/get.test.ts`.
+- [ ] **T457**: Implement `bitbucket.dc.projects.repos.settings.hooks.get` in `src/tools/operations/data-center/projects/repos/settings/hooks/get.ts`.
+- [ ] **T458** [P]: Write contract test for `bitbucket.dc.projects.repos.settings.hooks.list` in `tests/contract/operations/data-center/projects/repos/settings/hooks/list.test.ts`.
+- [ ] **T459**: Implement `bitbucket.dc.projects.repos.settings.hooks.list` in `src/tools/operations/data-center/projects/repos/settings/hooks/list.ts`.
+- [ ] **T460** [P]: Write contract test for `bitbucket.dc.projects.repos.settings.hooks.settings.list` in `tests/contract/operations/data-center/projects/repos/settings/hooks/settings/list.test.ts`.
+- [ ] **T461**: Implement `bitbucket.dc.projects.repos.settings.hooks.settings.list` in `src/tools/operations/data-center/projects/repos/settings/hooks/settings/list.ts`.
+- [ ] **T462** [P]: Write contract test for `bitbucket.dc.projects.repos.settings.hooks.settings.update` in `tests/contract/operations/data-center/projects/repos/settings/hooks/settings/update.test.ts`.
+- [ ] **T463**: Implement `bitbucket.dc.projects.repos.settings.hooks.settings.update` in `src/tools/operations/data-center/projects/repos/settings/hooks/settings/update.ts`.

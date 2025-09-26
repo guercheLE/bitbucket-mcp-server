@@ -25,3 +25,33 @@ This file lists the tasks for implementing the **Users and Groups** API endpoint
 - [ ] **T108**: Implement `bitbucket.dc.admin.groups.delete` in `src/tools/operations/admin/groups/delete.ts`.
 - [ ] **T109** [P]: Write contract test for `bitbucket.dc.admin.groups.addUsers` in `tests/contract/operations/admin/groups/addUsers.test.ts`.
 - [ ] **T110**: Implement `bitbucket.dc.admin.groups.addUsers` in `src/tools/operations/admin/groups/addUsers.ts`.
+
+## Extended Coverage
+
+### Cloud · Users Operations
+- [ ] **T930** [P]: Write contract test for `bitbucket.user.emails.get` in `tests/contract/operations/user/emails/get.test.ts`.
+- [ ] **T931**: Implement `bitbucket.user.emails.get` in `src/tools/operations/user/emails/get.ts`.
+- [ ] **T932** [P]: Write contract test for `bitbucket.user.get` in `tests/contract/operations/user/get.test.ts`.
+- [ ] **T933**: Implement `bitbucket.user.get` in `src/tools/operations/user/get.ts`.
+
+### Cloud · SSH Operations
+- [ ] **T934** [P]: Write contract test for `bitbucket.users.ssh-keys.add` in `tests/contract/operations/users/ssh-keys/add.test.ts`.
+- [ ] **T935**: Implement `bitbucket.users.ssh-keys.add` in `src/tools/operations/users/ssh-keys/add.ts`.
+- [ ] **T936** [P]: Write contract test for `bitbucket.users.ssh-keys.delete` in `tests/contract/operations/users/ssh-keys/delete.test.ts`.
+- [ ] **T937**: Implement `bitbucket.users.ssh-keys.delete` in `src/tools/operations/users/ssh-keys/delete.ts`.
+- [ ] **T938** [P]: Write contract test for `bitbucket.users.ssh-keys.get` in `tests/contract/operations/users/ssh-keys/get.test.ts`.
+- [ ] **T939**: Implement `bitbucket.users.ssh-keys.get` in `src/tools/operations/users/ssh-keys/get.ts`.
+- [ ] **T940** [P]: Write contract test for `bitbucket.users.ssh-keys.list` in `tests/contract/operations/users/ssh-keys/list.test.ts`.
+- [ ] **T941**: Implement `bitbucket.users.ssh-keys.list` in `src/tools/operations/users/ssh-keys/list.ts`.
+- [ ] **T942** [P]: Write contract test for `bitbucket.users.ssh-keys.update` in `tests/contract/operations/users/ssh-keys/update.test.ts`.
+- [ ] **T943**: Implement `bitbucket.users.ssh-keys.update` in `src/tools/operations/users/ssh-keys/update.ts`.
+
+### Cloud · GPG Operations
+- [ ] **T944** [P]: Write contract test for `bitbucket.users.gpg-keys.add` in `tests/contract/operations/users/gpg-keys/add.test.ts`.
+- [ ] **T945**: Implement `bitbucket.users.gpg-keys.add` in `src/tools/operations/users/gpg-keys/add.ts`.
+- [ ] **T946** [P]: Write contract test for `bitbucket.users.gpg-keys.delete` in `tests/contract/operations/users/gpg-keys/delete.test.ts`.
+- [ ] **T947**: Implement `bitbucket.users.gpg-keys.delete` in `src/tools/operations/users/gpg-keys/delete.ts`.
+- [ ] **T948** [P]: Write contract test for `bitbucket.users.gpg-keys.get` in `tests/contract/operations/users/gpg-keys/get.test.ts`.
+- [ ] **T949**: Implement `bitbucket.users.gpg-keys.get` in `src/tools/operations/users/gpg-keys/get.ts`.
+- [ ] **T950** [P]: Write contract test for `bitbucket.users.gpg-keys.list` in `tests/contract/operations/users/gpg-keys/list.test.ts`.
+- [ ] **T951**: Implement `bitbucket.users.gpg-keys.list` in `src/tools/operations/users/gpg-keys/list.ts`.
