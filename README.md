@@ -70,6 +70,20 @@ Bitbucket MCP Server is a Model Context Protocol (MCP) integration that provides
 - `npm run format:fix` – Formats the repository with Prettier.
 - `npm run build` – Compiles TypeScript sources to `dist/`.
 - `npm run typecheck` – Runs the TypeScript compiler without emitting output.
+- `npm run generate-embeddings` – Generates the `sqlite-vec` database from Bitbucket API metadata.
+
+## Generating Embeddings
+
+The embedding pipeline transforms structured Bitbucket API metadata into a `sqlite-vec` database that powers semantic search.
+
+1. Populate `data/bitbucket-api.json` with an array of `ApiOperationSource` objects (see `specs/004-spec-1-2/data-model.md` for the schema).
+2. Run the script:
+   ```bash
+   npm run generate-embeddings
+   ```
+3. On success the command logs the output path and creates `dist/db/bitbucket-embeddings.db`. Re-run the script whenever the source JSON changes.
+
+All errors are logged per-record, so malformed entries do not halt the overall run.
 
 ## Core Models
 
