@@ -10,6 +10,10 @@ type HistogramMock = {
     observe: jest.Mock;
 };
 
+type GaugeMock = {
+    set: jest.Mock;
+};
+
 type RegistryMock = {
     setDefaultLabels: jest.Mock;
     metrics: jest.Mock<Promise<string>, []>;
@@ -21,6 +25,7 @@ type CollectDefaultMetricsMock = jest.Mock;
 jest.mock("prom-client", () => {
     const counterMock: CounterMock = { inc: jest.fn() };
     const histogramMock: HistogramMock = { observe: jest.fn() };
+    const gaugeMock: GaugeMock = { set: jest.fn() };
     const registryMock: RegistryMock = {
         setDefaultLabels: jest.fn(),
         metrics: jest.fn().mockResolvedValue("metrics"),
@@ -31,6 +36,7 @@ jest.mock("prom-client", () => {
 
     const Counter = jest.fn(() => counterMock);
     const Histogram = jest.fn(() => histogramMock);
+    const Gauge = jest.fn(() => gaugeMock);
     const Registry = jest.fn(() => registryMock);
 
     return {
@@ -38,16 +44,19 @@ jest.mock("prom-client", () => {
         default: {
             Counter,
             Histogram,
+            Gauge,
             Registry,
             collectDefaultMetrics
         },
         Counter,
         Histogram,
+        Gauge,
         Registry,
         collectDefaultMetrics,
         _mocks: {
             counterMock,
             histogramMock,
+            gaugeMock,
             registryMock
         }
     };
@@ -56,11 +65,13 @@ jest.mock("prom-client", () => {
 const promClient = jest.requireMock("prom-client");
 const counterMock: CounterMock = promClient._mocks.counterMock;
 const histogramMock: HistogramMock = promClient._mocks.histogramMock;
+const gaugeMock: GaugeMock = promClient._mocks.gaugeMock;
 const registryMock: RegistryMock = promClient._mocks.registryMock;
 const collectDefaultMetrics: CollectDefaultMetricsMock = promClient.collectDefaultMetrics;
 
 const Counter = promClient.Counter as jest.Mock;
 const Histogram = promClient.Histogram as jest.Mock;
+const Gauge = promClient.Gauge as jest.Mock;
 const Registry = promClient.Registry as jest.Mock;
 
 describe("MetricsService", () => {
@@ -86,6 +97,7 @@ describe("MetricsService", () => {
         expect(Histogram).toHaveBeenCalledWith(expect.objectContaining({ name: "http_request_duration_seconds" }));
         expect(counterMock.inc).toHaveBeenCalledWith({ method: "GET", route: "/health", status: "200" });
         expect(histogramMock.observe).toHaveBeenCalledWith({ method: "GET", route: "/health", status: "200" }, 0.125);
+        expect(Gauge).toHaveBeenCalledWith(expect.objectContaining({ name: "health_check_success_rate" }));
         expect(collectDefaultMetrics).toHaveBeenCalledWith({ register: registryMock });
     });
 
@@ -102,6 +114,15 @@ describe("MetricsService", () => {
         expect(Counter).toHaveBeenCalledWith(expect.objectContaining({ name: "test_http_requests_total" }));
         expect(Histogram).toHaveBeenCalledWith(expect.objectContaining({ name: "test_http_request_duration_seconds" }));
         expect(collectDefaultMetrics).not.toHaveBeenCalled();
+    });
+
+    it("records health check results and latency", () => {
+        const service = new MetricsService();
+
+        service.recordHealthCheck({ success: true, durationMs: 250 });
+
+        expect(gaugeMock.set).toHaveBeenCalledWith(1);
+        expect(histogramMock.observe).toHaveBeenCalledWith({ operation: "health" }, 0.25);
     });
 
     it("exposes an Express handler that emits registry metrics", async () => {

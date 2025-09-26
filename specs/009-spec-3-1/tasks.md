@@ -40,32 +40,32 @@
 - Paths shown below assume single project structure as defined in `plan.md`.
 
 ## Phase 3.1: Setup
-- [ ] T001 [P] Install `npm-check-updates` as a dev dependency.
-- [ ] T002 [P] Install `prom-client` as a production dependency.
+- [X] T001 [P] Install `npm-check-updates` as a dev dependency.
+- [X] T002 [P] Install `prom-client` as a production dependency.
 
 ## Phase 3.2: Tests First (TDD) ⚠️ MUST COMPLETE BEFORE 3.3
 **CRITICAL: These tests MUST be written and MUST FAIL before ANY implementation**
-- [ ] T003 [P] Create test file `tests/unit/update-dependencies.test.js` to test the `update-dependencies.sh` script. It should mock `ncu` and `npm` commands and verify that the script behaves correctly with and without updates.
-- [ ] T004 [P] Create test file `tests/unit/monitor-vulnerabilities.test.js` to test the `monitor-vulnerabilities.sh` script. It should mock `npm audit` to simulate finding vulnerabilities and verify the script's exit code.
-- [ ] T005 [P] Create test file `tests/unit/regenerate-embeddings.test.js` to test the `regenerate-embeddings.sh` script. It should mock `curl` and `shasum` to test the checksum logic.
-- [ ] T006 [P] Create test file `tests/integration/health-endpoint.test.js` to verify the `/health` endpoint and Prometheus metrics.
+- [X] T003 [P] Create test file `tests/unit/update-dependencies.test.js` to test the `update-dependencies.sh` script. It should mock `ncu` and `npm` commands and verify that the script behaves correctly with and without updates.
+- [X] T004 [P] Create test file `tests/unit/monitor-vulnerabilities.test.js` to test the `monitor-vulnerabilities.sh` script. It should mock `npm audit` to simulate finding vulnerabilities and verify the script's exit code.
+- [X] T005 [P] Create test file `tests/unit/regenerate-embeddings.test.js` to test the `regenerate-embeddings.sh` script. It should mock `curl` and `shasum` to test the checksum logic.
+- [X] T006 [P] Create test file `tests/integration/health-endpoint.test.js` to verify the `/health` endpoint and Prometheus metrics.
 
 ## Phase 3.3: Core Implementation (ONLY after tests are failing)
-- [ ] T007 Implement the `update-dependencies.sh` script in `src/scripts/maintenance/`.
-- [ ] T008 Implement the `monitor-vulnerabilities.sh` script in `src/scripts/maintenance/`.
-- [ ] T009 Implement the `regenerate-embeddings.sh` script in `src/scripts/maintenance/`.
-- [ ] T010 Implement the `/health` endpoint in the main server file (`src/server/index.ts`) to return a 200 OK status.
-- [ ] T011 Integrate `prom-client` to expose `health_check_success_rate` and `api_latency` metrics.
+- [X] T007 Implement the `update-dependencies.sh` script in `src/scripts/maintenance/`.
+- [X] T008 Implement the `monitor-vulnerabilities.sh` script in `src/scripts/maintenance/`.
+- [X] T009 Implement the `regenerate-embeddings.sh` script in `src/scripts/maintenance/`.
+- [X] T010 Implement the `/health` endpoint in the main server file (`src/server/index.ts`) to return a 200 OK status.
+- [X] T011 Integrate `prom-client` to expose `health_check_success_rate` and `api_latency` metrics.
 
 ## Phase 3.4: Integration
-- [ ] T012 Create a new GitHub Actions workflow file at `.github/workflows/weekly-maintenance.yml`.
-- [ ] T013 Configure the workflow to run on a weekly schedule.
-- [ ] T014 Add a job to the workflow to run the `update-dependencies.sh` script.
-- [ ] T015 Add a job to the main CI workflow (`.github/workflows/ci.yml`) to run the `monitor-vulnerabilities.sh` script on every push to `main`.
+- [X] T012 Create a new GitHub Actions workflow file at `.github/workflows/weekly-maintenance.yml`.
+- [X] T013 Configure the workflow to run on a weekly schedule.
+- [X] T014 Add a job to the workflow to run the `update-dependencies.sh` script.
+- [X] T015 Add a job to the main CI workflow (`.github/workflows/ci.yml`) to run the `monitor-vulnerabilities.sh` script on every push to `main`.
 
 ## Phase 3.5: Polish
-- [ ] T016 [P] Add comprehensive JSDoc comments to all new scripts and the health endpoint implementation.
-- [ ] T017 [P] Update the main `README.md` to document the new maintenance processes and the health endpoint.
+- [X] T016 [P] Add comprehensive JSDoc comments to all new scripts and the health endpoint implementation.
+- [X] T017 [P] Update the main `README.md` to document the new maintenance processes and the health endpoint.
 
 ## Dependencies
 - Setup (T001-T002) before everything.

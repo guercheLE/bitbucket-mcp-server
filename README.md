@@ -53,7 +53,13 @@ Bitbucket MCP Server is a Model Context Protocol (MCP) integration that provides
    ```bash
    curl http://127.0.0.1:${HTTP_PORT:-3000}/health
    ```
-   A healthy response returns HTTP 200 with details about the Bitbucket connection status.
+   A healthy response returns HTTP 200 with details about the Bitbucket connection status. When the Bitbucket API is unavailable the endpoint reports a `degraded` status so automation can pause risky tasks. Metrics from each probe, including response latency, are forwarded to Prometheus under the `health_check_success_rate` gauge.
+
+   You can also scrape Prometheus metrics at:
+   ```bash
+   curl http://127.0.0.1:${HTTP_PORT:-3000}/metrics
+   ```
+   The payload aggregates request counts, request durations, health check signals, and internal API latencies.
 
 5. Stop the server gracefully:
    ```bash
@@ -75,6 +81,39 @@ Enterprise security, authentication, and observability settings can be tuned thr
 - `npm run build` – Compiles TypeScript sources to `dist/`.
 - `npm run typecheck` – Runs the TypeScript compiler without emitting output.
 - `npm run generate-embeddings` – Generates the `sqlite-vec` database from Bitbucket API metadata.
+
+## Maintenance Automation
+
+Three operational scripts live under `src/scripts/maintenance/` and are wired into the CI pipeline as well as the weekly scheduled workflow (`.github/workflows/weekly-maintenance.yml`). Each script is safe to execute locally when you need to run maintenance on demand.
+
+### Dependency refresh (`update-dependencies.sh`)
+
+Checks for non-breaking (minor and patch) package updates using `npm-check-updates` and installs them when available. Exit codes communicate intent: `0` for successful upgrades, `2` when no changes are needed, and `1` if an error occurs. Use the `--dry-run` flag to review prospective changes without modifying the lockfile.
+
+```bash
+./src/scripts/maintenance/update-dependencies.sh --dry-run
+./src/scripts/maintenance/update-dependencies.sh
+```
+
+### Vulnerability monitoring (`monitor-vulnerabilities.sh`)
+
+Runs `npm audit` at a configurable severity threshold (default `critical`). CI executes this on every push to `main`, failing the pipeline when actionable vulnerabilities are detected so the team can respond quickly.
+
+```bash
+./src/scripts/maintenance/monitor-vulnerabilities.sh --level high
+```
+
+### Documentation drift guard (`regenerate-embeddings.sh`)
+
+Downloads the reference API documentation, stores a checksum, and exits with code `2` whenever the source changes. That signal tells the weekly workflow to request a manual review before regenerating vector embeddings, preventing unintended embedding churn.
+
+```bash
+API_DOCS_URL="https://developer.atlassian.com" \
+CHECKSUM_FILE=".specify/state/api-checksum.json" \
+./src/scripts/maintenance/regenerate-embeddings.sh
+```
+
+The weekly workflow triggers every Monday at 08:00 UTC and can also be launched manually from the Actions tab. It runs the dependency refresh in dry-run mode, surfaces vulnerability alerts, and records workflow artefacts to aid triage.
 
 ## Generating Embeddings
 

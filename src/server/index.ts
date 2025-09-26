@@ -223,14 +223,29 @@ const defaultHttpServerFactory: HttpServerFactory = ({
             app.use(i18nService.middleware());
         }
 
+        /**
+         * @summary Reports the readiness of the MCP server and feeds metrics into the health gauge.
+         * @route GET /health
+         * @returns 200 {object} JSON payload describing Bitbucket connectivity and degraded mode status.
+         */
         app.get("/health", (_req, res) => {
+            const startTime = metricsService ? process.hrtime.bigint() : null;
+            const isHealthy = state.bitbucketConnected && !state.degradedMode;
+
             const payload = {
                 status: state.degradedMode ? "degraded" : "ok",
                 bitbucketConnected: state.bitbucketConnected,
                 bitbucketServerInfo: state.bitbucketServerInfo,
                 degradedMode: state.degradedMode
             } satisfies Record<string, unknown>;
+
             res.status(200).json(payload);
+
+            if (metricsService && startTime !== null) {
+                const elapsedNs = process.hrtime.bigint() - startTime;
+                const elapsedMs = Number(elapsedNs) / 1_000_000;
+                metricsService.recordHealthCheck({ success: isHealthy, durationMs: elapsedMs });
+            }
         });
 
         if (metricsService) {
