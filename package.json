@@ -1,5 +1,5 @@
 {
-  "name": "bitbucket-mcp-server",
+  "name": "@guerchele/bitbucket-mcp-server",
   "version": "3.0.0",
   "description": "Bitbucket Model Context Protocol server",
   "license": "LGPL-3.0",
